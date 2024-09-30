@@ -1,0 +1,17 @@
+{
+  "name": "openapi-to-k6",
+  "version": "0.1.0",
+  "description": "A CLI tool to generate helper modules for K6 from OpenAPI schema",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "",
+  "license": "AGPL-3.0",
+  "dependencies": {
+    "commander": "^12.1.0",
+    "openapi-typescript": "^7.4.1",
+    "ts-node": "^10.9.2",
+    "typescript": "^5.6.2"
+  }
+}
