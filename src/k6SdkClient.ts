@@ -9,6 +9,7 @@ import {
     generateVerbImports,
     GeneratorMutator,
     GeneratorOptions,
+    GeneratorSchema,
     GeneratorVerbOptions,
     GetterBody,
     GetterQueryParam,
@@ -31,7 +32,8 @@ export const getK6Dependencies: ClientDependenciesBuilder = () => [
                 values: true,
                 syntheticDefaultImport: true,
             },
-            { name: 'Response' }
+            { name: 'Response' },
+            { name: 'Params' }
         ],
         dependency: 'k6/http',
     },
@@ -39,6 +41,12 @@ export const getK6Dependencies: ClientDependenciesBuilder = () => [
         exports: [
             {
                 name: 'URLSearchParams',
+                default: false,
+                values: true,
+                // syntheticDefaultImport: true,
+            },
+            {
+                name: 'URL',
                 default: false,
                 values: true,
                 // syntheticDefaultImport: true,
@@ -56,21 +64,7 @@ export const getK6Dependencies: ClientDependenciesBuilder = () => [
             },
         ],
         dependency: 'https://jslib.k6.io/formdata/0.0.2/index.js',
-    },
-    {
-        exports: [
-            {
-                name: 'axios',
-                default: true,
-                values: true,
-                syntheticDefaultImport: true,
-            },
-            { name: 'AxiosRequestConfig' },
-            { name: 'AxiosResponse' },
-        ],
-        dependency: 'axios',
     }
-
 ];
 
 const generateAxiosImplementation = (
@@ -101,6 +95,28 @@ const generateAxiosImplementation = (
         isFormUrlEncoded,
     });
 
+    let url = `cleanBaseUrl + \`${route}\``;
+
+    if (body.formUrlEncoded) {
+        url += '+\`?${formUrlEncoded.toString()}\`';
+    }
+    let queryParamsGenerationString = '';
+    if (queryParams) {
+        if (body.formUrlEncoded) {
+            // Add the query params to the existing formUrlEncoded object
+            queryParamsGenerationString = `
+                for (const [key, value] of Object.entries(params)) {
+                    formUrlEncoded.append(key, value);
+                    }
+            `;
+        } else {
+            url += '+\`?${new URLSearchParams(params).toString()}\`';
+        }
+
+    }
+    const urlGeneration = `
+         const url = new URL(${url});`;
+
     const options = getK6RequestOptions({
         route,
         body,
@@ -115,7 +131,8 @@ const generateAxiosImplementation = (
         paramsSerializerOptions: override?.paramsSerializerOptions,
     });
 
-    return `const ${operationName} = (\n    ${toObjectString(props, 'implementation')}): Response => {${bodyForm}
+    return `const ${operationName} = (\n    ${toObjectString(props, 'implementation')} options?: Params): Response => {${bodyForm}
+        ${urlGeneration}
       return http.request(${options});
     }
   `;
@@ -136,7 +153,33 @@ type OptionsInput = {
     paramsSerializerOptions?: ParamsSerializerOptions;
 }
 
-const VERBS_WITHOUT_BODY = [Verbs.GET, Verbs.HEAD]
+const getParamsInputValue = ({
+    response,
+    queryParams,
+    headers,
+}: {
+    response: GetterResponse;
+    queryParams?: GeneratorSchema;
+    headers?: GeneratorSchema;
+}) => {
+
+    if (!queryParams && !headers && !response.isBlob) {
+        return 'options';
+    }
+
+    let value = '\n    ...options,';
+
+    if (response.isBlob) {
+        value += `\n        responseType: 'binary',`;
+    }
+
+    if (headers) {
+        value += '\n        headers: {...headers, ...options?.headers},';
+    }
+
+    return `{${value}}`;
+
+}
 
 const getK6RequestOptions = (options: OptionsInput) => {
     const {
@@ -153,36 +196,34 @@ const getK6RequestOptions = (options: OptionsInput) => {
         paramsSerializerOptions,
     } = options;
 
-    const isBodyVerb = !VERBS_WITHOUT_BODY.includes(verb);
-
     const requestBodyParams = generateBodyOptions(
         body,
         isFormData,
         isFormUrlEncoded,
     );
 
-    let fetchBodyOption = 'null,';
+    let fetchBodyOption = 'undefined';
 
     if (requestBodyParams) {
         fetchBodyOption = `JSON.stringify(${requestBodyParams})`;
     }
 
-    // const bodyForm = generateFormDataAndUrlEncodedFunction({
-    //     formData: body,
-    //     formUrlEncoded: body,
-    //     body,
-    //     isFormData,
-    //     isFormUrlEncoded,
-    // });
+    // Generate the params input for the call
+
+    const paramsValue = getParamsInputValue({
+        response,
+        headers: headers?.schema,
+        queryParams: queryParams?.schema,
+    })
+
 
     // Sample output
-    // 'GET', 'http://test.com/route', <body>, <params>
-    const url = `cleanBaseUrl + \`${route}\``;
+    // 'GET', 'http://test.com/route', <body>, <options>
+
     return `'${verb.toUpperCase()}',
-        ${url},
-        ${isBodyVerb ? fetchBodyOption : ''}\n`;
-
-
+        url,
+        ${fetchBodyOption},
+        ${paramsValue}`;
 }
 
 export const generateTitle: ClientTitleBuilder = (title) => {
