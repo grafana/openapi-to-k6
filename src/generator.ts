@@ -27,7 +27,7 @@ export default (openApiPath: string, outputDir: string) => {
         input: openApiPath,
         output: {
             target: outputDir,
-            mode: 'single',
+            mode: 'split',
             client: () => k6ClientBuilder,
             override: {
                 header: generatedFileHeaderGenerator,
