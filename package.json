@@ -13,6 +13,7 @@
     "commander": "^12.1.0",
     "openapi-typescript": "^7.4.1",
     "orval": "^7.1.1",
+    "prettier": "^3.3.3",
     "ts-node": "^10.9.2",
     "typescript": "^5.6.2"
   }

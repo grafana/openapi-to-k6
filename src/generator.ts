@@ -31,7 +31,8 @@ export default (openApiPath: string, outputDir: string) => {
             client: () => k6ClientBuilder,
             override: {
                 header: generatedFileHeaderGenerator,
-            }
+            },
+            prettier: true,
         }
     });
 };
