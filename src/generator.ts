@@ -1,6 +1,6 @@
 import { InfoObject } from 'openapi3-ts/oas30';
 import orval from 'orval';
-import { getPackageDetails } from './helper';
+import { formatAllFilesInDirectory, getPackageDetails } from './helper';
 import { k6ClientBuilder } from './k6SdkClient';
 
 
@@ -17,7 +17,7 @@ const generatedFileHeaderGenerator = (info: InfoObject) => {
 };
 
 
-export default (openApiPath: string, outputDir: string) => {
+export default async (openApiPath: string, outputDir: string) => {
     /**
      * Note!
      * 1. override.requestOptions is not supported for the custom K6 client
@@ -31,9 +31,10 @@ export default (openApiPath: string, outputDir: string) => {
             client: () => k6ClientBuilder,
             override: {
                 header: generatedFileHeaderGenerator,
-            },
-            prettier: true,
+            }
         }
     });
+
+    await formatAllFilesInDirectory(outputDir);
 };
 

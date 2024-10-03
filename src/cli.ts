@@ -1,3 +1,5 @@
+#!/usr/bin/env node
+
 import { Command } from 'commander';
 import path from 'path';
 import generateK6SDK from './generator';
@@ -11,11 +13,11 @@ async function generateSDK(openApiPath: string, outputDir: string) {
     console.log('OpenAPI path:', openApiPath);
     console.log('Output directory:', outputDir);
 
-    generateK6SDK(openApiPath, outputDir);
+    await generateK6SDK(openApiPath, outputDir);
 }
 
 program
-    .name(packageDetails.name)
+    .name(packageDetails.commandName)
     .description(packageDetails.description)
     .version(packageDetails.version)
     .argument('<openApiPath>', 'Path to the OpenAPI spec file')
