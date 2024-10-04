@@ -23,7 +23,7 @@ export default async (openApiPath: string, outputDir: string) => {
      * 1. override.requestOptions is not supported for the custom K6 client
      * 2. override.mutator is not supported for the custom K6 client
     */
-    orval({
+    await orval({
         input: openApiPath,
         output: {
             target: outputDir,

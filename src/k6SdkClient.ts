@@ -221,7 +221,7 @@ const getK6RequestOptions = (options: OptionsInput) => {
     // 'GET', 'http://test.com/route', <body>, <options>
 
     return `'${verb.toUpperCase()}',
-        url,
+        url.toString(),
         ${fetchBodyOption},
         ${paramsValue}`;
 }
