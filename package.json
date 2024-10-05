@@ -15,6 +15,7 @@
   "license": "AGPL-3.0",
   "dependencies": {
     "@types/k6": "^0.54.0",
+    "chalk": "^4.1.2",
     "commander": "^12.1.0",
     "openapi-typescript": "^7.4.1",
     "orval": "^7.1.1",

@@ -15,15 +15,18 @@ OpenAPI documentation.
 ```shell
 git clone https://github.com/grafana/openapi-to-k6
 ```
+
 2. Install dependencies
 ```shell
 npm install
 ```
+
 3. Run the sdk generator from source
 ```shell
 npm run dev <path-to-openapi-schema> <output path>
 ```
 This will generate the SDK files in the corresponding directory.
+
 4. Import them in you k6 script and run the script using the following command
 ```shell
 k6 run --compatibility-mode=experimental_enhanced <path-to-k6-script>.ts
@@ -36,4 +39,4 @@ Note: `--compatibility-mode` is needed to use a typescript file as K6 script. To
 2. Install the compiled package locally by using `npm install .` or `npm install -g .`.
 3. Use the CLI `k6-sdkgen <path-to-openapi-schema> <output path>`
 
-Special mention for the the open-source library [Orval](https://orval.dev/) to facilitate the generation of these SDK.
+Special thanks for the the open-source library [Orval](https://orval.dev/) to facilitate the generation of these SDK.
