@@ -1,8 +1,9 @@
 import { InfoObject } from 'openapi3-ts/oas30';
 import orval from 'orval';
-import { formatAllFilesInDirectory, getPackageDetails } from './helper';
+import { formatAllFilesInDirectory, getPackageDetails, OutputOverrider } from './helper';
 import { k6ClientBuilder } from './k6SdkClient';
 
+const outputOverrider = OutputOverrider.getInstance();
 
 const generatedFileHeaderGenerator = (info: InfoObject) => {
     const packageDetails = getPackageDetails();
@@ -23,6 +24,8 @@ export default async (openApiPath: string, outputDir: string) => {
      * 1. override.requestOptions is not supported for the custom K6 client
      * 2. override.mutator is not supported for the custom K6 client
     */
+    outputOverrider.redirectOutputToNullStream();
+
     await orval({
         input: openApiPath,
         output: {
@@ -34,6 +37,8 @@ export default async (openApiPath: string, outputDir: string) => {
             }
         }
     });
+
+    outputOverrider.restoreOutput();
 
     await formatAllFilesInDirectory(outputDir);
 };

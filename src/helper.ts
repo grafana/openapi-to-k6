@@ -44,3 +44,48 @@ export async function formatAllFilesInDirectory(dir: string) {
         }
     }
 }
+
+/**
+ * A singleton Class to allow redirecting stdout and stderr to a null stream.
+ * This is used to supress the output from third-party libraries.
+ *
+ * Note: Make sure to call restoreOutput() after the third-party library call to restore the output.
+ *
+ * @example
+ * ```typescript
+ * const outputOverrider = OutputOverrider.getInstance();
+ * outputOverrider.redirectOutputToNullStream();
+ * // Call the third-party library
+ * outputOverrider.restoreOutput();
+ * ```
+ *
+ * @export
+ * @class OutputOverrider
+ */
+export class OutputOverrider {
+    private static instance: OutputOverrider | null = null;
+    private originalStdoutWrite: any;
+    private originalStderrWrite: any;
+
+    // Making the constructor private to prevent direct instantiation
+    private constructor() {
+        this.originalStdoutWrite = process.stdout.write;
+        this.originalStderrWrite = process.stderr.write;
+    }
+    // Static method to get the single instance of the class
+    public static getInstance() {
+        if (OutputOverrider.instance === null) {
+            OutputOverrider.instance = new OutputOverrider();
+        }
+        return OutputOverrider.instance;
+    }
+
+    public redirectOutputToNullStream() {
+        process.stdout.write = process.stderr.write = () => true;
+    }
+
+    public restoreOutput() {
+        process.stdout.write = this.originalStdoutWrite;
+        process.stderr.write = this.originalStderrWrite;
+    }
+}
