@@ -16,6 +16,8 @@ export const getPackageDetails = (): PackageDetails => {
 
 /**
  * Recursively formats all files in the given directory using Prettier.
+ * If a prettier configuration file is present in the directory, it will be used.
+ *
  * @param dir - Directory path to start formatting files.
  */
 export async function formatAllFilesInDirectory(dir: string) {
