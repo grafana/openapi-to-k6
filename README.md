@@ -9,6 +9,9 @@ easily call your endpoints and have auto completion in your IDE.
 This allows developers to easily create performance tests for their APIs based on their existing
 OpenAPI documentation.
 
+Note: Optional usage analytics are gathered to make the tool better. To disable this, use the option
+`--disable-analytics`.
+
 ## Getting started
 
 1. Clone the repository

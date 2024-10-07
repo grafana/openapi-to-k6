@@ -100,3 +100,17 @@ export function isTsNode(): boolean {
     const scriptPath = process.argv[1];
     return scriptPath.endsWith('.ts') || scriptPath.includes('ts-node');
 }
+
+/**
+ * Create a hash from the given string using the djb2 algorithm.
+ *
+ * @param str
+ * @returns generated hash
+ */
+export function djb2Hash(str: string): number {
+    let hash = 5381;
+    for (let i = 0; i < str.length; i++) {
+        hash = (hash * 33) ^ str.charCodeAt(i);
+    }
+    return hash >>> 0; // Ensure the hash is a positive integer
+}
