@@ -1,5 +1,5 @@
 {
-  "name": "openapi-to-k6",
+  "name": "@grafana/openapi-to-k6",
   "version": "0.1.0",
   "description": "A CLI tool to generate helper modules for K6 from OpenAPI schema",
   "main": "dist/cli.js",
@@ -30,5 +30,8 @@
     "ts-jest": "^29.2.5",
     "ts-node": "^10.9.2",
     "typescript": "^5.6.2"
+  },
+  "engines": {
+    "node": ">=21.5.0"
   }
 }

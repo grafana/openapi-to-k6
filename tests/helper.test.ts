@@ -83,7 +83,7 @@ describe('formatAllFilesInDirectory', () => {
     });
 });
 
-describe.only('djb2Hash', () => {
+describe('djb2Hash', () => {
     it(('should return a hash for a given string'), () => {
         const input = 'test';
         const expectedHash = 2087956275;
