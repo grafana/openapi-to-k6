@@ -20,6 +20,7 @@ import {
     toObjectString,
     Verbs
 } from '@orval/core';
+import { AnalyticsData } from './type';
 
 const returnTypesToWrite: Map<string, (title?: string) => string> = new Map();
 
@@ -83,9 +84,13 @@ const generateAxiosImplementation = (
         paramsSerializer,
     }: GeneratorVerbOptions,
     { route, context }: GeneratorOptions,
+    analyticsData?: AnalyticsData
 ) => {
     const isFormData = override?.formData !== false;
     const isFormUrlEncoded = override?.formUrlEncoded !== false;
+    if (analyticsData) {
+        analyticsData.generatedRequestsCount[verb] += 1;
+    }
 
     const bodyForm = generateFormDataAndUrlEncodedFunction({
         formData,
@@ -260,21 +265,28 @@ export const generateFooter: ClientFooterBuilder = ({
     return footer;
 };
 
-export const generateK6Client = (
-    verbOptions: GeneratorVerbOptions,
-    options: GeneratorOptions,
-) => {
-    const imports = generateVerbImports(verbOptions);
-    const implementation = generateAxiosImplementation(verbOptions, options);
+function getK6Client(analyticsData?: AnalyticsData) {
+    return function (
+        verbOptions: GeneratorVerbOptions,
+        options: GeneratorOptions,
+    ) {
+        const imports = generateVerbImports(verbOptions);
+        const implementation = generateAxiosImplementation(verbOptions, options, analyticsData);
+        const specData = Object.values(options.context.specs);
 
-    return { implementation, imports };
-};
+        if (analyticsData && specData.length > 0) {
+            analyticsData.openApiSpecVersion = specData[0].openapi;
+        }
+        return { implementation, imports };
+    }
+}
 
-export const k6ClientBuilder: ClientGeneratorsBuilder = {
-    client: generateK6Client,
-    header: generateK6Header,
-    dependencies: getK6Dependencies,
-    footer: generateFooter,
-    title: generateTitle,
-};
-
+export function getK6ClientBuilder(analyticsData?: AnalyticsData): ClientGeneratorsBuilder {
+    return {
+        client: getK6Client(analyticsData),
+        header: generateK6Header,
+        dependencies: getK6Dependencies,
+        footer: generateFooter,
+        title: generateTitle,
+    };
+}

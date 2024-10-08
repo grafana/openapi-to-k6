@@ -1,7 +1,7 @@
 import * as fs from 'fs';
 import * as path from 'path';
 import * as prettier from 'prettier';
-import { formatAllFilesInDirectory, getPackageDetails } from '../src/helper';
+import { djb2Hash, formatAllFilesInDirectory, getPackageDetails } from '../src/helper';
 import { PackageDetails } from '../src/type';
 
 
@@ -80,5 +80,14 @@ describe('formatAllFilesInDirectory', () => {
             const filePath = `${mockDirectory}/${file}`;
             expect(prettier.format).toHaveBeenNthCalledWith(index + 1, mockFileContent, { ...mockPrettierConfig, filepath: filePath });
         });
+    });
+});
+
+describe('djb2Hash', () => {
+    it(('should return a hash for a given string'), () => {
+        const input = 'test';
+        const expectedHash = 2087956275;
+        const hash = djb2Hash(input);
+        expect(hash).toEqual(expectedHash);
     });
 });
