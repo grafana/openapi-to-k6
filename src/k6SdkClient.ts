@@ -22,7 +22,9 @@ import {
 } from '@orval/core';
 import { AnalyticsData } from './type';
 
-const returnTypesToWrite: Map<string, (title?: string) => string> = new Map();
+// A map to store the operationNames for which a return type is to be written at the end to export
+// and the return type definition
+const returnTypesToWrite: Map<string, string> = new Map();
 
 export const getK6Dependencies: ClientDependenciesBuilder = () => [
     {
@@ -34,6 +36,7 @@ export const getK6Dependencies: ClientDependenciesBuilder = () => [
                 syntheticDefaultImport: true,
             },
             { name: 'Response' },
+            { name: 'ResponseBody' },
             { name: 'Params' }
         ],
         dependency: 'k6/http',
@@ -68,6 +71,25 @@ export const getK6Dependencies: ClientDependenciesBuilder = () => [
     }
 ];
 
+function _generateResponseTypeName(operationName: string): string {
+    return `${pascal(operationName)}Response`;
+}
+
+function _generateResponseTypeDefinition(operationName: string, response: GetterResponse): string {
+    const typeName = _generateResponseTypeName(operationName);
+    let responseDataType = '';
+
+    if (response.definition.success) {
+        responseDataType += response.definition.success + ' | ';
+    }
+    responseDataType += 'ResponseBody';
+
+    return `export type ${typeName} = {
+    response: Response
+    data: ${responseDataType}
+};`
+}
+
 const generateAxiosImplementation = (
     {
         headers,
@@ -88,6 +110,7 @@ const generateAxiosImplementation = (
 ) => {
     const isFormData = override?.formData !== false;
     const isFormUrlEncoded = override?.formUrlEncoded !== false;
+
     if (analyticsData) {
         analyticsData.generatedRequestsCount[verb] += 1;
     }
@@ -99,6 +122,12 @@ const generateAxiosImplementation = (
         isFormData,
         isFormUrlEncoded,
     });
+
+    // Generate response return types
+    returnTypesToWrite.set(
+        operationName,
+        _generateResponseTypeDefinition(operationName, response)
+    );
 
     let url = `cleanBaseUrl + \`${route}\``;
 
@@ -136,9 +165,20 @@ const generateAxiosImplementation = (
         paramsSerializerOptions: override?.paramsSerializerOptions,
     });
 
-    return `const ${operationName} = (\n    ${toObjectString(props, 'implementation')} options?: Params): Response => {${bodyForm}
+    return `const ${operationName} = (\n    ${toObjectString(props, 'implementation')} options?: Params): ${_generateResponseTypeName(operationName)} => {${bodyForm}
         ${urlGeneration}
-      return http.request(${options});
+        const response = http.request(${options});
+        let data;
+
+        try {
+            data = response.json();
+        } catch (error) {
+            data = response.body;
+        }
+      return {
+        response,
+        data
+      }
     }
   `;
 };
@@ -238,27 +278,22 @@ export const generateTitle: ClientTitleBuilder = (title) => {
 
 export const generateK6Header: ClientHeaderBuilder = ({
     title,
-    noFunction,
 }) => {
-    return `${!noFunction ? `export const ${title} = (baseUrl: string) => {\n
-        const cleanBaseUrl = baseUrl.replace(/\\/+$/, '');\n` : ''}`
+    return `export const ${title} = (baseUrl: string) => {\n
+        const cleanBaseUrl = baseUrl.replace(/\\/+$/, '');\n`
 };
 
 export const generateFooter: ClientFooterBuilder = ({
     operationNames,
     title,
-    noFunction,
 }) => {
     let footer = '';
 
-    if (!noFunction) {
-        footer += `return {${operationNames.join(',')}}};\n`;
-    }
+    footer += `return {${operationNames.join(',')}}};\n\n`;
 
     operationNames.forEach((operationName) => {
         if (returnTypesToWrite.has(operationName)) {
-            const func = returnTypesToWrite.get(operationName)!;
-            footer += func(!noFunction ? title : undefined) + '\n';
+            footer += returnTypesToWrite.get(operationName) + '\n';
         }
     });
 
