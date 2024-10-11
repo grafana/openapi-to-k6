@@ -273,7 +273,7 @@ const getK6RequestOptions = (options: OptionsInput) => {
 
 export const generateTitle: ClientTitleBuilder = (title) => {
     const sanTitle = sanitize(title);
-    return `get${pascal(sanTitle)}`;
+    return `create${pascal(sanTitle)}`;
 };
 
 export const generateK6Header: ClientHeaderBuilder = ({
