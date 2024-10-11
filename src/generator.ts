@@ -30,7 +30,7 @@ export default async (openApiPath: string, outputDir: string, analyticsData?: An
         input: openApiPath,
         output: {
             target: outputDir,
-            mode: 'split',
+            mode: 'single',
             client: () => getK6ClientBuilder(analyticsData),
             override: {
                 header: generatedFileHeaderGenerator,
