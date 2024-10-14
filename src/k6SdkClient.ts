@@ -306,7 +306,7 @@ function getK6Client(
     )
     const specData = Object.values(options.context.specs)
 
-    if (specData.length > 0) {
+    if (specData[0]) {
       schemaDetails.title = specData[0].info.title
 
       if (analyticsData) {

@@ -6,7 +6,7 @@ import { logger } from './logger'
 import { PackageDetails } from './type'
 
 export const getPackageDetails = (): PackageDetails => {
-  const commandName = Object.keys(packageJson.bin)[0]
+  const commandName = Object.keys(packageJson.bin)[0] || 'openapi-to-k6'
   return {
     name: packageJson.name,
     commandName,
@@ -94,11 +94,19 @@ export class OutputOverrider {
     return OutputOverrider.instance
   }
 
-  public redirectOutputToNullStream() {
+  public async redirectOutputToNullStream(callback?: () => Promise<void>) {
     process.stdout.write = process.stderr.write = () => true
+
+    try {
+      if (callback) {
+        await callback()
+      }
+    } finally {
+      this._restoreOutput()
+    }
   }
 
-  public restoreOutput() {
+  private _restoreOutput() {
     process.stdout.write = this.originalStdoutWrite
     process.stderr.write = this.originalStderrWrite
   }
@@ -112,7 +120,11 @@ export class OutputOverrider {
  */
 export function isTsNode(): boolean {
   const scriptPath = process.argv[1]
-  return scriptPath.endsWith('.ts') || scriptPath.includes('ts-node')
+  if (scriptPath) {
+    return scriptPath.endsWith('.ts') || scriptPath.includes('ts-node')
+  } else {
+    return false
+  }
 }
 
 /**

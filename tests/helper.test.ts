@@ -98,26 +98,25 @@ describe('OutputOverrider', () => {
     outputOverrider = OutputOverrider.getInstance()
   })
 
-  it('should redirect output to null stream', () => {
+  it('should redirect output to null stream for the callback function', async () => {
     const originalStdoutWrite = process.stdout.write
     const originalStderrWrite = process.stderr.write
 
-    outputOverrider.redirectOutputToNullStream()
+    await outputOverrider.redirectOutputToNullStream(async () => {
+      expect(process.stdout.write).not.toBe(originalStdoutWrite)
+      expect(process.stderr.write).not.toBe(originalStderrWrite)
+    })
 
-    expect(process.stdout.write).not.toBe(originalStdoutWrite)
-    expect(process.stderr.write).not.toBe(originalStderrWrite)
-
-    outputOverrider.restoreOutput()
+    expect(process.stdout.write).toBe(originalStdoutWrite)
+    expect(process.stderr.write).toBe(originalStderrWrite)
   })
 
-  it('should restore output', () => {
+  it('should restore output automatically after the call', async () => {
     const originalStdoutWrite = process.stdout.write
     const originalStderrWrite = process.stderr.write
 
-    outputOverrider.redirectOutputToNullStream()
-    outputOverrider.restoreOutput()
+    await outputOverrider.redirectOutputToNullStream()
 
-    console.log(process.stdout.write)
     expect(process.stdout.write).toBe(originalStdoutWrite)
     expect(process.stderr.write).toBe(originalStderrWrite)
   })
