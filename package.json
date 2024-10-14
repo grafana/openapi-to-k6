@@ -1,10 +1,10 @@
 {
   "name": "@grafana/openapi-to-k6",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "A CLI tool to generate helper modules for K6 from OpenAPI schema",
   "main": "dist/cli.js",
   "bin": {
-    "k6-sdkgen": "dist/cli.js"
+    "openapi-to-k6": "dist/cli.js"
   },
   "scripts": {
     "build": "tsc",
