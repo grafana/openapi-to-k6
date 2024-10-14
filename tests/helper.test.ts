@@ -1,13 +1,17 @@
-import * as fs from 'fs';
-import * as path from 'path';
+import fs from 'fs';
 import * as prettier from 'prettier';
-import { djb2Hash, formatAllFilesInDirectory, getPackageDetails } from '../src/helper';
+import { promisify } from 'util';
+import { djb2Hash, formatFileWithPrettier, getPackageDetails, isTsNode, OutputOverrider } from '../src/helper';
 import { PackageDetails } from '../src/type';
+
+const mkdtemp = promisify(fs.mkdtemp);
+const rmdir = promisify(fs.rmdir);
 
 
 jest.mock('fs');
 jest.mock('path');
 jest.mock('prettier');
+// jest.mock('@orval/core');
 
 // Mock the package.json file
 jest.mock('../package.json', () => ({
@@ -31,58 +35,6 @@ describe('getPackageDetails', () => {
     });
 });
 
-describe('formatAllFilesInDirectory', () => {
-    const mockFiles = ['file1.ts', 'file2.js'];
-    const mockDirectory = '/mock-directory';
-    const mockFileContent = 'const x = 1;';
-    const mockFormattedContent = 'const x = 1; // formatted';
-
-    beforeEach(() => {
-        (fs.readdirSync as jest.Mock).mockReturnValue(mockFiles);
-        (fs.readFileSync as jest.Mock).mockReturnValue(mockFileContent);
-        (fs.writeFileSync as jest.Mock).mockImplementation(() => { });
-        (fs.statSync as jest.Mock).mockReturnValue({ isDirectory: () => false });
-        (path.join as jest.Mock).mockImplementation((...args) => args.join('/'));
-        (prettier.format as jest.Mock).mockReturnValue(mockFormattedContent);
-    });
-
-    afterEach(() => {
-        jest.clearAllMocks();
-    });
-
-    it('should format all files in the directory', async () => {
-        await formatAllFilesInDirectory(mockDirectory);
-
-        expect(prettier.format).toHaveBeenCalledTimes(mockFiles.length);
-        mockFiles.forEach((file, index) => {
-            const filePath = `${mockDirectory}/${file}`;
-            expect(fs.readFileSync).toHaveBeenCalledWith(filePath, 'utf-8');
-            expect(prettier.format).toHaveBeenCalledWith(mockFileContent, { filepath: filePath });
-            expect(fs.writeFileSync).toHaveBeenNthCalledWith(index + 1, filePath, mockFormattedContent);
-        });
-    });
-
-    it('should handle empty directory', () => {
-        (fs.readdirSync as jest.Mock).mockReturnValue([]);
-        formatAllFilesInDirectory(mockDirectory);
-        expect(fs.readFileSync).not.toHaveBeenCalled();
-        expect(prettier.format).not.toHaveBeenCalled();
-        expect(fs.writeFileSync).not.toHaveBeenCalled();
-    });
-
-    it('should use prettier config if available', async () => {
-        const mockPrettierConfig = { semi: false };
-        (prettier.resolveConfig as jest.Mock).mockResolvedValue(mockPrettierConfig);
-
-        await formatAllFilesInDirectory(mockDirectory);
-
-        mockFiles.forEach((file, index) => {
-            const filePath = `${mockDirectory}/${file}`;
-            expect(prettier.format).toHaveBeenNthCalledWith(index + 1, mockFileContent, { ...mockPrettierConfig, filepath: filePath });
-        });
-    });
-});
-
 describe('djb2Hash', () => {
     it(('should return a hash for a given string'), () => {
         const input = 'test';
@@ -91,3 +43,90 @@ describe('djb2Hash', () => {
         expect(hash).toEqual(expectedHash);
     });
 });
+
+describe('formatFileWithPrettier', () => {
+    const mockFilePath = '/mock-directory/mock-file.ts';
+    const mockFileContent = 'const x = 1;';
+    const mockFormattedContent = 'const x = 1; // formatted';
+
+    beforeEach(() => {
+        (fs.readFileSync as jest.Mock).mockReturnValue(mockFileContent);
+        (fs.writeFileSync as jest.Mock).mockImplementation(() => { });
+        (prettier.resolveConfig as jest.Mock).mockResolvedValue({});
+        (prettier.format as jest.Mock).mockReturnValue(mockFormattedContent);
+    });
+
+    afterEach(() => {
+        jest.clearAllMocks();
+    });
+
+    it('should format the file using Prettier', async () => {
+        await formatFileWithPrettier(mockFilePath);
+
+        expect(fs.readFileSync).toHaveBeenCalledWith(mockFilePath, 'utf-8');
+        expect(prettier.format).toHaveBeenCalledWith(mockFileContent, { filepath: mockFilePath });
+        expect(fs.writeFileSync).toHaveBeenCalledWith(mockFilePath, mockFormattedContent);
+    });
+
+    it('should use Prettier config if available', async () => {
+        const mockPrettierConfig = { semi: false };
+        (prettier.resolveConfig as jest.Mock).mockResolvedValue(mockPrettierConfig);
+
+        await formatFileWithPrettier(mockFilePath);
+
+        expect(prettier.format).toHaveBeenCalledWith(mockFileContent, { ...mockPrettierConfig, filepath: mockFilePath });
+    });
+});
+
+describe('OutputOverrider', () => {
+    let outputOverrider: OutputOverrider;
+
+    beforeEach(() => {
+        outputOverrider = OutputOverrider.getInstance();
+    });
+
+    it('should redirect output to null stream', () => {
+        const originalStdoutWrite = process.stdout.write;
+        const originalStderrWrite = process.stderr.write;
+
+        outputOverrider.redirectOutputToNullStream();
+
+        expect(process.stdout.write).not.toBe(originalStdoutWrite);
+        expect(process.stderr.write).not.toBe(originalStderrWrite);
+
+        outputOverrider.restoreOutput();
+    });
+
+    it('should restore output', () => {
+        const originalStdoutWrite = process.stdout.write;
+        const originalStderrWrite = process.stderr.write;
+
+        outputOverrider.redirectOutputToNullStream();
+        outputOverrider.restoreOutput();
+
+        console.log(process.stdout.write)
+        expect(process.stdout.write).toBe(originalStdoutWrite);
+        expect(process.stderr.write).toBe(originalStderrWrite);
+    });
+});
+
+describe('isTsNode', () => {
+    it('should return true if running with ts-node', () => {
+        const originalArgv = process.argv;
+        process.argv = ['node', 'script.ts'];
+
+        expect(isTsNode()).toBe(true);
+
+        process.argv = originalArgv;
+    });
+
+    it('should return false if not running with ts-node', () => {
+        const originalArgv = process.argv;
+        process.argv = ['node', 'script.js'];
+
+        expect(isTsNode()).toBe(false);
+
+        process.argv = originalArgv;
+    });
+});
+

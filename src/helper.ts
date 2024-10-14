@@ -1,6 +1,7 @@
+import { camel, getFileInfo } from '@orval/core';
 import fs from 'fs';
-import path from 'path';
 import prettier from 'prettier';
+import { logger } from './logger';
 import { PackageDetails } from "./type";
 
 export const getPackageDetails = (): PackageDetails => {
@@ -15,34 +16,44 @@ export const getPackageDetails = (): PackageDetails => {
 };
 
 /**
- * Recursively formats all files in the given directory using Prettier.
- * If a prettier configuration file is present in the directory, it will be used.
+ * Format the given file using Prettier.
  *
- * @param dir - Directory path to start formatting files.
+ * @param filePath - Path to the file to format.
  */
-export async function formatAllFilesInDirectory(dir: string) {
-    const files = fs.readdirSync(dir);
+export async function formatFileWithPrettier(filePath: string) {
+    // Read file contents
+    const content = fs.readFileSync(filePath, 'utf-8');
+    // Format using Prettier
+    const options = await prettier.resolveConfig(filePath);
+    const formatted = await prettier.format(content, { ...options, filepath: filePath });
 
-    for (const file of files) {
-        const fullPath = path.join(dir, file);
-        const stat = fs.statSync(fullPath);
+    // Write formatted content back to the file
+    fs.writeFileSync(filePath, formatted);
+    logger.debug(`Formatted: ${filePath}`);
+}
 
-        if (stat.isDirectory()) {
-            // Recursively format files in subdirectories
-            await formatAllFilesInDirectory(fullPath);
-        } else if (file.endsWith('.js') || file.endsWith('.ts') || file.endsWith('.jsx') || file.endsWith('.tsx')) {
-            // Read file contents
-            const content = fs.readFileSync(fullPath, 'utf-8');
-
-            // Format using Prettier
-            const options = await prettier.resolveConfig(fullPath);
-            const formatted = await prettier.format(content, { ...options, filepath: fullPath });
-
-            // Write formatted content back to the file
-            fs.writeFileSync(fullPath, formatted);
-            console.log(`Formatted: ${fullPath}`);
+/**
+ * Format the generated files using Prettier.
+ *
+ * @param outputTarget - Path to the generated files.
+ * @param schemaTitle - Title of the schema.
+ */
+export async function formatGeneratedFiles(outputTarget: string, schemaTitle: string) {
+    // Here we call the original function from @orval/core used by the library to generate the
+    // file name with same defaults.
+    const { path } = getFileInfo(
+        outputTarget,
+        {
+            'backupFilename': camel(schemaTitle),
+            extension: '.ts',
         }
-    }
+    )
+    logger.debug('Following are the details for formatting generated files:')
+    logger.debug(`Path: ${path}`);
+    logger.debug(`Schema Title: ${schemaTitle}`);
+    logger.debug(`Output Target: ${outputTarget}`);
+
+    await formatFileWithPrettier(path);
 }
 
 /**

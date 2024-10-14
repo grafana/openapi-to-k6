@@ -1,8 +1,9 @@
 import { InfoObject } from 'openapi3-ts/oas30';
 import orval from 'orval';
-import { formatAllFilesInDirectory, getPackageDetails, OutputOverrider } from './helper';
+import { formatGeneratedFiles, getPackageDetails, OutputOverrider } from './helper';
 import { getK6ClientBuilder } from './k6SdkClient';
-import { AnalyticsData } from './type';
+import { logger } from './logger';
+import { AnalyticsData, SchemaDetails } from './type';
 
 const outputOverrider = OutputOverrider.getInstance();
 const packageDetails = getPackageDetails();
@@ -19,6 +20,10 @@ const generatedFileHeaderGenerator = (info: InfoObject) => {
 };
 
 export default async (openApiPath: string, outputDir: string, analyticsData?: AnalyticsData) => {
+    const schemaDetails: SchemaDetails = {
+        title: ''
+    };
+
     /**
      * Note!
      * 1. override.requestOptions is not supported for the custom K6 client
@@ -31,15 +36,18 @@ export default async (openApiPath: string, outputDir: string, analyticsData?: An
         output: {
             target: outputDir,
             mode: 'single',
-            client: () => getK6ClientBuilder(analyticsData),
+            client: () => getK6ClientBuilder(schemaDetails, analyticsData),
             override: {
                 header: generatedFileHeaderGenerator,
             }
         }
     });
-
     outputOverrider.restoreOutput();
 
-    await formatAllFilesInDirectory(outputDir);
+    if (!schemaDetails.title) {
+        logger.warning('Could not find schema title in the OpenAPI spec. Please provide a `title` in the schema in `info` block to generate proper file names');
+    }
+
+    await formatGeneratedFiles(outputDir, schemaDetails.title);
 };
 

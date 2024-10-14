@@ -6,6 +6,10 @@ export interface PackageDetails {
     version: string;
 }
 
+export interface SchemaDetails {
+    title: string
+}
+
 export interface AnalyticsData {
     generatedRequestsCount: {
         post: number,

@@ -20,7 +20,7 @@ import {
     toObjectString,
     Verbs
 } from '@orval/core';
-import { AnalyticsData } from './type';
+import { AnalyticsData, SchemaDetails } from './type';
 
 // A map to store the operationNames for which a return type is to be written at the end to export
 // and the return type definition
@@ -300,7 +300,7 @@ export const generateFooter: ClientFooterBuilder = ({
     return footer;
 };
 
-function getK6Client(analyticsData?: AnalyticsData) {
+function getK6Client(schemaDetails: SchemaDetails, analyticsData?: AnalyticsData) {
     return function (
         verbOptions: GeneratorVerbOptions,
         options: GeneratorOptions,
@@ -309,16 +309,21 @@ function getK6Client(analyticsData?: AnalyticsData) {
         const implementation = generateAxiosImplementation(verbOptions, options, analyticsData);
         const specData = Object.values(options.context.specs);
 
-        if (analyticsData && specData.length > 0) {
-            analyticsData.openApiSpecVersion = specData[0].openapi;
+        if (specData.length > 0) {
+            schemaDetails.title = specData[0].info.title;
+
+            if (analyticsData) {
+                analyticsData.openApiSpecVersion = specData[0].openapi;
+            }
         }
+
         return { implementation, imports };
     }
 }
 
-export function getK6ClientBuilder(analyticsData?: AnalyticsData): ClientGeneratorsBuilder {
+export function getK6ClientBuilder(schemaDetails: SchemaDetails, analyticsData?: AnalyticsData): ClientGeneratorsBuilder {
     return {
-        client: getK6Client(analyticsData),
+        client: getK6Client(schemaDetails, analyticsData),
         header: generateK6Header,
         dependencies: getK6Dependencies,
         footer: generateFooter,
