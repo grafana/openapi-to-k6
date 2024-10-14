@@ -29,20 +29,19 @@ export default async (openApiPath: string, outputDir: string, analyticsData?: An
      * 1. override.requestOptions is not supported for the custom K6 client
      * 2. override.mutator is not supported for the custom K6 client
     */
-    outputOverrider.redirectOutputToNullStream();
-
-    await orval({
-        input: openApiPath,
-        output: {
-            target: outputDir,
-            mode: 'single',
-            client: () => getK6ClientBuilder(schemaDetails, analyticsData),
-            override: {
-                header: generatedFileHeaderGenerator,
+    await outputOverrider.redirectOutputToNullStream(async () => {
+        await orval({
+            input: openApiPath,
+            output: {
+                target: outputDir,
+                mode: 'single',
+                client: () => getK6ClientBuilder(schemaDetails, analyticsData),
+                override: {
+                    header: generatedFileHeaderGenerator,
+                }
             }
-        }
+        });
     });
-    outputOverrider.restoreOutput();
 
     if (!schemaDetails.title) {
         logger.warning('Could not find schema title in the OpenAPI spec. Please provide a `title` in the schema in `info` block to generate proper file names');

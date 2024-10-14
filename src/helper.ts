@@ -91,11 +91,20 @@ export class OutputOverrider {
         return OutputOverrider.instance;
     }
 
-    public redirectOutputToNullStream() {
+    public async redirectOutputToNullStream(callback?: () => Promise<void>) {
         process.stdout.write = process.stderr.write = () => true;
+
+        try {
+          callback && await callback();
+        } catch (error) {
+            throw error;
+        }
+        finally {
+            this._restoreOutput();
+        }
     }
 
-    public restoreOutput() {
+    private _restoreOutput() {
         process.stdout.write = this.originalStdoutWrite;
         process.stderr.write = this.originalStderrWrite;
     }
