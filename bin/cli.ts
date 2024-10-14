@@ -2,11 +2,11 @@
 
 import { Command } from 'commander';
 import path from 'path';
-import { generateDefaultAnalyticsData, reportUsageAnalytics } from './analytics';
-import generateK6SDK from './generator';
-import { getPackageDetails, isTsNode } from './helper';
-import { logger } from './logger';
-import { AnalyticsData } from './type';
+import { generateDefaultAnalyticsData, reportUsageAnalytics } from '../src/analytics';
+import generateK6SDK from '../src/generator';
+import { getPackageDetails, isTsNode } from '../src/helper';
+import { logger } from '../src/logger';
+import { AnalyticsData } from '../src/type';
 
 const program = new Command();
 const packageDetails = getPackageDetails();

@@ -8,7 +8,7 @@
   },
   "scripts": {
     "build": "tsc",
-    "dev": "ts-node src/cli.ts",
+    "dev": "ts-node bin/cli.ts",
     "test": "node --experimental-vm-modules node_modules/jest/bin/jest.js"
   },
   "author": "",
