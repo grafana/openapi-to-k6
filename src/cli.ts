@@ -1,7 +1,6 @@
 #!/usr/bin/env node
 
 import { Command } from 'commander'
-import path from 'path'
 import { generateDefaultAnalyticsData, reportUsageAnalytics } from './analytics'
 import generateK6SDK from './generator'
 import { getPackageDetails, isTsNode } from './helper'
@@ -29,7 +28,7 @@ program
   .name(packageDetails.commandName)
   .description(packageDetails.description)
   .version(packageDetails.version)
-  .argument('<openApiPath>', 'Path to the OpenAPI spec file')
+  .argument('<openApiPath>', 'Path or URL for the OpenAPI schema file')
   .argument('<outputDir>', 'Directory where the SDK should be generated')
   .option('-v, --verbose', 'enable verbose mode to show debug logs')
   .option('--disable-analytics', 'disable anonymous usage data collection')
@@ -53,16 +52,12 @@ program
         analyticsData = generateDefaultAnalyticsData(packageDetails)
       }
 
-      const resolvedOpenApiPath = path.resolve(openApiPath)
-      const resolvedOutputDir = path.resolve(outputDir)
       logger.debug(`
-            Supplied OpenAPI path: ${openApiPath}
-            Resolved OpenAPI path: ${resolvedOpenApiPath}
+            Supplied OpenAPI schema: ${openApiPath}
             Supplied output directory: ${outputDir}
-            Resolved output directory: ${resolvedOutputDir}
             `)
       try {
-        await generateSDK(resolvedOpenApiPath, resolvedOutputDir, analyticsData)
+        await generateSDK(openApiPath, outputDir, analyticsData)
       } catch (error) {
         logger.error('Failed to generate SDK:')
         console.error(error)
