@@ -12,7 +12,8 @@
     "test": "node --experimental-vm-modules node_modules/jest/bin/jest.js",
     "lint": "eslint --ext .ts,.tsx .",
     "lint:fix": "eslint --ext .ts,.tsx . --fix",
-    "format": "prettier --ignore-unknown --write \"./**/*\""
+    "format": "prettier --ignore-unknown --write \"./**/*\"",
+    "prepare": "husky"
   },
   "author": "",
   "license": "AGPL-3.0",
@@ -36,7 +37,9 @@
     "eslint-plugin-import": "^2.31.0",
     "eslint-plugin-prettier": "^5.2.1",
     "eslint-plugin-unused-imports": "^4.1.4",
+    "husky": "^9.1.6",
     "jest": "^29.7.0",
+    "lint-staged": "^15.2.10",
     "prettier": "^3.3.3",
     "ts-jest": "^29.2.5",
     "ts-node": "^10.9.2",
@@ -44,5 +47,12 @@
   },
   "engines": {
     "node": ">=21.5.0"
+  },
+  "lint-staged": {
+    "*.{js,jsx,ts,tsx}": [
+      "eslint --fix",
+      "prettier --ignore-unknown --write",
+      "bash -c 'tsc --noEmit'"
+    ]
   }
 }
