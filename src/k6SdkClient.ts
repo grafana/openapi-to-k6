@@ -148,6 +148,7 @@ const generateAxiosImplementation = (
 
   return `const ${operationName} = (\n    ${toObjectString(props, 'implementation')} requestParameters?: Params): ${_generateResponseTypeName(operationName)} => {${bodyForm}
         ${urlGeneration}
+        const mergedRequestParameters = _mergeRequestParameters(requestParameters || {}, clientOptions.commonRequestParameters);
         const response = http.request(${options});
         let data;
 
@@ -187,17 +188,18 @@ const getParamsInputValue = ({
   headers?: GeneratorSchema
 }) => {
   if (!queryParams && !headers && !response.isBlob) {
-    return 'requestParameters'
+    return 'mergedRequestParameters'
   }
 
-  let value = '\n    ...requestParameters,'
+  let value = '\n    ...mergedRequestParameters,'
 
   if (response.isBlob) {
     value += `\n        responseType: 'binary',`
   }
 
   if (headers) {
-    value += '\n        headers: {...headers, ...requestParameters?.headers},'
+    value +=
+      '\n        headers: {...headers, ...mergedRequestParameters?.headers},'
   }
 
   return `{${value}}`
@@ -232,6 +234,34 @@ const getK6RequestOptions = (options: OptionsInput) => {
         ${paramsValue}`
 }
 
+function _getRequestParametersMergerFunctionImplementation() {
+  return `/**
+ * Merges the provided request parameters with default parameters for the client.
+ *
+ * @param {Params} requestParameters - The parameters provided specifically for the request
+ * @param {Params} commonRequestParameters - Common parameters for all requests
+ * @returns {Params} - The merged parameters
+ */
+  const _mergeRequestParameters = (requestParameters?: Params, commonRequestParameters?: Params): Params => {
+    return {
+        ...commonRequestParameters,  // Default to common parameters
+        ...requestParameters,        // Override with request-specific parameters
+        headers: {
+            ...commonRequestParameters?.headers || {},  // Ensure headers are defined
+            ...requestParameters?.headers || {},
+        },
+        cookies: {
+            ...commonRequestParameters?.cookies || {},  // Ensure cookies are defined
+            ...requestParameters?.cookies || {},
+        },
+        tags: {
+            ...commonRequestParameters?.tags || {},     // Ensure tags are defined
+            ...requestParameters?.tags || {},
+        },
+    };
+};`
+}
+
 export const generateTitle: ClientTitleBuilder = (title) => {
   const defaultTitle = 'k6SdkClient'
   const sanTitle = sanitize(title || defaultTitle)
@@ -239,8 +269,20 @@ export const generateTitle: ClientTitleBuilder = (title) => {
 }
 
 export const generateK6Header: ClientHeaderBuilder = ({ title }) => {
-  return `export const ${title} = (baseUrl: string) => {\n
-        const cleanBaseUrl = baseUrl.replace(/\\/+$/, '');\n`
+  const clientOptionsTypeName = `${pascal(title)}Options`
+  return `
+  ${_getRequestParametersMergerFunctionImplementation()}
+
+  export type ${clientOptionsTypeName} = {
+    baseUrl: string,
+    commonRequestParameters?: Params
+  }
+
+  /**
+ * This is the base client to use for interacting with the API.
+ */
+  export const ${title} = (clientOptions: ${clientOptionsTypeName}) => {\n
+        const cleanBaseUrl = clientOptions.baseUrl.replace(/\\/+$/, '');\n`
 }
 
 export const generateFooter: ClientFooterBuilder = ({ operationNames }) => {
