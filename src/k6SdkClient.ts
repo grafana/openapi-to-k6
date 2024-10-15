@@ -4,7 +4,6 @@ import {
   ClientGeneratorsBuilder,
   ClientHeaderBuilder,
   ClientTitleBuilder,
-  generateBodyOptions,
   generateFormDataAndUrlEncodedFunction,
   generateVerbImports,
   GeneratorMutator,
@@ -110,9 +109,6 @@ const generateAxiosImplementation = (
   { route }: GeneratorOptions,
   analyticsData?: AnalyticsData
 ) => {
-  const isFormData = override?.formData !== false
-  const isFormUrlEncoded = override?.formUrlEncoded !== false
-
   if (analyticsData) {
     analyticsData.generatedRequestsCount[verb] += 1
   }
@@ -121,8 +117,8 @@ const generateAxiosImplementation = (
     formData,
     formUrlEncoded,
     body,
-    isFormData,
-    isFormUrlEncoded,
+    isFormData: true,
+    isFormUrlEncoded: false,
   })
 
   // Generate response return types
@@ -133,25 +129,10 @@ const generateAxiosImplementation = (
 
   let url = `cleanBaseUrl + \`${route}\``
 
-  if (body.formUrlEncoded) {
-    url += '+`?${formUrlEncoded.toString()}`'
-  }
-  let queryParamsGenerationString = ''
   if (queryParams) {
-    if (body.formUrlEncoded) {
-      // Add the query params to the existing formUrlEncoded object
-      queryParamsGenerationString = `
-                for (const [key, value] of Object.entries(params)) {
-                    formUrlEncoded.append(key, value);
-                    }
-            `
-    } else {
-      url += '+`?${new URLSearchParams(params).toString()}`'
-    }
+    url += '+`?${new URLSearchParams(params).toString()}`'
   }
-  const urlGeneration = `
-        ${queryParamsGenerationString}
-         const url = new URL(${url});`
+  const urlGeneration = `const url = new URL(${url});`
 
   const options = getK6RequestOptions({
     route,
@@ -161,13 +142,11 @@ const generateAxiosImplementation = (
     response,
     verb,
     requestOptions: override?.requestOptions,
-    isFormData,
-    isFormUrlEncoded,
     paramsSerializer,
     paramsSerializerOptions: override?.paramsSerializerOptions,
   })
 
-  return `const ${operationName} = (\n    ${toObjectString(props, 'implementation')} options?: Params): ${_generateResponseTypeName(operationName)} => {${bodyForm}
+  return `const ${operationName} = (\n    ${toObjectString(props, 'implementation')} requestParameters?: Params): ${_generateResponseTypeName(operationName)} => {${bodyForm}
         ${urlGeneration}
         const response = http.request(${options});
         let data;
@@ -193,8 +172,6 @@ type OptionsInput = {
   response: GetterResponse
   verb: Verbs
   requestOptions?: object | boolean
-  isFormData: boolean
-  isFormUrlEncoded: boolean
   isVue?: boolean
   paramsSerializer?: GeneratorMutator
   paramsSerializerOptions?: ParamsSerializerOptions
@@ -210,43 +187,32 @@ const getParamsInputValue = ({
   headers?: GeneratorSchema
 }) => {
   if (!queryParams && !headers && !response.isBlob) {
-    return 'options'
+    return 'requestParameters'
   }
 
-  let value = '\n    ...options,'
+  let value = '\n    ...requestParameters,'
 
   if (response.isBlob) {
     value += `\n        responseType: 'binary',`
   }
 
   if (headers) {
-    value += '\n        headers: {...headers, ...options?.headers},'
+    value += '\n        headers: {...headers, ...requestParameters?.headers},'
   }
 
   return `{${value}}`
 }
 
 const getK6RequestOptions = (options: OptionsInput) => {
-  const {
-    body,
-    headers,
-    queryParams,
-    response,
-    verb,
-    isFormData,
-    isFormUrlEncoded,
-  } = options
-
-  const requestBodyParams = generateBodyOptions(
-    body,
-    isFormData,
-    isFormUrlEncoded
-  )
+  const { body, headers, queryParams, response, verb } = options
 
   let fetchBodyOption = 'undefined'
 
-  if (requestBodyParams) {
-    fetchBodyOption = `JSON.stringify(${requestBodyParams})`
+  if (body.formData) {
+    // Use the FormData.body() method to get the body of the request
+    fetchBodyOption = 'formData.body()'
+  } else if (body.formUrlEncoded || body.implementation) {
+    fetchBodyOption = `JSON.stringify(${body.implementation})`
   }
 
   // Generate the params input for the call
@@ -260,7 +226,7 @@ const getK6RequestOptions = (options: OptionsInput) => {
   // Sample output
   // 'GET', 'http://test.com/route', <body>, <options>
 
-  return `'${verb.toUpperCase()}',
+  return `"${verb.toUpperCase()}",
         url.toString(),
         ${fetchBodyOption},
         ${paramsValue}`
