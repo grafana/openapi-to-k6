@@ -1,0 +1,132 @@
+{
+  "openapi_schema": {
+    "openapi": "3.0.3",
+    "info": {
+      "title": "Example API",
+      "description": "API with all formats of data in the POST request body",
+      "version": "1.0.0"
+    },
+    "paths": {
+      "/example": {
+        "post": {
+          "summary": "Create example data",
+          "description": "This endpoint demonstrates the use of various data formats in the input body",
+          "operationId": "createExampleData",
+          "requestBody": {
+            "required": true,
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "name": {
+                      "type": "string",
+                      "description": "A string parameter"
+                    },
+                    "age": {
+                      "type": "integer",
+                      "format": "int32",
+                      "description": "An integer parameter"
+                    },
+                    "isActive": {
+                      "type": "boolean",
+                      "description": "A boolean parameter"
+                    },
+                    "tags": {
+                      "type": "array",
+                      "items": {
+                        "type": "string"
+                      },
+                      "description": "An array of strings"
+                    },
+                    "date": {
+                      "type": "string",
+                      "format": "date",
+                      "description": "A date parameter in YYYY-MM-DD format"
+                    },
+                    "meta": {
+                      "type": "object",
+                      "properties": {
+                        "createdBy": {
+                          "type": "string",
+                          "description": "A string parameter for the creator's name"
+                        },
+                        "updatedBy": {
+                          "type": "string",
+                          "description": "A string parameter for the updater's name"
+                        }
+                      },
+                      "description": "An object parameter containing metadata"
+                    }
+                  },
+                  "required": ["name", "age", "isActive"]
+                }
+              }
+            }
+          },
+          "responses": {
+            "201": {
+              "description": "Successfully created data",
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "type": "object",
+                    "properties": {
+                      "id": {
+                        "type": "string",
+                        "description": "The unique ID of the created resource"
+                      },
+                      "name": {
+                        "type": "string"
+                      },
+                      "age": {
+                        "type": "integer",
+                        "format": "int32"
+                      },
+                      "isActive": {
+                        "type": "boolean"
+                      },
+                      "tags": {
+                        "type": "array",
+                        "items": {
+                          "type": "string"
+                        }
+                      },
+                      "date": {
+                        "type": "string",
+                        "format": "date"
+                      },
+                      "meta": {
+                        "type": "object",
+                        "properties": {
+                          "createdBy": {
+                            "type": "string"
+                          },
+                          "updatedBy": {
+                            "type": "string"
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "expected_sdk": {
+    "fileName": "exampleAPI.ts",
+    "expectedSubstrings": [
+      "export const createExampleAPI =",
+      "const url = new URL(cleanBaseUrl + `/example`);",
+      "JSON.stringify(createExampleDataBody),",
+      "POST",
+      "export type CreateExampleData201 = {\n  age?: number;\n  date?: string;\n  /** The unique ID of the created resource */\n  id?: string;\n  isActive?: boolean;\n  meta?: CreateExampleData201Meta;\n  name?: string;\n  tags?: string[];",
+      "): CreateExampleDataResponse => {",
+      "return { createExampleData };"
+    ]
+  }
+}

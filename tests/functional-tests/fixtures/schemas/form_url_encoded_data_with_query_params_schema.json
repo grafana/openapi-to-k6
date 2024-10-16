@@ -1,0 +1,113 @@
+{
+  "openapi_schema": {
+    "openapi": "3.0.0",
+    "info": {
+      "title": "Form URL Encoded API with Query Parameters",
+      "version": "1.0.0"
+    },
+    "paths": {
+      "/submit-form": {
+        "post": {
+          "summary": "Submit form data with query parameters",
+          "description": "This endpoint accepts form URL-encoded data and query parameters.",
+          "parameters": [
+            {
+              "name": "token",
+              "in": "query",
+              "required": true,
+              "description": "Authentication token",
+              "schema": {
+                "type": "string"
+              }
+            },
+            {
+              "name": "locale",
+              "in": "query",
+              "required": false,
+              "description": "Locale of the user",
+              "schema": {
+                "type": "string",
+                "example": "en_US"
+              }
+            }
+          ],
+          "requestBody": {
+            "required": true,
+            "content": {
+              "application/x-www-form-urlencoded": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "name": {
+                      "type": "string",
+                      "description": "Name of the user"
+                    },
+                    "age": {
+                      "type": "integer",
+                      "description": "Age of the user"
+                    },
+                    "email": {
+                      "type": "string",
+                      "format": "email",
+                      "description": "Email address of the user"
+                    }
+                  },
+                  "required": ["name", "email"]
+                }
+              }
+            }
+          },
+          "responses": {
+            "200": {
+              "description": "Form submitted successfully",
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "type": "object",
+                    "properties": {
+                      "success": {
+                        "type": "boolean",
+                        "example": true
+                      },
+                      "message": {
+                        "type": "string",
+                        "example": "Form submitted successfully"
+                      }
+                    }
+                  }
+                }
+              }
+            },
+            "400": {
+              "description": "Bad Request",
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "type": "object",
+                    "properties": {
+                      "success": {
+                        "type": "boolean",
+                        "example": false
+                      },
+                      "error": {
+                        "type": "string",
+                        "example": "Invalid input data"
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "expected_sdk": {
+    "fileName": "formURLEncodedAPIWithQueryParameters.ts",
+    "expectedSubstrings": [
+      "const postSubmitForm = (\n    postSubmitFormBody: PostSubmitFormBody,\n    params: PostSubmitFormParams,\n    requestParameters?: Params,\n  ): PostSubmitFormResponse => {",
+      "const url = new URL(\n      cleanBaseUrl +\n        `/submit-form` +\n        `?${new URLSearchParams(params).toString()}`,\n    );"
+    ]
+  }
+}
