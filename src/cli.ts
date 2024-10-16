@@ -21,7 +21,7 @@ async function generateSDK(
 
   await generateK6SDK(openApiPath, outputDir, analyticsData)
 
-  logger.logMessage(`K6 SDK generated successfully at ${outputDir}!`)
+  logger.logMessage(`K6 SDK generated successfully.`)
 }
 
 program

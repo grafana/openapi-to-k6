@@ -92,7 +92,7 @@ function _generateResponseTypeDefinition(
 };`
 }
 
-const generateAxiosImplementation = (
+const generateK6Implementation = (
   {
     headers,
     queryParams,
@@ -308,7 +308,7 @@ function getK6Client(
     options: GeneratorOptions
   ) {
     const imports = generateVerbImports(verbOptions)
-    const implementation = generateAxiosImplementation(
+    const implementation = generateK6Implementation(
       verbOptions,
       options,
       analyticsData
