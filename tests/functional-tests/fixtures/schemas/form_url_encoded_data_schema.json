@@ -87,7 +87,7 @@
     "expectedSubstrings": [
       "export const createFormURLEncodedAPI = (\n  clientOptions: CreateFormURLEncodedAPIOptions,\n) => {",
       "const url = new URL(cleanBaseUrl + `/submit-form`);",
-      "const response = http.request(\n      \"POST\",\n      url.toString(),\n      JSON.stringify(postSubmitFormBody),\n      mergedRequestParameters,\n    );"
+      "const response = http.request(\n      \"POST\",\n      url.toString(),\n      JSON.stringify(postSubmitFormBody),\n      {\n        ...mergedRequestParameters,\n        headers: {\n          \"Content-Type\": \"application/x-www-form-urlencoded\",\n          ...mergedRequestParameters?.headers,\n        },\n      },\n    );"
     ]
   }
 }
