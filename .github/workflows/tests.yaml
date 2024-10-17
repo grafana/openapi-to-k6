@@ -19,3 +19,25 @@ jobs:
       - run: npm ci
       - run: npm run lint
       - run: npm test
+  e2e-test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '21.5.0'
+      - run: npm ci
+      - name: Generate SDK for E2E tests
+        run: npm run dev -- ./tests/e2e/schema.json ./tests/e2e/sdk.ts --disable-analytics
+      - name: Start Mockoon CLI
+        uses: mockoon/cli-action@v2
+        with:
+          # Mockoon local data file or URL
+          data-file: './tests/e2e/schema.json'
+          port: 3000
+      - uses: grafana/setup-k6-action@v1
+      - uses: grafana/run-k6-action@v1
+        with:
+          path: './tests/e2e/k6Script.ts'
+          flags: '--compatibility-mode=experimental_enhanced'
+          inspect-flags: '--compatibility-mode=experimental_enhanced'
