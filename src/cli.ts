@@ -39,13 +39,15 @@ program
       options: { verbose?: boolean; disableAnalytics?: boolean }
     ) => {
       let analyticsData: AnalyticsData | undefined
+      const shouldDisableAnalytics =
+        options.disableAnalytics || process.env.DISABLE_ANALYTICS === 'true'
 
       if (options.verbose || isTsNode()) {
         logger.setVerbose(true)
         logger.debug('Verbose mode enabled, showing debug logs')
       }
 
-      if (options.disableAnalytics) {
+      if (shouldDisableAnalytics) {
         logger.debug('Anonymous usage data collection disabled')
       } else {
         logger.debug('Anonymous usage data collection enabled')
@@ -63,7 +65,7 @@ program
         console.error(error)
       }
 
-      if (!options.disableAnalytics && analyticsData) {
+      if (!shouldDisableAnalytics && analyticsData) {
         logger.debug('Reporting following usage analytics data:')
         logger.debug(JSON.stringify(analyticsData, null, 2))
 

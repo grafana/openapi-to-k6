@@ -10,7 +10,7 @@ This allows developers to easily create performance tests for their APIs based o
 OpenAPI documentation.
 
 Note: Optional usage analytics are gathered to make the tool better. To disable this, use the option
-`--disable-analytics`.
+`--disable-analytics` or set an environment variable `DISABLE_ANALYTICS=true`.
 
 ## Getting started
 
