@@ -46,6 +46,7 @@ export default async (
         override: {
           header: generatedFileHeaderGenerator,
         },
+        headers: true,
       },
     })
   })

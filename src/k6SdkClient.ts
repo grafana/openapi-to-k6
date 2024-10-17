@@ -182,12 +182,15 @@ const getParamsInputValue = ({
   response,
   queryParams,
   headers,
+  body,
 }: {
   response: GetterResponse
+  body: GetterBody
   queryParams?: GeneratorSchema
   headers?: GeneratorSchema
 }) => {
-  if (!queryParams && !headers && !response.isBlob) {
+  if (!queryParams && !headers && !response.isBlob && !body.contentType) {
+    // No parameters to merge, return the request parameters directly
     return 'mergedRequestParameters'
   }
 
@@ -196,10 +199,9 @@ const getParamsInputValue = ({
   if (response.isBlob) {
     value += `\n        responseType: 'binary',`
   }
-
-  if (headers) {
-    value +=
-      '\n        headers: {...headers, ...mergedRequestParameters?.headers},'
+  // Expand the headers
+  if (body.contentType || headers) {
+    value += `\n        headers: {${body.contentType ? `'Content-Type': '${body.contentType}',` : ''} ${headers ? '...headers,' : ''} ...mergedRequestParameters?.headers},`
   }
 
   return `{${value}}`
@@ -221,6 +223,7 @@ const getK6RequestOptions = (options: OptionsInput) => {
 
   const paramsValue = getParamsInputValue({
     response,
+    body,
     headers: headers?.schema,
     queryParams: queryParams?.schema,
   })
