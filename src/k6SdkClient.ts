@@ -201,7 +201,21 @@ const getParamsInputValue = ({
   }
   // Expand the headers
   if (body.contentType || headers) {
-    value += `\n        headers: {${body.contentType ? `'Content-Type': '${body.contentType}',` : ''} ${headers ? '...headers,' : ''} ...mergedRequestParameters?.headers},`
+    let headersValue = `\n       headers: {`
+    if (body.contentType) {
+      if (body.formData) {
+        headersValue += `\n'Content-Type': '${body.contentType}; boundary=' + formData.boundary,`
+      } else {
+        headersValue += `\n'Content-Type': '${body.contentType}',`
+      }
+    }
+
+    if (headers) {
+      headersValue += `\n...headers,`
+    }
+
+    headersValue += `\n...mergedRequestParameters?.headers},`
+    value += headersValue
   }
 
   return `{${value}}`

@@ -66,4 +66,12 @@ export default function () {
     name: 'string',
   })
   checkResponseStatus(postFormDataResponseData.response, 201)
+
+  // Should add multipart/form-data content type header in request with boundary
+  check(postFormDataResponseData.response, {
+    'has multipart/form-data content type header with bounday': (r) =>
+      r.request.headers['Content-Type'][0].includes(
+        'multipart/form-data; boundary=---'
+      ),
+  })
 }

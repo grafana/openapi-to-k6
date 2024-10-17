@@ -152,7 +152,7 @@
     "expectedSubstrings": [
       "export const createHeaderDemoAPI = (\n  clientOptions: CreateHeaderDemoAPIOptions,\n) => {",
       "const getExampleGet = (\n    headers?: GetExampleGetHeaders,\n    requestParameters?: Params,\n  ): GetExampleGetResponse => {",
-      "const response = http.request(\"GET\", url.toString(), undefined, {\n      ...mergedRequestParameters,\n      headers: { ...headers, ...mergedRequestParameters?.headers },\n    });",
+      "const response = http.request(\"GET\", url.toString(), undefined, {\n      ...mergedRequestParameters,\n      headers: {\n        ...headers,\n        ...mergedRequestParameters?.headers,\n      },\n    });",
       "const postExamplePost = (\n    postExamplePostBody: PostExamplePostBody,\n    headers: PostExamplePostHeaders,\n    requestParameters?: Params,\n  ): PostExamplePostResponse => {",
       "const response = http.request(\n      \"POST\",\n      url.toString(),\n      JSON.stringify(postExamplePostBody),\n      {\n        ...mergedRequestParameters,\n        headers: {\n          \"Content-Type\": \"application/json\",\n          ...headers,\n          ...mergedRequestParameters?.headers,\n        },\n      },\n    );",
       "const getExampleResponseHeaders = (\n    requestParameters?: Params,\n  ): GetExampleResponseHeadersResponse => {",
