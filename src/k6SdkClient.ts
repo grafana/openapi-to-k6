@@ -288,8 +288,6 @@ export const generateTitle: ClientTitleBuilder = (title) => {
 export const generateK6Header: ClientHeaderBuilder = ({ title }) => {
   const clientOptionsTypeName = `${pascal(title)}Options`
   return `
-  ${_getRequestParametersMergerFunctionImplementation()}
-
   export type ${clientOptionsTypeName} = {
     baseUrl: string,
     commonRequestParameters?: Params
@@ -312,6 +310,9 @@ export const generateFooter: ClientFooterBuilder = ({ operationNames }) => {
       footer += returnTypesToWrite.get(operationName) + '\n'
     }
   })
+
+  // Add function definition for merging request parameters
+  footer += `\n\n${_getRequestParametersMergerFunctionImplementation()}\n`
 
   return footer
 }
