@@ -1,18 +1,15 @@
 import fs from 'fs'
-import * as prettier from 'prettier'
+import os from 'os'
+import path from 'path'
 import {
   djb2Hash,
   formatFileWithPrettier,
+  getDirectoryForPath,
   getPackageDetails,
   isTsNode,
   OutputOverrider,
 } from '../src/helper'
 import { PackageDetails } from '../src/type'
-
-jest.mock('fs')
-jest.mock('path')
-jest.mock('prettier')
-// jest.mock('@orval/core');
 
 // Mock the package.json file
 jest.mock(
@@ -50,15 +47,23 @@ describe('djb2Hash', () => {
 })
 
 describe('formatFileWithPrettier', () => {
-  const mockFilePath = '/mock-directory/mock-file.ts'
-  const mockFileContent = 'const x = 1;'
-  const mockFormattedContent = 'const x = 1; // formatted'
+  let tempDir: string
+  const unformattedContent = `const x= {foo: "bar",baz:"qux"}`
+  const prettierOptions = {
+    semi: false,
+    singleQuote: true,
+  }
+  const formattedContentWithOptions = `const x = { foo: 'bar', baz: 'qux' }
+`
+  const formattedContent = `const x = { foo: "bar", baz: "qux" };
+`
 
-  beforeEach(() => {
-    ;(fs.readFileSync as jest.Mock).mockReturnValue(mockFileContent)
-    ;(fs.writeFileSync as jest.Mock).mockImplementation(() => {})
-    ;(prettier.resolveConfig as jest.Mock).mockResolvedValue({})
-    ;(prettier.format as jest.Mock).mockReturnValue(mockFormattedContent)
+  beforeAll(() => {
+    tempDir = fs.mkdtempSync(path.join(os.tmpdir(), 'test-prettier-'))
+  })
+
+  afterAll(() => {
+    fs.rmdirSync(tempDir, { recursive: true })
   })
 
   afterEach(() => {
@@ -66,28 +71,32 @@ describe('formatFileWithPrettier', () => {
   })
 
   it('should format the file using Prettier', async () => {
-    await formatFileWithPrettier(mockFilePath)
+    const filePath = path.join(tempDir, 'test-file-1.ts')
+    fs.writeFileSync(filePath, unformattedContent)
 
-    expect(fs.readFileSync).toHaveBeenCalledWith(mockFilePath, 'utf-8')
-    expect(prettier.format).toHaveBeenCalledWith(mockFileContent, {
-      filepath: mockFilePath,
-    })
-    expect(fs.writeFileSync).toHaveBeenCalledWith(
-      mockFilePath,
-      mockFormattedContent
-    )
+    await formatFileWithPrettier(filePath)
+
+    const fileContents = fs.readFileSync(filePath, 'utf-8')
+    expect(fileContents).toEqual(formattedContent)
   })
 
   it('should use Prettier config if available', async () => {
-    const mockPrettierConfig = { semi: false }
-    ;(prettier.resolveConfig as jest.Mock).mockResolvedValue(mockPrettierConfig)
+    // Add a new directory for the second test
+    const testDir = path.join(tempDir, 'prettier-config-test')
+    fs.mkdirSync(testDir)
 
-    await formatFileWithPrettier(mockFilePath)
+    // Create prettier config file
+    const prettierConfigPath = path.join(testDir, '.prettierrc')
+    fs.writeFileSync(prettierConfigPath, JSON.stringify(prettierOptions))
 
-    expect(prettier.format).toHaveBeenCalledWith(mockFileContent, {
-      ...mockPrettierConfig,
-      filepath: mockFilePath,
-    })
+    // Create a new file
+    const filePath = path.join(testDir, 'test-file-2.ts')
+    fs.writeFileSync(filePath, unformattedContent)
+
+    await formatFileWithPrettier(filePath)
+
+    const fileContents = fs.readFileSync(filePath, 'utf-8')
+    expect(fileContents).toEqual(formattedContentWithOptions)
   })
 })
 
@@ -139,5 +148,36 @@ describe('isTsNode', () => {
     expect(isTsNode()).toBe(false)
 
     process.argv = originalArgv
+  })
+})
+
+describe('getDirectoryForPath', () => {
+  it('should return the directory path for a given file path', () => {
+    const filePath = path.join(os.tmpdir(), 'file.txt')
+    const expectedDirectory = os.tmpdir()
+
+    const directory = getDirectoryForPath(filePath)
+    expect(directory).toEqual(expectedDirectory)
+  })
+  it('should return the directory path for a given directory path', () => {
+    const directoryPath = os.tmpdir()
+    const expectedDirectory = os.tmpdir()
+
+    const directory = getDirectoryForPath(directoryPath)
+    expect(directory).toEqual(expectedDirectory)
+  })
+  it('should return correct directory if it has period in the name', () => {
+    const directoryPath = path.join(os.tmpdir(), 'test.dir', 'file.txt')
+    const expectedDirectory = path.join(os.tmpdir(), 'test.dir')
+
+    const directory = getDirectoryForPath(directoryPath)
+    expect(directory).toEqual(expectedDirectory)
+  })
+  it('should return correct directory for relative paths', () => {
+    const directoryPath = './test.dir/file.txt'
+    const expectedDirectory = './test.dir'
+
+    const directory = getDirectoryForPath(directoryPath)
+    expect(directory).toEqual(expectedDirectory)
   })
 })

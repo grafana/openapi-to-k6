@@ -22,6 +22,7 @@
     "axios": "^1.7.7",
     "chalk": "^4.1.2",
     "commander": "^12.1.0",
+    "handlebars": "^4.7.8",
     "openapi-typescript": "^7.4.1",
     "orval": "^7.1.1",
     "prettier": "^3.3.3",

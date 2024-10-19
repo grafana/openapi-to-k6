@@ -7,7 +7,7 @@ import {
 } from './helper'
 import { getK6ClientBuilder } from './k6SdkClient'
 import { logger } from './logger'
-import { AnalyticsData, SchemaDetails } from './type'
+import { GenerateK6SDKOptions, SchemaDetails } from './type'
 
 const outputOverrider = OutputOverrider.getInstance()
 const packageDetails = getPackageDetails()
@@ -22,11 +22,12 @@ const generatedFileHeaderGenerator = (info: InfoObject) => {
   ]
 }
 
-export default async (
-  openApiPath: string,
-  outputDir: string,
-  analyticsData?: AnalyticsData
-) => {
+export default async ({
+  openApiPath,
+  outputDir,
+  shouldGenerateSampleK6Script,
+  analyticsData,
+}: GenerateK6SDKOptions) => {
   const schemaDetails: SchemaDetails = {
     title: '',
   }
@@ -42,7 +43,12 @@ export default async (
       output: {
         target: outputDir,
         mode: 'single',
-        client: () => getK6ClientBuilder(schemaDetails, analyticsData),
+        client: () =>
+          getK6ClientBuilder(
+            schemaDetails,
+            shouldGenerateSampleK6Script,
+            analyticsData
+          ),
         override: {
           header: generatedFileHeaderGenerator,
         },
@@ -57,5 +63,9 @@ export default async (
     )
   }
 
-  await formatGeneratedFiles(outputDir, schemaDetails.title)
+  await formatGeneratedFiles(
+    outputDir,
+    schemaDetails.title,
+    !!shouldGenerateSampleK6Script
+  )
 }

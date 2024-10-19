@@ -25,3 +25,10 @@ export interface AnalyticsData {
   osArch?: string
   osType?: string
 }
+
+export interface GenerateK6SDKOptions {
+  openApiPath: string
+  outputDir: string
+  shouldGenerateSampleK6Script?: boolean
+  analyticsData?: AnalyticsData
+}

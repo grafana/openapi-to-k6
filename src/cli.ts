@@ -5,21 +5,27 @@ import { generateDefaultAnalyticsData, reportUsageAnalytics } from './analytics'
 import generateK6SDK from './generator'
 import { getPackageDetails, isTsNode } from './helper'
 import { logger } from './logger'
-import { AnalyticsData } from './type'
+import { AnalyticsData, GenerateK6SDKOptions } from './type'
 
 const program = new Command()
 const packageDetails = getPackageDetails()
 
-async function generateSDK(
-  openApiPath: string,
-  outputDir: string,
-  analyticsData?: AnalyticsData
-) {
+async function generateSDK({
+  openApiPath,
+  outputDir,
+  shouldGenerateSampleK6Script,
+  analyticsData,
+}: GenerateK6SDKOptions) {
   logger.logMessage('Generating SDK for K6...')
   logger.logMessage(`OpenAPI path: ${openApiPath}`)
   logger.logMessage(`Output directory: ${outputDir}`)
 
-  await generateK6SDK(openApiPath, outputDir, analyticsData)
+  await generateK6SDK({
+    openApiPath,
+    outputDir,
+    shouldGenerateSampleK6Script,
+    analyticsData,
+  })
 
   logger.logMessage(`K6 client generated successfully.`)
 }
@@ -31,16 +37,24 @@ program
   .argument('<openApiPath>', 'Path or URL for the OpenAPI schema file')
   .argument('<outputDir>', 'Directory where the SDK should be generated')
   .option('-v, --verbose', 'enable verbose mode to show debug logs')
+  .option('--no-sample-script', 'disable generating sample k6 script')
   .option('--disable-analytics', 'disable anonymous usage data collection')
   .action(
     async (
       openApiPath,
       outputDir,
-      options: { verbose?: boolean; disableAnalytics?: boolean }
+      options: {
+        verbose?: boolean
+        disableAnalytics?: boolean
+        disableSampleScript?: boolean
+      }
     ) => {
       let analyticsData: AnalyticsData | undefined
       const shouldDisableAnalytics =
         options.disableAnalytics || process.env.DISABLE_ANALYTICS === 'true'
+      const shouldDisableSampleScript =
+        options.disableSampleScript ||
+        process.env.DISABLE_SAMPLE_SCRIPT === 'true'
 
       if (options.verbose || isTsNode()) {
         logger.setVerbose(true)
@@ -59,7 +73,12 @@ program
             Supplied output directory: ${outputDir}
             `)
       try {
-        await generateSDK(openApiPath, outputDir, analyticsData)
+        await generateSDK({
+          openApiPath,
+          outputDir,
+          shouldGenerateSampleK6Script: !shouldDisableSampleScript,
+          analyticsData,
+        })
       } catch (error) {
         logger.error('Failed to generate SDK:')
         console.error(error)

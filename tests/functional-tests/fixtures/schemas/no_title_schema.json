@@ -33,7 +33,7 @@
   "expected_sdk": {
     "fileName": ".ts",
     "expectedSubstrings": [
-      "export const createK6SdkClient =",
+      "export const createK6Client =",
       "return { getExample };"
     ]
   }

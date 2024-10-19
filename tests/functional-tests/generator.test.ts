@@ -51,7 +51,7 @@ describe('generator', () => {
       const generatedSchemaPath = path.join(schemaDirectory, 'generated-schema')
       await writeFile(openApiPath, JSON.stringify(fixture['openapi_schema']))
 
-      await generator(openApiPath, generatedSchemaPath)
+      await generator({ openApiPath, outputDir: generatedSchemaPath })
 
       const generatedFiles = fs.readdirSync(generatedSchemaPath)
       expect(generatedFiles.length).toBe(1)
