@@ -3,10 +3,7 @@ name: Run Tests
 on:
   push:
     branches:
-      - main
-  pull_request:
-    branches:
-      - main
+      - "**"
 
 jobs:
   test:
@@ -41,3 +38,22 @@ jobs:
           path: './tests/e2e/k6Script.ts'
           flags: '--compatibility-mode=experimental_enhanced'
           inspect-flags: '--compatibility-mode=experimental_enhanced'
+  run-examples:
+    runs-on: ubuntu-latest
+    needs: [test, e2e-test]
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '21.5.0'
+      - run: npm ci
+      - name: Update examples
+        run: npm run update-examples
+      - name: Compare generated Clients with existing ones
+        id: diff
+        run: |
+          if [ "$(git diff --ignore-space-at-eol --text examples/ | wc -l)" -gt "0" ]; then
+            echo "Detected changes in the examples, run `npm run update-examples` to update all the examples."
+            git diff --ignore-space-at-eol --text examples/
+            exit 1
+          fi
