@@ -24,6 +24,10 @@ class Logger {
     this.isVerbose = verbose
   }
 
+  public getVerbose(): boolean {
+    return this.isVerbose
+  }
+
   private logWithColor(
     message: string,
     level: LogLevel,

@@ -103,7 +103,10 @@ export class OutputOverrider {
   }
 
   public async redirectOutputToNullStream(callback?: () => Promise<void>) {
-    process.stdout.write = process.stderr.write = () => true
+    if (!logger.getVerbose()) {
+      // Redirect stdout and stderr to null stream only if not running in verbose mode
+      process.stdout.write = process.stderr.write = () => true
+    }
 
     try {
       if (callback) {
