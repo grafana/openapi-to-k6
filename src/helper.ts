@@ -3,7 +3,6 @@ import fs from 'fs'
 import path from 'path'
 import { format, resolveConfig } from 'prettier'
 import packageJson from '../package.json'
-import { SAMPLE_K6_SCRIPT_FILE_NAME } from './constants'
 import { logger } from './logger'
 import { PackageDetails } from './type'
 
@@ -41,42 +40,6 @@ export async function formatFileWithPrettier(filePath: string) {
   // Write formatted content back to the file
   fs.writeFileSync(filePath, formatted)
   logger.debug(`Formatted: ${filePath}`)
-}
-
-/**
- * Format the generated files using Prettier.
- *
- * @param outputTarget - Path to the generated files.
- * @param schemaTitle - Title of the schema.
- */
-export async function formatGeneratedFiles(
-  outputTarget: string,
-  schemaTitle: string,
-  isSampleK6ScriptGenerated: boolean
-) {
-  // Here we call the original function from @orval/core used by the library to generate the
-  // file name with same defaults.
-  const { path: clientPath } = await getGeneratedClientPath(
-    outputTarget,
-    schemaTitle
-  )
-
-  logger.debug('Following are the details for formatting generated files:')
-  logger.debug(`Path: ${clientPath}`)
-  logger.debug(`Schema Title: ${schemaTitle}`)
-  logger.debug(`Output Target: ${outputTarget}`)
-
-  await exports.formatFileWithPrettier(clientPath)
-
-  if (isSampleK6ScriptGenerated) {
-    const k6ScriptPath = path.join(
-      getDirectoryForPath(clientPath),
-      SAMPLE_K6_SCRIPT_FILE_NAME
-    )
-    logger.debug(`Generated sample K6 Script Path: ${k6ScriptPath}`)
-
-    await exports.formatFileWithPrettier(k6ScriptPath)
-  }
 }
 
 /**

@@ -1,7 +1,7 @@
 import { InfoObject } from 'openapi3-ts/oas30'
 import orval from 'orval'
 import {
-  formatGeneratedFiles,
+  formatFileWithPrettier,
   getPackageDetails,
   OutputOverrider,
 } from './helper'
@@ -20,6 +20,12 @@ const generatedFileHeaderGenerator = (info: InfoObject) => {
     ...(info.description ? [info.description] : []),
     ...(info.version ? [`OpenAPI spec version: ${info.version}`] : []),
   ]
+}
+
+const afterAllFilesWriteHandler = async (filePaths: string[]) => {
+  for (const filePath of filePaths) {
+    await formatFileWithPrettier(filePath)
+  }
 }
 
 export default async ({
@@ -54,6 +60,9 @@ export default async ({
         },
         headers: true,
       },
+      hooks: {
+        afterAllFilesWrite: afterAllFilesWriteHandler,
+      },
     })
   })
 
@@ -62,10 +71,4 @@ export default async ({
       'Could not find schema title in the OpenAPI spec. Please provide a `title` in the schema in `info` block to generate proper file names'
     )
   }
-
-  await formatGeneratedFiles(
-    outputDir,
-    schemaDetails.title,
-    !!shouldGenerateSampleK6Script
-  )
 }

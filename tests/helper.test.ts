@@ -39,37 +39,6 @@ describe('djb2Hash', () => {
   })
 })
 
-describe('formatGeneratedFiles', () => {
-  let tempDir: string
-
-  beforeAll(() => {
-    tempDir = fs.mkdtempSync(
-      path.join(os.tmpdir(), 'test-formatGeneratedFiles-')
-    )
-  })
-
-  afterAll(() => {
-    fs.rmdirSync(tempDir, { recursive: true })
-  })
-
-  it.only('should format the generated client file ignoring schema title', async () => {
-    jest.spyOn(helper, 'formatFileWithPrettier').mockResolvedValue()
-
-    const outputTarget = path.join(tempDir, 'test-file-1.ts')
-    fs.writeFileSync(outputTarget, 'test')
-
-    const schemaTitle = 'TestSchema'
-    const isSampleK6ScriptGenerated = false
-
-    await helper.formatGeneratedFiles(
-      outputTarget,
-      schemaTitle,
-      isSampleK6ScriptGenerated
-    )
-    expect(helper.formatFileWithPrettier).toHaveBeenCalledWith(outputTarget)
-  })
-})
-
 describe('formatFileWithPrettier', () => {
   let tempDir: string
   const unformattedContent = `const x= {foo: "bar",baz:"qux"}`
