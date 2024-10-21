@@ -1,5 +1,11 @@
 # openapi-to-k6
 
+<p align="center">⚠️</p>
+
+***This tool is currently in the experimental stage. Expect bugs, incomplete features, and breaking changes as development progresses. Use at your own risk, and please report any issues or feedback to help us improve.***
+
+---
+
 ## Overview
 
 The _openapi-to-k6_ repository is a tool designed to ease the process of writing k6 scripts.
