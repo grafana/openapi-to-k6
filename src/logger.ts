@@ -43,8 +43,13 @@ class Logger {
     this.logWithColor(message, LogLevel.INFO, chalk.blue)
   }
 
-  public logMessage(message: string): void {
-    console.log(message)
+  public logMessage(message: string, color?: chalk.Chalk): void {
+    if (color) {
+      console.log(color(message))
+      return
+    } else {
+      console.log(message)
+    }
   }
 
   public warning(message: string): void {

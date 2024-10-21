@@ -1,5 +1,6 @@
 #!/usr/bin/env node
 
+import chalk from 'chalk'
 import { Command } from 'commander'
 import { generateDefaultAnalyticsData, reportUsageAnalytics } from './analytics'
 import generateK6SDK from './generator'
@@ -16,9 +17,9 @@ async function generateSDK({
   shouldGenerateSampleK6Script,
   analyticsData,
 }: GenerateK6SDKOptions) {
-  logger.logMessage('Generating SDK for K6...')
-  logger.logMessage(`OpenAPI path: ${openApiPath}`)
-  logger.logMessage(`Output directory: ${outputDir}`)
+  logger.logMessage('Generating TypeScript client for k6...\n')
+  logger.logMessage(`OpenAPI schema: ${openApiPath}`)
+  logger.logMessage(`Output: ${outputDir}\n`)
 
   await generateK6SDK({
     openApiPath,
@@ -27,7 +28,14 @@ async function generateSDK({
     analyticsData,
   })
 
-  logger.logMessage(`K6 client generated successfully.`)
+  if (shouldGenerateSampleK6Script) {
+    logger.logMessage(
+      `TypeScript client and sample k6 script generated successfully.`,
+      chalk.green
+    )
+  } else {
+    logger.logMessage(`TypeScript client generated successfully.`, chalk.green)
+  }
 }
 
 program
