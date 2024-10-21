@@ -23,6 +23,12 @@ export const getPackageDetails = (): PackageDetails => {
  * @param filePath - Path to the file to format.
  */
 export async function formatFileWithPrettier(filePath: string) {
+  if (!fs.existsSync(filePath)) {
+    logger.debug(
+      `formatFileWithPrettier ~ File does not exist: ${filePath}, skipping formatting with prettier.`
+    )
+    return
+  }
   // Read file contents
   const content = fs.readFileSync(filePath, 'utf-8')
   // Format using Prettier
@@ -56,7 +62,7 @@ export async function formatGeneratedFiles(
   )
 
   logger.debug('Following are the details for formatting generated files:')
-  logger.debug(`Path: ${path}`)
+  logger.debug(`Path: ${clientPath}`)
   logger.debug(`Schema Title: ${schemaTitle}`)
   logger.debug(`Output Target: ${outputTarget}`)
 
@@ -69,14 +75,7 @@ export async function formatGeneratedFiles(
     )
     logger.debug(`Generated sample K6 Script Path: ${k6ScriptPath}`)
 
-    if (fs.existsSync(k6ScriptPath)) {
-      logger.debug('Formatting sample k6 script file')
-      await exports.formatFileWithPrettier(k6ScriptPath)
-    } else {
-      logger.error(
-        'Unable to format sample K6 script file as it does not exist!'
-      )
-    }
+    await exports.formatFileWithPrettier(k6ScriptPath)
   }
 }
 
