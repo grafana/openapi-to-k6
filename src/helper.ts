@@ -124,21 +124,6 @@ export class OutputOverrider {
 }
 
 /**
- * Check if the current script is running with ts-node. i.e. directly from source.
- *
- * @export
- * @returns {boolean}
- */
-export function isTsNode(): boolean {
-  const scriptPath = process.argv[1]
-  if (scriptPath) {
-    return scriptPath.endsWith('.ts') || scriptPath.includes('ts-node')
-  } else {
-    return false
-  }
-}
-
-/**
  * Create a hash from the given string using the djb2 algorithm.
  *
  * @param str

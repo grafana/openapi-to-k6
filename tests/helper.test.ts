@@ -120,26 +120,6 @@ describe('OutputOverrider', () => {
   })
 })
 
-describe('isTsNode', () => {
-  it('should return true if running with ts-node', () => {
-    const originalArgv = process.argv
-    process.argv = ['node', 'script.ts']
-
-    expect(helper.isTsNode()).toBe(true)
-
-    process.argv = originalArgv
-  })
-
-  it('should return false if not running with ts-node', () => {
-    const originalArgv = process.argv
-    process.argv = ['node', 'script.js']
-
-    expect(helper.isTsNode()).toBe(false)
-
-    process.argv = originalArgv
-  })
-})
-
 describe('getDirectoryForPath', () => {
   it('should return the directory path for a given file path', () => {
     const filePath = path.join(os.tmpdir(), 'file.txt')

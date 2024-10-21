@@ -3,7 +3,7 @@
 import { Command } from 'commander'
 import { generateDefaultAnalyticsData, reportUsageAnalytics } from './analytics'
 import generateK6SDK from './generator'
-import { getPackageDetails, isTsNode } from './helper'
+import { getPackageDetails } from './helper'
 import { logger } from './logger'
 import { AnalyticsData, GenerateK6SDKOptions } from './type'
 
@@ -56,7 +56,7 @@ program
         options.disableSampleScript ||
         process.env.DISABLE_SAMPLE_SCRIPT === 'true'
 
-      if (options.verbose || isTsNode()) {
+      if (options.verbose) {
         logger.setVerbose(true)
         logger.debug('Verbose mode enabled, showing debug logs')
       }
