@@ -60,7 +60,7 @@ export async function formatGeneratedFiles(
   logger.debug(`Schema Title: ${schemaTitle}`)
   logger.debug(`Output Target: ${outputTarget}`)
 
-  await formatFileWithPrettier(clientPath)
+  await exports.formatFileWithPrettier(clientPath)
 
   if (isSampleK6ScriptGenerated) {
     const k6ScriptPath = path.join(
@@ -71,7 +71,7 @@ export async function formatGeneratedFiles(
 
     if (fs.existsSync(k6ScriptPath)) {
       logger.debug('Formatting sample k6 script file')
-      await formatFileWithPrettier(k6ScriptPath)
+      await exports.formatFileWithPrettier(k6ScriptPath)
     } else {
       logger.error(
         'Unable to format sample K6 script file as it does not exist!'

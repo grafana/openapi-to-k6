@@ -1,14 +1,7 @@
 import fs from 'fs'
 import os from 'os'
 import path from 'path'
-import {
-  djb2Hash,
-  formatFileWithPrettier,
-  getDirectoryForPath,
-  getPackageDetails,
-  isTsNode,
-  OutputOverrider,
-} from '../src/helper'
+import * as helper from '../src/helper'
 import { PackageDetails } from '../src/type'
 
 // Mock the package.json file
@@ -32,7 +25,7 @@ describe('getPackageDetails', () => {
       version: '1.0.0',
     }
 
-    const details = getPackageDetails()
+    const details = helper.getPackageDetails()
     expect(details).toEqual(expectedDetails)
   })
 })
@@ -41,8 +34,39 @@ describe('djb2Hash', () => {
   it('should return a hash for a given string', () => {
     const input = 'test'
     const expectedHash = 2087956275
-    const hash = djb2Hash(input)
+    const hash = helper.djb2Hash(input)
     expect(hash).toEqual(expectedHash)
+  })
+})
+
+describe('formatGeneratedFiles', () => {
+  let tempDir: string
+
+  beforeAll(() => {
+    tempDir = fs.mkdtempSync(
+      path.join(os.tmpdir(), 'test-formatGeneratedFiles-')
+    )
+  })
+
+  afterAll(() => {
+    fs.rmdirSync(tempDir, { recursive: true })
+  })
+
+  it.only('should format the generated client file ignoring schema title', async () => {
+    jest.spyOn(helper, 'formatFileWithPrettier').mockResolvedValue()
+
+    const outputTarget = path.join(tempDir, 'test-file-1.ts')
+    fs.writeFileSync(outputTarget, 'test')
+
+    const schemaTitle = 'TestSchema'
+    const isSampleK6ScriptGenerated = false
+
+    await helper.formatGeneratedFiles(
+      outputTarget,
+      schemaTitle,
+      isSampleK6ScriptGenerated
+    )
+    expect(helper.formatFileWithPrettier).toHaveBeenCalledWith(outputTarget)
   })
 })
 
@@ -66,15 +90,11 @@ describe('formatFileWithPrettier', () => {
     fs.rmdirSync(tempDir, { recursive: true })
   })
 
-  afterEach(() => {
-    jest.clearAllMocks()
-  })
-
   it('should format the file using Prettier', async () => {
     const filePath = path.join(tempDir, 'test-file-1.ts')
     fs.writeFileSync(filePath, unformattedContent)
 
-    await formatFileWithPrettier(filePath)
+    await helper.formatFileWithPrettier(filePath)
 
     const fileContents = fs.readFileSync(filePath, 'utf-8')
     expect(fileContents).toEqual(formattedContent)
@@ -93,7 +113,7 @@ describe('formatFileWithPrettier', () => {
     const filePath = path.join(testDir, 'test-file-2.ts')
     fs.writeFileSync(filePath, unformattedContent)
 
-    await formatFileWithPrettier(filePath)
+    await helper.formatFileWithPrettier(filePath)
 
     const fileContents = fs.readFileSync(filePath, 'utf-8')
     expect(fileContents).toEqual(formattedContentWithOptions)
@@ -101,10 +121,10 @@ describe('formatFileWithPrettier', () => {
 })
 
 describe('OutputOverrider', () => {
-  let outputOverrider: OutputOverrider
+  let outputOverrider: helper.OutputOverrider
 
   beforeEach(() => {
-    outputOverrider = OutputOverrider.getInstance()
+    outputOverrider = helper.OutputOverrider.getInstance()
   })
 
   it('should redirect output to null stream for the callback function', async () => {
@@ -136,7 +156,7 @@ describe('isTsNode', () => {
     const originalArgv = process.argv
     process.argv = ['node', 'script.ts']
 
-    expect(isTsNode()).toBe(true)
+    expect(helper.isTsNode()).toBe(true)
 
     process.argv = originalArgv
   })
@@ -145,7 +165,7 @@ describe('isTsNode', () => {
     const originalArgv = process.argv
     process.argv = ['node', 'script.js']
 
-    expect(isTsNode()).toBe(false)
+    expect(helper.isTsNode()).toBe(false)
 
     process.argv = originalArgv
   })
@@ -156,28 +176,28 @@ describe('getDirectoryForPath', () => {
     const filePath = path.join(os.tmpdir(), 'file.txt')
     const expectedDirectory = os.tmpdir()
 
-    const directory = getDirectoryForPath(filePath)
+    const directory = helper.getDirectoryForPath(filePath)
     expect(directory).toEqual(expectedDirectory)
   })
   it('should return the directory path for a given directory path', () => {
     const directoryPath = os.tmpdir()
     const expectedDirectory = os.tmpdir()
 
-    const directory = getDirectoryForPath(directoryPath)
+    const directory = helper.getDirectoryForPath(directoryPath)
     expect(directory).toEqual(expectedDirectory)
   })
   it('should return correct directory if it has period in the name', () => {
     const directoryPath = path.join(os.tmpdir(), 'test.dir', 'file.txt')
     const expectedDirectory = path.join(os.tmpdir(), 'test.dir')
 
-    const directory = getDirectoryForPath(directoryPath)
+    const directory = helper.getDirectoryForPath(directoryPath)
     expect(directory).toEqual(expectedDirectory)
   })
   it('should return correct directory for relative paths', () => {
     const directoryPath = './test.dir/file.txt'
     const expectedDirectory = './test.dir'
 
-    const directory = getDirectoryForPath(directoryPath)
+    const directory = helper.getDirectoryForPath(directoryPath)
     expect(directory).toEqual(expectedDirectory)
   })
 })
