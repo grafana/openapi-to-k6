@@ -11,9 +11,9 @@ const rmdir = promisify(fs.rmdir)
 
 const fixturesDir = path.join(__dirname, 'fixtures', 'schemas')
 
-const loadFixture = async (filename: string) => {
+const loadFixture = (filename: string) => {
   const filePath = path.join(fixturesDir, filename)
-  const data = await readFile(filePath, 'utf-8')
+  const data = fs.readFileSync(filePath, 'utf-8')
   return JSON.parse(data)
 }
 
@@ -26,8 +26,10 @@ const commonSubstringsForAllSDK = [
   'return {\n      response,\n      data,\n    };',
 ]
 
+const commonSubstringsForK6SampleScript = [`const baseUrl = "<BASE_URL>";`]
+
 describe('generator', () => {
-  let tempDir: string
+  let tempDir: string, schemaDirectory: string
   const allFixtures = fs.readdirSync(fixturesDir)
 
   beforeAll(async () => {
@@ -39,35 +41,73 @@ describe('generator', () => {
   })
 
   for (const fixtureName of allFixtures) {
-    it(`should generate SDK from ${fixtureName} OpenAPI schema`, async () => {
-      const schemaDirectory = await mkdtemp(
-        path.join(tempDir, fixtureName.replace('.', '-'))
-      )
+    describe(`test ${fixtureName} OpenAPI schema`, () => {
+      let openApiPath: string, generatedSchemaPath: string
+      const fixture = loadFixture(fixtureName)
 
-      const fixture = await loadFixture(fixtureName)
-      const expectedGeneratedCode = fixture['expected_sdk']
+      beforeEach(async () => {
+        schemaDirectory = await mkdtemp(
+          path.join(tempDir, fixtureName.replace('.', '-'))
+        )
+        // Write the OpenAPI schema to a file
 
-      const openApiPath = path.join(schemaDirectory, 'openapi-schema.json')
-      const generatedSchemaPath = path.join(schemaDirectory, 'generated-schema')
-      await writeFile(openApiPath, JSON.stringify(fixture['openapi_schema']))
+        openApiPath = path.join(schemaDirectory, 'openapi-schema.json')
 
-      await generator({ openApiPath, outputDir: generatedSchemaPath })
+        await writeFile(openApiPath, JSON.stringify(fixture['openapi_schema']))
 
-      const generatedFiles = fs.readdirSync(generatedSchemaPath)
-      expect(generatedFiles.length).toBe(1)
-      expect(generatedFiles[0]).toBeDefined()
-      const generatedFilePath = path.join(
-        generatedSchemaPath,
-        generatedFiles[0]!
-      )
-      const generatedContent = await readFile(generatedFilePath, 'utf-8')
+        generatedSchemaPath = path.join(schemaDirectory, 'generated-schema')
+      })
 
-      for (const expectedString of [
-        ...expectedGeneratedCode['expectedSubstrings'],
-        ...commonSubstringsForAllSDK,
-      ]) {
-        expect(generatedContent).toContain(expectedString)
-      }
+      afterEach(async () => {
+        await rmdir(schemaDirectory, { recursive: true })
+      })
+
+      it(`should generate SDK client from the OpenAPI schema`, async () => {
+        const expectedGeneratedCode = fixture['expected_sdk']
+
+        await generator({ openApiPath, outputDir: generatedSchemaPath })
+
+        const generatedFiles = fs.readdirSync(generatedSchemaPath)
+        expect(generatedFiles.length).toBe(1)
+        expect(generatedFiles[0]).toBeDefined()
+        const fileName = path.basename(generatedFiles[0]!)
+        expect(fileName).toBe(expectedGeneratedCode.fileName)
+        const generatedFilePath = path.join(
+          generatedSchemaPath,
+          generatedFiles[0]!
+        )
+        const generatedContent = await readFile(generatedFilePath, 'utf-8')
+
+        for (const expectedString of [
+          ...expectedGeneratedCode['expectedSubstrings'],
+          ...commonSubstringsForAllSDK,
+        ]) {
+          expect(generatedContent).toContain(expectedString)
+        }
+      })
+
+      it('should generate a sample K6 script', async () => {
+        await generator({
+          openApiPath,
+          outputDir: generatedSchemaPath,
+          shouldGenerateSampleK6Script: true,
+        })
+
+        const generatedFiles = fs.readdirSync(generatedSchemaPath)
+        expect(generatedFiles.length).toBe(2)
+        const k6ScriptFile = generatedFiles.find((file) =>
+          file.includes('k6-script')
+        )
+        expect(k6ScriptFile).toBeDefined()
+        expect(k6ScriptFile).toBe('k6-script.sample.ts')
+
+        const generatedFilePath = path.join(generatedSchemaPath, k6ScriptFile!)
+        const generatedContent = await readFile(generatedFilePath, 'utf-8')
+
+        for (const expectedString of [...commonSubstringsForK6SampleScript]) {
+          expect(generatedContent).toContain(expectedString)
+        }
+      })
     })
   }
 })

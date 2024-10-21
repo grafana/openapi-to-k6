@@ -105,7 +105,7 @@
     }
   },
   "expected_sdk": {
-    "fileName": "createExampleAPI.ts",
+    "fileName": "exampleAPI.ts",
     "expectedSubstrings": [
       "export const createExampleAPI =",
       "cleanBaseUrl + `/example` + `?${new URLSearchParams(params).toString()}`",

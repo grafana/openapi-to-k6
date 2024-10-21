@@ -31,7 +31,7 @@
     }
   },
   "expected_sdk": {
-    "fileName": ".ts",
+    "fileName": "K6Client.ts",
     "expectedSubstrings": [
       "export const createK6Client =",
       "return { getExample };"

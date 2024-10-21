@@ -1,5 +1,8 @@
+import fs from 'fs'
 import { InfoObject } from 'openapi3-ts/oas30'
 import orval from 'orval'
+import path from 'path'
+import { DEFAULT_SCHEMA_TITLE } from './constants'
 import {
   formatFileWithPrettier,
   getPackageDetails,
@@ -25,6 +28,19 @@ const generatedFileHeaderGenerator = (info: InfoObject) => {
 const afterAllFilesWriteHandler = async (filePaths: string[]) => {
   for (const filePath of filePaths) {
     await formatFileWithPrettier(filePath)
+
+    const fileName = path.basename(filePath)
+
+    if (fileName === '.ts') {
+      // Generated SDK had no name because there was no title in the schema
+      // Rename it to the default name
+      const directoryPath = path.dirname(filePath)
+      const newPath = path.join(directoryPath, `${DEFAULT_SCHEMA_TITLE}.ts`)
+      logger.debug(
+        `afterAllFilesWriteHandler ~ Renaming ${filePath} to ${newPath}`
+      )
+      fs.renameSync(filePath, newPath)
+    }
   }
 }
 

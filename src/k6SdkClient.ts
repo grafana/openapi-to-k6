@@ -29,6 +29,7 @@ import {
   SAMPLE_K6_SCRIPT_FILE_NAME,
 } from './constants'
 import { getDirectoryForPath, getGeneratedClientPath } from './helper'
+import { logger } from './logger'
 import { AnalyticsData, SchemaDetails } from './type'
 
 // A map to store the operationNames for which a return type is to be written at the end to export
@@ -83,11 +84,15 @@ export const getK6Dependencies: ClientDependenciesBuilder = () => [
 function getSchemaTitleFromContext(context: ContextSpecs) {
   const specData = Object.values(context.specs)
 
+  let schemaTitle
+
   if (specData[0]) {
-    return specData[0].info.title
+    schemaTitle = specData[0].info.title
   }
 
-  return DEFAULT_SCHEMA_TITLE
+  schemaTitle ??= DEFAULT_SCHEMA_TITLE
+
+  return schemaTitle
 }
 
 function _generateResponseTypeName(operationName: string): string {
@@ -341,18 +346,6 @@ const k6ScriptBuilder: ClientExtraFilesBuilder = async (
   output,
   context
 ) => {
-  console.log(
-    JSON.stringify(
-      {
-        verbOptions,
-        output,
-        context,
-      },
-      null,
-      2
-    )
-  )
-
   const schemaTitle = getSchemaTitleFromContext(context)
   const {
     path: pathOfGeneratedClient,
@@ -363,6 +356,21 @@ const k6ScriptBuilder: ClientExtraFilesBuilder = async (
   const generateScriptPath = path.join(
     directoryPath,
     SAMPLE_K6_SCRIPT_FILE_NAME
+  )
+
+  logger.debug(
+    `k6ScriptBuilder ~ Generating sample K6 Script\n${JSON.stringify(
+      {
+        pathOfGeneratedClient,
+        filename,
+        extension,
+        schemaTitle,
+        directoryPath,
+        generateScriptPath,
+      },
+      null,
+      2
+    )}`
   )
 
   const clientFunctionsList = []
