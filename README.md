@@ -9,6 +9,13 @@ easily call your endpoints and have auto completion in your IDE.
 This allows developers to easily create performance tests for their APIs based on their existing
 OpenAPI documentation.
 
+Along with the client, it also generates a sample k6 script as an example of how to use the client.
+
+To get started, install the tool with npm via `npm install openapi-to-k6` and run it to convert your
+OpenAPI specification to a TypeScript client for k6.
+
+To take a look at a few examples of how the generated client and sample script looks, check out the [examples](./examples) directory.
+
 Note: Optional usage analytics are gathered to make the tool better. To disable this, use the option
 `--disable-analytics` or set an environment variable `DISABLE_ANALYTICS=true`.
 
