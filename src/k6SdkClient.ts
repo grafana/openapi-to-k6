@@ -236,7 +236,8 @@ const getParamsInputValue = ({
     }
 
     if (headers) {
-      headersValue += `\n...headers,`
+      headersValue += `\n// In the schema, headers can be of any type like number but k6 accepts only strings as headers, hence converting all headers to string`
+      headersValue += `\n...Object.fromEntries(Object.entries(headers || {}).map(([key, value]) => [key, String(value)])),`
     }
 
     headersValue += `\n...mergedRequestParameters?.headers},`
