@@ -106,7 +106,10 @@ function _generateResponseTypeDefinition(
   const typeName = _generateResponseTypeName(operationName)
   let responseDataType = ''
 
-  if (response.definition.success) {
+  if (
+    response.definition.success &&
+    !['any', 'unknown'].includes(response.definition.success)
+  ) {
     responseDataType += response.definition.success + ' | '
   }
   responseDataType += 'ResponseBody'
