@@ -1,10 +1,15 @@
-# openapi-to-k6
+<div align="center">
 
-<p align="center">⚠️</p>
-
-***This tool is currently in the experimental stage. Expect bugs, incomplete features, and breaking changes as development progresses. Use at your own risk, and please report any issues or feedback to help us improve.***
-
----
+  <img
+    src="./images/openapi-to-k6.png"
+    width="600"
+    style="pointer-events: none;" />
+  <br />
+  <hr/>
+  <p align="center">⚠️</p>
+<b>This tool is currently in the experimental stage. Expect bugs, incomplete features, and breaking changes as development progresses. Use at your own risk, and please report any issues or feedback to help us improve.</b>
+<hr/>
+</div>
 
 ## Overview
 
