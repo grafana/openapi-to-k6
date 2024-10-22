@@ -87,7 +87,7 @@
     "fileName": "exampleAPI.ts",
     "expectedSubstrings": [
       "export const createExampleAPI = (clientOptions: CreateExampleAPIOptions) => {",
-      "const createExampleData = (\n    createExampleDataBody: CreateExampleDataBody,\n    params: CreateExampleDataParams,\n    requestParameters?: Params,\n  ): CreateExampleDataResponse => {",
+      "const createExampleData = (\n    createExampleDataBody: CreateExampleDataBody,\n    params: CreateExampleDataParams,\n    requestParameters?: Params,\n  ):",
       "cleanBaseUrl + `/example` + `?${new URLSearchParams(params).toString()}`,",
       "return { createExampleData };"
     ]

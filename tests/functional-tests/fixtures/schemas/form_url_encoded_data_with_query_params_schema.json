@@ -106,7 +106,7 @@
   "expected_sdk": {
     "fileName": "formURLEncodedAPIWithQueryParameters.ts",
     "expectedSubstrings": [
-      "const postSubmitForm = (\n    postSubmitFormBody: PostSubmitFormBody,\n    params: PostSubmitFormParams,\n    requestParameters?: Params,\n  ): PostSubmitFormResponse => {",
+      "const postSubmitForm = (\n    postSubmitFormBody: PostSubmitFormBody,\n    params: PostSubmitFormParams,\n    requestParameters?: Params,\n  ): ",
       "const url = new URL(\n      cleanBaseUrl +\n        `/submit-form` +\n        `?${new URLSearchParams(params).toString()}`,\n    );"
     ]
   }

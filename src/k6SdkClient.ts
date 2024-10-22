@@ -32,10 +32,6 @@ import { getDirectoryForPath, getGeneratedClientPath } from './helper'
 import { logger } from './logger'
 import { AnalyticsData, SchemaDetails } from './type'
 
-// A map to store the operationNames for which a return type is to be written at the end to export
-// and the return type definition
-const returnTypesToWrite: Map<string, string> = new Map()
-
 export const getK6Dependencies: ClientDependenciesBuilder = () => [
   {
     exports: [
@@ -95,15 +91,7 @@ function getSchemaTitleFromContext(context: ContextSpecs) {
   return schemaTitle
 }
 
-function _generateResponseTypeName(operationName: string): string {
-  return `${pascal(operationName)}Response`
-}
-
-function _generateResponseTypeDefinition(
-  operationName: string,
-  response: GetterResponse
-): string {
-  const typeName = _generateResponseTypeName(operationName)
+function _generateResponseTypeDefinition(response: GetterResponse): string {
   let responseDataType = ''
 
   if (
@@ -114,10 +102,10 @@ function _generateResponseTypeDefinition(
   }
   responseDataType += 'ResponseBody'
 
-  return `export type ${typeName} = {
+  return `{
     response: Response
     data: ${responseDataType}
-};`
+}`
 }
 
 const generateK6Implementation = (
@@ -149,12 +137,6 @@ const generateK6Implementation = (
     isFormUrlEncoded: false,
   })
 
-  // Generate response return types
-  returnTypesToWrite.set(
-    operationName,
-    _generateResponseTypeDefinition(operationName, response)
-  )
-
   let url = `cleanBaseUrl + \`${route}\``
 
   if (queryParams) {
@@ -174,7 +156,7 @@ const generateK6Implementation = (
     paramsSerializerOptions: override?.paramsSerializerOptions,
   })
 
-  return `const ${operationName} = (\n    ${toObjectString(props, 'implementation')} requestParameters?: Params): ${_generateResponseTypeName(operationName)} => {${bodyForm}
+  return `const ${operationName} = (\n    ${toObjectString(props, 'implementation')} requestParameters?: Params): ${_generateResponseTypeDefinition(response)} => {${bodyForm}
         ${urlGeneration}
         const mergedRequestParameters = _mergeRequestParameters(requestParameters || {}, clientOptions.commonRequestParameters);
         const response = http.request(${options});
@@ -332,12 +314,6 @@ export const generateFooter: ClientFooterBuilder = ({ operationNames }) => {
   let footer = ''
 
   footer += `return {${operationNames.join(',')}}};\n\n`
-
-  operationNames.forEach((operationName) => {
-    if (returnTypesToWrite.has(operationName)) {
-      footer += returnTypesToWrite.get(operationName) + '\n'
-    }
-  })
 
   // Add function definition for merging request parameters
   footer += `\n\n${_getRequestParametersMergerFunctionImplementation()}\n`

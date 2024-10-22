@@ -151,11 +151,11 @@
     "fileName": "headerDemoAPI.ts",
     "expectedSubstrings": [
       "export const createHeaderDemoAPI = (\n  clientOptions: CreateHeaderDemoAPIOptions,\n) => {",
-      "const getExampleGet = (\n    headers?: GetExampleGetHeaders,\n    requestParameters?: Params,\n  ): GetExampleGetResponse => {",
-      "const response = http.request(\"GET\", url.toString(), undefined, {\n      ...mergedRequestParameters,\n      headers: {\n        ...headers,\n        ...mergedRequestParameters?.headers,\n      },\n    });",
-      "const postExamplePost = (\n    postExamplePostBody: PostExamplePostBody,\n    headers: PostExamplePostHeaders,\n    requestParameters?: Params,\n  ): PostExamplePostResponse => {",
-      "const response = http.request(\n      \"POST\",\n      url.toString(),\n      JSON.stringify(postExamplePostBody),\n      {\n        ...mergedRequestParameters,\n        headers: {\n          \"Content-Type\": \"application/json\",\n          ...headers,\n          ...mergedRequestParameters?.headers,\n        },\n      },\n    );",
-      "const getExampleResponseHeaders = (\n    requestParameters?: Params,\n  ): GetExampleResponseHeadersResponse => {",
+      "const getExampleGet = (\n    headers?: GetExampleGetHeaders,\n    requestParameters?: Params,\n  ): {\n    response: Response;\n    data: GetExampleGet200 | ResponseBody;\n  } => {",
+      "const response = http.request(\"GET\", url.toString(), undefined, {\n      ...mergedRequestParameters,\n      headers: {\n        // In the schema, headers can be of any type like number but k6 accepts only strings as headers, hence converting all headers to string\n        ...Object.fromEntries(\n          Object.entries(headers || {}).map(([key, value]) => [\n            key,\n            String(value),\n          ]),\n        ),\n        ...mergedRequestParameters?.headers,\n      },\n    });",
+      "const postExamplePost = (\n    postExamplePostBody: PostExamplePostBody,\n    headers: PostExamplePostHeaders,\n    requestParameters?: Params,\n  ): {\n    response: Response;\n    data: void | ResponseBody;\n  } => {",
+      "const response = http.request(\n      \"POST\",\n      url.toString(),\n      JSON.stringify(postExamplePostBody),\n      {\n        ...mergedRequestParameters,\n        headers: {\n          \"Content-Type\": \"application/json\",\n          // In the schema, headers can be of any type like number but k6 accepts only strings as headers, hence converting all headers to string\n          ...Object.fromEntries(\n            Object.entries(headers || {}).map(([key, value]) => [\n              key,\n              String(value),\n            ]),\n          ),\n          ...mergedRequestParameters?.headers,\n        },\n      },\n    );",
+      "const getExampleResponseHeaders = (\n    requestParameters?: Params,\n  ): {\n    response: Response;\n    data: GetExampleResponseHeaders200 | ResponseBody;\n  } => {",
       "const response = http.request(\n      \"GET\",\n      url.toString(),\n      undefined,\n      mergedRequestParameters,\n    );",
       "return { getExampleGet, postExamplePost, getExampleResponseHeaders };"
     ]
