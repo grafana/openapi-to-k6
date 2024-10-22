@@ -45,7 +45,7 @@ program
   .argument('<openApiPath>', 'Path or URL for the OpenAPI schema file')
   .argument('<outputDir>', 'Directory where the SDK should be generated')
   .option('-v, --verbose', 'enable verbose mode to show debug logs')
-  .option('--no-sample-script', 'disable generating sample k6 script')
+  .option('--disable-sample-script', 'disable generating sample k6 script')
   .option('--disable-analytics', 'disable anonymous usage data collection')
   .action(
     async (
