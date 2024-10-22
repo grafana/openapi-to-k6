@@ -2,15 +2,15 @@ import fs from 'fs'
 import { InfoObject } from 'openapi3-ts/oas30'
 import orval from 'orval'
 import path from 'path'
-import { DEFAULT_SCHEMA_TITLE } from './constants'
+import { DEFAULT_SCHEMA_TITLE } from '../constants'
 import {
   formatFileWithPrettier,
   getPackageDetails,
   OutputOverrider,
-} from './helper'
-import { getK6ClientBuilder } from './k6SdkClient'
-import { logger } from './logger'
-import { GenerateK6SDKOptions, SchemaDetails } from './type'
+} from '../helper'
+import { logger } from '../logger'
+import { GenerateK6SDKOptions, SchemaDetails } from '../type'
+import { getK6ClientBuilder } from './k6Client'
 
 const outputOverrider = OutputOverrider.getInstance()
 const packageDetails = getPackageDetails()
@@ -84,7 +84,7 @@ export default async ({
 
   if (!schemaDetails.title) {
     logger.warning(
-      'Could not find schema title in the OpenAPI spec. Please provide a `title` in the schema in `info` block to generate proper file names'
+      'Schema title not found in the OpenAPI spec. Please include a `title` in the `info` block to ensure proper file name generation.'
     )
   }
 }
