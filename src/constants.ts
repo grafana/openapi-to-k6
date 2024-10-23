@@ -5,7 +5,7 @@ export const K6_SCRIPT_TEMPLATE = `
 import { {{clientFunctionName}} } from '{{clientPath}}'
 
 const baseUrl = '<BASE_URL>';
-const client = {{clientFunctionName}}({ baseUrl })
+const client = new {{clientFunctionName}}({ baseUrl })
 
 export default function () {
     {{#each clientFunctionsList}}

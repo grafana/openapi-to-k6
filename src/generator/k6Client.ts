@@ -67,7 +67,7 @@ function _getRequestParametersMergerFunctionImplementation() {
  * @param {Params} commonRequestParameters - Common parameters for all requests
  * @returns {Params} - The merged parameters
  */
-  const _mergeRequestParameters = (requestParameters?: Params, commonRequestParameters?: Params): Params => {
+  private _mergeRequestParameters (requestParameters?: Params, commonRequestParameters?: Params): Params {
     return {
         ...commonRequestParameters,  // Default to common parameters
         ...requestParameters,        // Override with request-specific parameters
@@ -232,7 +232,7 @@ const generateK6Implementation = (
     isFormUrlEncoded: false,
   })
 
-  let url = `cleanBaseUrl + \`${route}\``
+  let url = `this.cleanBaseUrl + \`${route}\``
 
   if (queryParams) {
     url += '+`?${new URLSearchParams(params).toString()}`'
@@ -241,15 +241,15 @@ const generateK6Implementation = (
 
   const options = _getK6RequestOptions(verbOptions)
 
-  return `const ${operationName} = (\n    ${toObjectString(props, 'implementation')} requestParameters?: Params): ${_generateResponseTypeDefinition(response)} => {${bodyForm}
+  return `${operationName}(\n    ${toObjectString(props, 'implementation')} requestParameters?: Params): ${_generateResponseTypeDefinition(response)} {\n${bodyForm}
         ${urlGeneration}
-        const mergedRequestParameters = _mergeRequestParameters(requestParameters || {}, clientOptions.commonRequestParameters);
+        const mergedRequestParameters = this._mergeRequestParameters(requestParameters || {}, this.commonRequestParameters);
         const response = http.request(${options});
         let data;
 
         try {
             data = response.json();
-        } catch (error) {
+        } catch {
             data = response.body;
         }
       return {
@@ -266,28 +266,32 @@ const generateTitle: ClientTitleBuilder = (title) => {
 }
 
 const generateK6Header: ClientHeaderBuilder = ({ title }) => {
-  const clientOptionsTypeName = `${pascal(title)}Options`
   return `
-  export type ${clientOptionsTypeName} = {
+  /**
+   * This is the base client to use for interacting with the API.
+   */
+  export class ${title} {
+      private cleanBaseUrl: string;
+      private commonRequestParameters: Params;
+
+      constructor (clientOptions: {
     baseUrl: string,
     commonRequestParameters?: Params
-  }
-
-  /**
- * This is the base client to use for interacting with the API.
- */
-  export const ${title} = (clientOptions: ${clientOptionsTypeName}) => {\n
-        const cleanBaseUrl = clientOptions.baseUrl.replace(/\\/+$/, '');\n`
+}) {
+       this.cleanBaseUrl = clientOptions.baseUrl.replace(/\\/+$/, '');\n
+      }\n
+`
 }
 
-const generateFooter: ClientFooterBuilder = ({ operationNames }) => {
-  let footer = ''
-
-  footer += `return {${operationNames.join(',')}}};\n\n`
-
+const generateFooter: ClientFooterBuilder = () => {
   // Add function definition for merging request parameters
-  footer += `\n\n${_getRequestParametersMergerFunctionImplementation()}\n`
+  const footer = `
 
+  ${_getRequestParametersMergerFunctionImplementation()}
+
+}
+
+  `
   return footer
 }
 

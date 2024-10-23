@@ -4,7 +4,7 @@ import { createComprehensiveAPI } from './sdk.ts'
 /* eslint-enable import/no-unresolved */
 
 const baseUrl = 'http://localhost:3000'
-const client = createComprehensiveAPI({ baseUrl })
+const client = new createComprehensiveAPI({ baseUrl })
 
 export const options = {
   thresholds: {

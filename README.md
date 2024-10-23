@@ -74,7 +74,7 @@ cd tests/e2e/
 This will run the mock server in a docker container in background.
 
 ```shell
-docker run -d -v ./schema.json:/tmp/schema.json -p 3000:3000 mockoon/cli:latest -d /tmp/schema.json
+docker run -v ./schema.json:/tmp/schema.json -p 3000:3000 mockoon/cli:latest -d /tmp/schema.json
 ```
 
 3. Assuming you have already followed previous steps and have the environment set up, you can generate the SDK by using
