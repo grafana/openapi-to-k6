@@ -59,8 +59,8 @@
   "expected_sdk": {
     "fileName": "simpleAPI.ts",
     "expectedSubstrings": [
-      "const getItemById = (\n    id: string,\n    requestParameters?: Params,\n  ): ",
-      "const url = new URL(cleanBaseUrl + `/items/${id}`);"
+      "getItemById( id: string, requestParameters?: Params, ): ",
+      "const url = new URL(this.cleanBaseUrl + `/items/${id}`);"
     ]
   }
 }

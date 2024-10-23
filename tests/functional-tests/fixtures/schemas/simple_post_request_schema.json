@@ -120,12 +120,11 @@
   "expected_sdk": {
     "fileName": "exampleAPI.ts",
     "expectedSubstrings": [
-      "export const createExampleAPI =",
-      "const url = new URL(cleanBaseUrl + `/example`);",
+      "export class createExampleAPI {",
+      "const url = new URL(this.cleanBaseUrl + `/example`);",
       "JSON.stringify(createExampleDataBody),",
       "POST",
-      "export type CreateExampleData201 = {\n  age?: number;\n  date?: string;\n  /** The unique ID of the created resource */\n  id?: string;\n  isActive?: boolean;\n  meta?: CreateExampleData201Meta;\n  name?: string;\n  tags?: string[];",
-      "return { createExampleData };"
+      "export type CreateExampleData201 = { age?: number; date?: string; /** The unique ID of the created resource */ id?: string; isActive?: boolean; meta?: CreateExampleData201Meta; name?: string; tags?: string[];"
     ]
   }
 }

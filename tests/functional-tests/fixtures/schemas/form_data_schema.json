@@ -85,10 +85,10 @@
   "expected_sdk": {
     "fileName": "formDataAPI.ts",
     "expectedSubstrings": [
-      "export const createFormDataAPI = (clientOptions: CreateFormDataAPIOptions) => {",
-      "const formData = new FormData();\n    formData.append(\"file\", postUploadBody.file);\n    if (postUploadBody.description !== undefined) {\n      formData.append(\"description\", postUploadBody.description);\n    }\n    formData.append(\"userId\", postUploadBody.userId);",
-      "const url = new URL(cleanBaseUrl + `/upload`);",
-      "const response = http.request(\"POST\", url.toString(), formData.body(), {\n      ...mergedRequestParameters,\n      headers: {\n        \"Content-Type\": \"multipart/form-data; boundary=\" + formData.boundary,\n        ...mergedRequestParameters?.headers,\n      },\n    });"
+      "export class createFormDataAPI",
+      "const formData = new FormData(); formData.append(\"file\", postUploadBody.file); if (postUploadBody.description !== undefined) { formData.append(\"description\", postUploadBody.description); } formData.append(\"userId\", postUploadBody.userId);",
+      "const url = new URL(this.cleanBaseUrl + `/upload`);",
+      "const response = http.request(\"POST\", url.toString(), formData.body(), { ...mergedRequestParameters, headers: { \"Content-Type\": \"multipart/form-data; boundary=\" + formData.boundary, ...mergedRequestParameters?.headers, }, });"
     ]
   }
 }
