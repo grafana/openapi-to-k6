@@ -9,7 +9,7 @@ import {
   OutputOverrider,
 } from '../helper'
 import { logger } from '../logger'
-import { GenerateK6SDKOptions, SchemaDetails } from '../type'
+import { GenerateK6SDKOptions } from '../type'
 import { getK6ClientBuilder } from './k6Client'
 
 const outputOverrider = OutputOverrider.getInstance()
@@ -51,10 +51,6 @@ export default async ({
   analyticsData,
   mode,
 }: GenerateK6SDKOptions) => {
-  const schemaDetails: SchemaDetails = {
-    title: '',
-  }
-
   /**
    * Note!
    * 1. override.requestOptions is not supported for the custom K6 client
@@ -67,11 +63,7 @@ export default async ({
         target: outputDir,
         mode: mode,
         client: () =>
-          getK6ClientBuilder(
-            schemaDetails,
-            shouldGenerateSampleK6Script,
-            analyticsData
-          ),
+          getK6ClientBuilder(shouldGenerateSampleK6Script, analyticsData),
         override: {
           header: generatedFileHeaderGenerator,
         },
@@ -82,10 +74,4 @@ export default async ({
       },
     })
   })
-
-  if (!schemaDetails.title) {
-    logger.warning(
-      'Schema title not found in the OpenAPI spec. Please include a `title` in the `info` block to ensure proper file name generation.'
-    )
-  }
 }

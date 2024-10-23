@@ -26,20 +26,19 @@ import {
 } from '../constants'
 import { getDirectoryForPath, getGeneratedClientPath } from '../helper'
 import { logger } from '../logger'
-import { AnalyticsData, SchemaDetails } from '../type'
+import { AnalyticsData } from '../type'
 
-function _getSchemaTitleFromContext(context: ContextSpecs) {
-  const specData = Object.values(context.specs)
-
-  let schemaTitle
-
-  if (specData[0]) {
-    schemaTitle = specData[0].info.title
+/**
+ * In case the supplied schema does not have a title set, it will set the default title to ensure
+ * proper client generation
+ *
+ * @param context - The context object containing the schema details
+ */
+function _setDefaultSchemaTitle(context: ContextSpecs) {
+  const schemaDetails = context.specs[context.specKey]
+  if (schemaDetails && !schemaDetails.info.title) {
+    schemaDetails.info.title = DEFAULT_SCHEMA_TITLE
   }
-
-  schemaTitle ??= DEFAULT_SCHEMA_TITLE
-
-  return schemaTitle
 }
 
 function _generateResponseTypeDefinition(response: GetterResponse): string {
@@ -300,7 +299,8 @@ const k6ScriptBuilder: ClientExtraFilesBuilder = async (
   output,
   context
 ) => {
-  const schemaTitle = _getSchemaTitleFromContext(context)
+  const schemaTitle =
+    context.specs[context.specKey]?.info.title || DEFAULT_SCHEMA_TITLE
   const {
     path: pathOfGeneratedClient,
     filename,
@@ -354,21 +354,19 @@ const k6ScriptBuilder: ClientExtraFilesBuilder = async (
   ]
 }
 
-function getK6Client(
-  schemaDetails: SchemaDetails,
-  analyticsData?: AnalyticsData
-) {
+function getK6Client(analyticsData?: AnalyticsData) {
   return function (
     verbOptions: GeneratorVerbOptions,
     options: GeneratorOptions
   ) {
+    _setDefaultSchemaTitle(options.context)
+
     const imports = generateVerbImports(verbOptions)
     const implementation = generateK6Implementation(
       verbOptions,
       options,
       analyticsData
     )
-    schemaDetails.title = _getSchemaTitleFromContext(options.context)
     const specData = Object.values(options.context.specs)
     if (specData[0]) {
       if (analyticsData) {
@@ -381,12 +379,11 @@ function getK6Client(
 }
 
 export function getK6ClientBuilder(
-  schemaDetails: SchemaDetails,
   shouldGenerateSampleK6Script?: boolean,
   analyticsData?: AnalyticsData
 ): ClientGeneratorsBuilder {
   return {
-    client: getK6Client(schemaDetails, analyticsData),
+    client: getK6Client(analyticsData),
     header: generateK6Header,
     dependencies: getK6Dependencies,
     footer: generateFooter,

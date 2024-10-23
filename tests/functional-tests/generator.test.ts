@@ -120,6 +120,35 @@ describe('generator', () => {
           expect(generatedContent).toContain(expectedString)
         }
       })
+
+      it('should not contain types in main file when using split mode', async () => {
+        await generator({
+          openApiPath,
+          outputDir: generatedSchemaPath,
+          shouldGenerateSampleK6Script: true,
+          mode: Mode.SPLIT,
+        })
+        const expectedGeneratedCode = fixture['expected_sdk']
+        const generatedFiles = fs.readdirSync(generatedSchemaPath)
+
+        expect(generatedFiles.length).toBe(3)
+
+        const clientFile = generatedFiles.find((file) =>
+          file.includes(expectedGeneratedCode.fileName)
+        )
+        const schemaFile = generatedFiles.find((file) =>
+          file.includes('.schemas.ts')
+        )
+
+        expect(clientFile).toBeDefined()
+        expect(schemaFile).toBeDefined()
+
+        const generatedFilePath = path.join(generatedSchemaPath, clientFile!)
+        const generatedContent = await readFile(generatedFilePath, 'utf-8')
+
+        expect(generatedContent).not.toContain('export type')
+        expect(generatedContent).not.toContain('export interface')
+      })
     })
   }
 })
