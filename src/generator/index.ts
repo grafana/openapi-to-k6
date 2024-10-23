@@ -49,6 +49,7 @@ export default async ({
   outputDir,
   shouldGenerateSampleK6Script,
   analyticsData,
+  mode,
 }: GenerateK6SDKOptions) => {
   const schemaDetails: SchemaDetails = {
     title: '',
@@ -64,7 +65,7 @@ export default async ({
       input: openApiPath,
       output: {
         target: outputDir,
-        mode: 'single',
+        mode: mode,
         client: () =>
           getK6ClientBuilder(
             schemaDetails,

@@ -17,3 +17,9 @@ export default function () {
     {{/each}}
 }
 `
+
+export enum Mode {
+  SINGLE = 'single',
+  SPLIT = 'split',
+  TAGS = 'tags',
+}

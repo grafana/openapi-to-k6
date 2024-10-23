@@ -1,8 +1,9 @@
 #!/usr/bin/env node
 
 import chalk from 'chalk'
-import { Command } from 'commander'
+import { Command, InvalidArgumentError } from 'commander'
 import { generateDefaultAnalyticsData, reportUsageAnalytics } from './analytics'
+import { Mode } from './constants'
 import generateK6SDK from './generator'
 import { getPackageDetails } from './helper'
 import { logger } from './logger'
@@ -11,11 +12,27 @@ import { AnalyticsData, GenerateK6SDKOptions } from './type'
 const program = new Command()
 const packageDetails = getPackageDetails()
 
+/**
+ * Validate that the mode argument is one of the supported modes.
+ *
+ * @param {string} value - The mode value to validate
+ * @return {Mode} - The validated mode value
+ */
+function validateMode(value: string): Mode {
+  if (!Object.values(Mode).includes(value as Mode)) {
+    throw new InvalidArgumentError(
+      `Supported modes: ${Object.values(Mode).join(', ')}`
+    )
+  }
+  return value as Mode
+}
+
 async function generateSDK({
   openApiPath,
   outputDir,
   shouldGenerateSampleK6Script,
   analyticsData,
+  mode,
 }: GenerateK6SDKOptions) {
   logger.logMessage('Generating TypeScript client for k6...\n')
   logger.logMessage(`OpenAPI schema: ${openApiPath}`)
@@ -26,6 +43,7 @@ async function generateSDK({
     outputDir,
     shouldGenerateSampleK6Script,
     analyticsData,
+    mode,
   })
 
   if (shouldGenerateSampleK6Script) {
@@ -44,6 +62,12 @@ program
   .version(packageDetails.version)
   .argument('<openApiPath>', 'Path or URL for the OpenAPI schema file')
   .argument('<outputDir>', 'Directory where the SDK should be generated')
+  .option(
+    '-m, --mode <string>',
+    `mode to use for generating the client. Valid values - ${Object.values(Mode).join(', ')}`,
+    validateMode,
+    Mode.SINGLE
+  )
   .option('-v, --verbose', 'enable verbose mode to show debug logs')
   .option('--disable-sample-script', 'disable generating sample k6 script')
   .option('--disable-analytics', 'disable anonymous usage data collection')
@@ -53,6 +77,7 @@ program
       outputDir,
       options: {
         verbose?: boolean
+        mode: Mode
         disableAnalytics?: boolean
         disableSampleScript?: boolean
       }
@@ -86,6 +111,7 @@ program
           outputDir,
           shouldGenerateSampleK6Script: !shouldDisableSampleScript,
           analyticsData,
+          mode: options.mode,
         })
       } catch (error) {
         logger.error('Failed to generate SDK:')

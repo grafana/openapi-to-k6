@@ -1,3 +1,5 @@
+import { Mode } from './constants'
+
 export interface PackageDetails {
   name: string
   commandName: string
@@ -31,4 +33,5 @@ export interface GenerateK6SDKOptions {
   outputDir: string
   shouldGenerateSampleK6Script?: boolean
   analyticsData?: AnalyticsData
+  mode: Mode
 }
