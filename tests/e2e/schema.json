@@ -8,6 +8,7 @@
   "paths": {
     "/items/{id}": {
       "get": {
+        "tags": ["Items"],
         "summary": "Get an item by ID",
         "parameters": [
           {
@@ -37,6 +38,7 @@
         }
       },
       "post": {
+        "tags": ["Items"],
         "summary": "Create an item by ID",
         "parameters": [
           {
@@ -74,6 +76,7 @@
         }
       },
       "put": {
+        "tags": ["Items"],
         "summary": "Update an item by ID",
         "parameters": [
           {
@@ -111,6 +114,7 @@
         }
       },
       "patch": {
+        "tags": ["Items"],
         "summary": "Partially update an item by ID",
         "parameters": [
           {
@@ -145,6 +149,7 @@
         }
       },
       "delete": {
+        "tags": ["Items"],
         "summary": "Delete an item by ID",
         "parameters": [
           {
@@ -164,6 +169,7 @@
         }
       },
       "head": {
+        "tags": ["Items"],
         "summary": "Check if item exists",
         "parameters": [
           {
@@ -188,6 +194,7 @@
     },
     "/items-form-url-encoded": {
       "post": {
+        "tags": ["ItemsForm", "Items"],
         "summary": "Create an item using form-urlencoded data",
         "requestBody": {
           "required": true,
@@ -217,6 +224,7 @@
     },
     "/items-form-data": {
       "post": {
+        "tags": ["ItemsForm", "Items"],
         "summary": "Create an item using form-data",
         "requestBody": {
           "required": true,

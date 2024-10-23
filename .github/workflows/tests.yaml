@@ -25,7 +25,10 @@ jobs:
           node-version: '21.5.0'
       - run: npm ci
       - name: Generate SDK for E2E tests
-        run: npm run dev -- ./tests/e2e/schema.json ./tests/e2e/sdk.ts --disable-analytics
+        run: |
+          npm run dev -- ./tests/e2e/schema.json ./tests/e2e/single/sdk.ts --disable-analytics --mode single
+          npm run dev -- ./tests/e2e/schema.json ./tests/e2e/split/sdk.ts --disable-analytics --mode split
+          npm run dev -- ./tests/e2e/schema.json ./tests/e2e/tags/sdk.ts --disable-analytics --mode tags
       - name: Start Mockoon CLI
         uses: mockoon/cli-action@v2
         with:
@@ -35,7 +38,7 @@ jobs:
       - uses: grafana/setup-k6-action@v1
       - uses: grafana/run-k6-action@v1
         with:
-          path: './tests/e2e/k6Script.ts'
+          path: './tests/e2e/*/k6Script.ts'
           flags: '--compatibility-mode=experimental_enhanced'
           inspect-flags: '--compatibility-mode=experimental_enhanced'
   run-examples:

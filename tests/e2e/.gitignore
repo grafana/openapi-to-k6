@@ -1,2 +1,5 @@
 sdk.ts
 k6-script.sample.ts
+*.schemas.ts
+tags/*.ts
+!tags/k6Script.ts
