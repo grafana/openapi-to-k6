@@ -69,7 +69,7 @@ program
     Mode.SINGLE
   )
   .option('-v, --verbose', 'enable verbose mode to show debug logs')
-  .option('--disable-sample-script', 'disable generating sample k6 script')
+  .option('--include-sample-script', 'generate a sample k6 script')
   .option('--disable-analytics', 'disable anonymous usage data collection')
   .action(
     async (
@@ -79,15 +79,12 @@ program
         verbose?: boolean
         mode: Mode
         disableAnalytics?: boolean
-        disableSampleScript?: boolean
+        includeSampleScript?: boolean
       }
     ) => {
       let analyticsData: AnalyticsData | undefined
       const shouldDisableAnalytics =
         options.disableAnalytics || process.env.DISABLE_ANALYTICS === 'true'
-      const shouldDisableSampleScript =
-        options.disableSampleScript ||
-        process.env.DISABLE_SAMPLE_SCRIPT === 'true'
 
       if (options.verbose) {
         logger.setVerbose(true)
@@ -98,7 +95,10 @@ program
         logger.debug('Anonymous usage data collection disabled')
       } else {
         logger.debug('Anonymous usage data collection enabled')
-        analyticsData = generateDefaultAnalyticsData(packageDetails)
+        analyticsData = generateDefaultAnalyticsData(
+          packageDetails,
+          !!options.includeSampleScript
+        )
       }
 
       logger.debug(`
@@ -109,7 +109,7 @@ program
         await generateSDK({
           openApiPath,
           outputDir,
-          shouldGenerateSampleK6Script: !shouldDisableSampleScript,
+          shouldGenerateSampleK6Script: !!options.includeSampleScript,
           analyticsData,
           mode: options.mode,
         })

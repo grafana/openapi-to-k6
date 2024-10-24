@@ -26,7 +26,8 @@ function getAnonymousUserId(): string {
  * @returns
  */
 export function generateDefaultAnalyticsData(
-  packageDetails: PackageDetails
+  packageDetails: PackageDetails,
+  isSampleK6ScriptGenerated: boolean
 ): AnalyticsData {
   const defaultAnalyticsData: AnalyticsData = {
     generatedRequestsCount: {
@@ -37,6 +38,7 @@ export function generateDefaultAnalyticsData(
       delete: 0,
       head: 0,
     },
+    isSampleK6ScriptGenerated,
     openApiSpecVersion: '',
     toolVersion: packageDetails.version,
     anonymousUserId: getAnonymousUserId(),

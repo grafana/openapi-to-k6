@@ -13,7 +13,7 @@
     "lint": "eslint --ext .ts,.tsx .",
     "lint:fix": "eslint --ext .ts,.tsx . --fix",
     "format": "prettier --ignore-unknown --write \"./**/*\"",
-    "update-examples": "for dir in ./examples/*/; do (npm run dev -- \"$dir/schema.json\" \"$dir/single/\" -m single && npm run dev -- \"$dir/schema.json\" \"$dir/split/\" -m split && npm run dev -- \"$dir/schema.json\" \"$dir/tags/\" -m tags); done",
+    "update-examples": "for dir in ./examples/*/; do (npm run dev -- \"$dir/schema.json\" \"$dir/single/\" -m single --include-sample-script && npm run dev -- \"$dir/schema.json\" \"$dir/split/\" -m split --include-sample-script && npm run dev -- \"$dir/schema.json\" \"$dir/tags/\" -m tags --include-sample-script); done",
     "prepare": "husky"
   },
   "author": "",

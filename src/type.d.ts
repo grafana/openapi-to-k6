@@ -16,6 +16,7 @@ export interface AnalyticsData {
     patch: number
     head: number
   }
+  isSampleK6ScriptGenerated: boolean
   openApiSpecVersion: string
   toolVersion: string
   anonymousUserId: string

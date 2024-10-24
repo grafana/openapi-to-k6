@@ -45,20 +45,25 @@ To take a look at a few examples of how the generated client looks and sample sc
 
     This will the generate a TypeScript client and a sample k6 script in the corresponding directory.
 
+    You can also supply the optional flag `--include-sample-script` to also generate a sample k6 script
+    along with the client.
+
+💡 _Note_: The tool supports both JSON and YAML format for OpenAPI schema.
+
 ### Options
 
 Following are some of the configuration options supported by the tool.
 
-1. `--mode` or ` -m`: Specify the mode to use for generating the client. Following are available options:
+1. `--mode` or `-m`: Specify the mode to use for generating the client. Following are available options:
    1. `single`: This is the default mode used is nothing is specified. It generated the TypeScript client as a single file with all the types and implementation in a single file.
    2. `split`: This mode splits the types and implementation into separate files.
    3. `tags`: This modes splits your OpenAPI schema based on the tags and generates a separate client for each tag. If a route has no tag set, it will be available in `default.ts` file.
 
    To check how the output looks for each mode, check out the [examples](./examples) directory.
 2. `--disable-analytics`: Disable anonymous usage analytics reporting which helping making the tool better. You can also set an environment variable `DISABLE_ANALYTICS=true` to disable the analytics.
-3. `--disable-sample-script`: Disable the generation of sample k6 script.
-4. `--verbose` or ` -v` : Enable verbose logging to see more detailed logging output.
-5. `--help` or ` -h` : Show help message.
+3. `--include-sample-script`: Generate a sample k6 script.
+4. `--verbose` or `-v` : Enable verbose logging to see more detailed logging output.
+5. `--help` or `-h` : Show help message.
 
 ## Developing locally
 
