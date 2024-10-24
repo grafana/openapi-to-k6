@@ -22,15 +22,45 @@ OpenAPI documentation.
 
 Along with the client, it also generates a sample k6 script as an example of how to use the client.
 
-To get started, install the tool with npm via `npm install openapi-to-k6` and run it to convert your
-OpenAPI specification to a TypeScript client for k6.
+The generated client exports a class with methods for each endpoint in the OpenAPI specification. You can create
+a instance of the class and use the methods to call the endpoints.
 
-To take a look at a few examples of how the generated client and sample script looks, check out the [examples](./examples) directory.
+To take a look at a few examples of how the generated client looks and sample script looks, check out the [examples](./examples) directory.
 
-Note: Optional usage analytics are gathered to make the tool better. To disable this, use the option
-`--disable-analytics` or set an environment variable `DISABLE_ANALYTICS=true`.
 
 ## Getting started
+
+1. Install the tool globally via
+
+    ```shell
+    npm install -g @grafana/openapi-to-k6
+    ```
+
+2. To start using the tool either give path to your OpenAPI schema file or provide a URL to your Open
+   API schema and the output path where you want to generate the client files.
+
+    ```shell
+    openapi-to-k6 <path-to-openapi-schema | url-to-openapi-schema> <output path>
+    ```
+
+    This will the generate a TypeScript client and a sample k6 script in the corresponding directory.
+
+### Options
+
+Following are some of the configuration options supported by the tool.
+
+1. `--mode` or ` -m`: Specify the mode to use for generating the client. Following are available options:
+   1. `single`: This is the default mode used is nothing is specified. It generated the TypeScript client as a single file with all the types and implementation in a single file.
+   2. `split`: This mode splits the types and implementation into separate files.
+   3. `tags`: This modes splits your OpenAPI schema based on the tags and generates a separate client for each tag. If a route has no tag set, it will be available in `default.ts` file.
+
+   To check how the output looks for each mode, check out the [examples](./examples) directory.
+2. `--disable-analytics`: Disable anonymous usage analytics reporting which helping making the tool better. You can also set an environment variable `DISABLE_ANALYTICS=true` to disable the analytics.
+3. `--disable-sample-script`: Disable the generation of sample k6 script.
+4. `--verbose` or ` -v` : Enable verbose logging to see more detailed logging output.
+5. `--help` or ` -h` : Show help message.
+
+## Developing locally
 
 1. Clone the repository
 
@@ -95,4 +125,4 @@ k6 run --compatibility-mode=experimental_enhanced ./K6Script.ts
 2. Install the compiled package locally by using `npm install .` or `npm install -g .`.
 3. Use the CLI `k6-sdkgen <path-to-openapi-schema> <output path>`
 
-Special thanks for the the open-source library [Orval](https://orval.dev/) to facilitate the generation of these SDK.
+Special mention for the the open-source library [Orval](https://orval.dev/) which is used for the generation of the TypeScript client.
