@@ -1,20 +1,27 @@
 import fs from 'fs'
 import os from 'os'
 import path from 'path'
+import {
+  afterAll,
+  beforeAll,
+  beforeEach,
+  describe,
+  expect,
+  it,
+  vi,
+} from 'vitest'
 import * as helper from '../src/helper'
 import { PackageDetails } from '../src/type'
 
 // Mock the package.json file
-jest.mock(
-  '../package.json',
-  () => ({
+vi.mock('../package.json', () => ({
+  default: {
     name: 'test-package-name',
     description: 'This is a test package',
     bin: { 'test-package': 'bin/test-package.js' },
     version: '1.0.0',
-  }),
-  { virtual: true }
-)
+  },
+}))
 
 describe('getPackageDetails', () => {
   it('should return the package details', () => {
