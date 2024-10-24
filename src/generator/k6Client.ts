@@ -48,9 +48,10 @@ function _generateResponseTypeDefinition(response: GetterResponse): string {
     response.definition.success &&
     !['any', 'unknown'].includes(response.definition.success)
   ) {
-    responseDataType += response.definition.success + ' | '
+    responseDataType += response.definition.success
+  } else {
+    responseDataType += 'ResponseBody'
   }
-  responseDataType += 'ResponseBody'
 
   return `{
     response: Response
