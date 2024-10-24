@@ -26,8 +26,6 @@ jobs:
         run: |
           NEW_VERSION=${{ github.event.release.tag_name }}
           npm version $NEW_VERSION --no-git-tag-version
-      - name: Update generated examples
-        run: npm run update-examples
       - name: Commit updated package.json
         run: |
           git config --global user.name 'github-actions[bot]'
