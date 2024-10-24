@@ -7,7 +7,7 @@
  */
 import { URL } from 'https://jslib.k6.io/url/1.0.0/index.js'
 import http from 'k6/http'
-import type { Params, Response, ResponseBody } from 'k6/http'
+import type { Params, Response } from 'k6/http'
 import type {
   GetExampleGet200,
   GetExampleGetHeaders,
@@ -19,7 +19,7 @@ import type {
 /**
  * This is the base client to use for interacting with the API.
  */
-export class createHeaderDemoAPI {
+export class HeaderDemoAPIClient {
   private cleanBaseUrl: string
   private commonRequestParameters: Params
 
@@ -39,7 +39,7 @@ export class createHeaderDemoAPI {
     requestParameters?: Params
   ): {
     response: Response
-    data: GetExampleGet200 | ResponseBody
+    data: GetExampleGet200
   } {
     const url = new URL(this.cleanBaseUrl + `/example-get`)
     const mergedRequestParameters = this._mergeRequestParameters(
@@ -82,7 +82,7 @@ export class createHeaderDemoAPI {
     requestParameters?: Params
   ): {
     response: Response
-    data: void | ResponseBody
+    data: void
   } {
     const url = new URL(this.cleanBaseUrl + `/example-post`)
     const mergedRequestParameters = this._mergeRequestParameters(
@@ -127,7 +127,7 @@ export class createHeaderDemoAPI {
    */
   getExampleResponseHeaders(requestParameters?: Params): {
     response: Response
-    data: GetExampleResponseHeaders200 | ResponseBody
+    data: GetExampleResponseHeaders200
   } {
     const url = new URL(this.cleanBaseUrl + `/example-response-headers`)
     const mergedRequestParameters = this._mergeRequestParameters(

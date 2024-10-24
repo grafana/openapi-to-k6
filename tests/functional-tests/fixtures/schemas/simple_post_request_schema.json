@@ -120,7 +120,7 @@
   "expected_sdk": {
     "fileName": "exampleAPI.ts",
     "expectedSubstrings": [
-      "export class createExampleAPI {",
+      "export class ExampleAPIClient {",
       "const url = new URL(this.cleanBaseUrl + `/example`);",
       "JSON.stringify(createExampleDataBody),",
       "POST",

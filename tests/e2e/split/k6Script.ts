@@ -1,10 +1,10 @@
 /* eslint-disable import/no-unresolved */
 import { check } from 'k6'
-import { createComprehensiveAPI } from './sdk.ts'
+import { ComprehensiveAPIClient } from './sdk.ts'
 /* eslint-enable import/no-unresolved */
 
 const baseUrl = 'http://localhost:3000'
-const client = new createComprehensiveAPI({ baseUrl })
+const client = new ComprehensiveAPIClient({ baseUrl })
 
 export const options = {
   thresholds: {

@@ -7,7 +7,7 @@
  */
 import { URL } from 'https://jslib.k6.io/url/1.0.0/index.js'
 import http from 'k6/http'
-import type { Params, Response, ResponseBody } from 'k6/http'
+import type { Params, Response } from 'k6/http'
 export type GetItemById200 = {
   description?: string
   id?: string
@@ -17,7 +17,7 @@ export type GetItemById200 = {
 /**
  * This is the base client to use for interacting with the API.
  */
-export class createSimpleAPI {
+export class SimpleAPIClient {
   private cleanBaseUrl: string
   private commonRequestParameters: Params
 
@@ -37,7 +37,7 @@ export class createSimpleAPI {
     requestParameters?: Params
   ): {
     response: Response
-    data: GetItemById200 | ResponseBody
+    data: GetItemById200
   } {
     const url = new URL(this.cleanBaseUrl + `/items/${id}`)
     const mergedRequestParameters = this._mergeRequestParameters(

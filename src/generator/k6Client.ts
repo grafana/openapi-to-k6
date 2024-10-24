@@ -262,7 +262,7 @@ const generateK6Implementation = (
 
 const generateTitle: ClientTitleBuilder = (title) => {
   const sanTitle = sanitize(title || DEFAULT_SCHEMA_TITLE)
-  return `create${pascal(sanTitle)}`
+  return `${pascal(sanTitle)}Client`
 }
 
 const generateK6Header: ClientHeaderBuilder = ({ title }) => {

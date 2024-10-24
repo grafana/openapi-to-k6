@@ -1,7 +1,7 @@
-import { createFormURLEncodedAPIwithQueryParameters } from './formURLEncodedAPIWithQueryParameters.ts'
+import { FormURLEncodedAPIwithQueryParametersClient } from './formURLEncodedAPIWithQueryParameters.ts'
 
 const baseUrl = '<BASE_URL>'
-const client = new createFormURLEncodedAPIwithQueryParameters({ baseUrl })
+const client = new FormURLEncodedAPIwithQueryParametersClient({ baseUrl })
 
 export default function () {
   /**

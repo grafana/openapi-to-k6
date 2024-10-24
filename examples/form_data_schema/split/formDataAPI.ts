@@ -7,13 +7,13 @@
 import { FormData } from 'https://jslib.k6.io/formdata/0.0.2/index.js'
 import { URL } from 'https://jslib.k6.io/url/1.0.0/index.js'
 import http from 'k6/http'
-import type { Params, Response, ResponseBody } from 'k6/http'
+import type { Params, Response } from 'k6/http'
 import type { PostUpload200, PostUploadBody } from './formDataAPI.schemas'
 
 /**
  * This is the base client to use for interacting with the API.
  */
-export class createFormDataAPI {
+export class FormDataAPIClient {
   private cleanBaseUrl: string
   private commonRequestParameters: Params
 
@@ -33,7 +33,7 @@ export class createFormDataAPI {
     requestParameters?: Params
   ): {
     response: Response
-    data: PostUpload200 | ResponseBody
+    data: PostUpload200
   } {
     const formData = new FormData()
     formData.append('file', postUploadBody.file)

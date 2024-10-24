@@ -1,7 +1,7 @@
-import { createFormURLEncodedAPI } from './formURLEncodedAPI.ts'
+import { FormURLEncodedAPIClient } from './formURLEncodedAPI.ts'
 
 const baseUrl = '<BASE_URL>'
-const client = new createFormURLEncodedAPI({ baseUrl })
+const client = new FormURLEncodedAPIClient({ baseUrl })
 
 export default function () {
   /**

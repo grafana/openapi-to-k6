@@ -6,7 +6,7 @@
  */
 import { URL } from 'https://jslib.k6.io/url/1.0.0/index.js'
 import http from 'k6/http'
-import type { Params, Response, ResponseBody } from 'k6/http'
+import type { Params, Response } from 'k6/http'
 export type PostSubmitForm400 = {
   error?: string
   success?: boolean
@@ -29,7 +29,7 @@ export type PostSubmitFormBody = {
 /**
  * This is the base client to use for interacting with the API.
  */
-export class createFormURLEncodedAPI {
+export class FormURLEncodedAPIClient {
   private cleanBaseUrl: string
   private commonRequestParameters: Params
 
@@ -49,7 +49,7 @@ export class createFormURLEncodedAPI {
     requestParameters?: Params
   ): {
     response: Response
-    data: PostSubmitForm200 | ResponseBody
+    data: PostSubmitForm200
   } {
     const url = new URL(this.cleanBaseUrl + `/submit-form`)
     const mergedRequestParameters = this._mergeRequestParameters(

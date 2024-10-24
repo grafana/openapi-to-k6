@@ -6,7 +6,7 @@
  */
 import { URL } from 'https://jslib.k6.io/url/1.0.0/index.js'
 import http from 'k6/http'
-import type { Params, Response, ResponseBody } from 'k6/http'
+import type { Params, Response } from 'k6/http'
 export type GetExample200 = {
   message?: string
 }
@@ -14,7 +14,7 @@ export type GetExample200 = {
 /**
  * This is the base client to use for interacting with the API.
  */
-export class createK6Client {
+export class K6ClientClient {
   private cleanBaseUrl: string
   private commonRequestParameters: Params
 
@@ -30,7 +30,7 @@ export class createK6Client {
    */
   getExample(requestParameters?: Params): {
     response: Response
-    data: GetExample200 | ResponseBody
+    data: GetExample200
   } {
     const url = new URL(this.cleanBaseUrl + `/example`)
     const mergedRequestParameters = this._mergeRequestParameters(

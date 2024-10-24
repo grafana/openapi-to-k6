@@ -86,7 +86,7 @@
   "expected_sdk": {
     "fileName": "exampleAPI.ts",
     "expectedSubstrings": [
-      "export class createExampleAPI {",
+      "export class ExampleAPIClient {",
       "createExampleData( createExampleDataBody: CreateExampleDataBody, params: CreateExampleDataParams, requestParameters?: Params, ):",
       "cleanBaseUrl + `/example` + `?${new URLSearchParams(params).toString()}`,"
     ]

@@ -1,7 +1,7 @@
-import { createExampleAPI } from './exampleAPI.ts'
+import { ExampleAPIClient } from './exampleAPI.ts'
 
 const baseUrl = '<BASE_URL>'
-const client = new createExampleAPI({ baseUrl })
+const client = new ExampleAPIClient({ baseUrl })
 
 export default function () {
   /**

@@ -1,7 +1,7 @@
-import { createFormDataAPI } from './formDataAPI.ts'
+import { FormDataAPIClient } from './formDataAPI.ts'
 
 const baseUrl = '<BASE_URL>'
-const client = new createFormDataAPI({ baseUrl })
+const client = new FormDataAPIClient({ baseUrl })
 
 export default function () {
   /**

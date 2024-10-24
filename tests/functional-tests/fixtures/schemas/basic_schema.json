@@ -33,6 +33,6 @@
   },
   "expected_sdk": {
     "fileName": "simpleAPI.ts",
-    "expectedSubstrings": ["export class createSimpleAPI"]
+    "expectedSubstrings": ["export class SimpleAPIClient"]
   }
 }

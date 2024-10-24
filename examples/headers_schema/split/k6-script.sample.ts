@@ -1,7 +1,7 @@
-import { createHeaderDemoAPI } from './headerDemoAPI.ts'
+import { HeaderDemoAPIClient } from './headerDemoAPI.ts'
 
 const baseUrl = '<BASE_URL>'
-const client = new createHeaderDemoAPI({ baseUrl })
+const client = new HeaderDemoAPIClient({ baseUrl })
 
 export default function () {
   /**

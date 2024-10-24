@@ -7,7 +7,7 @@
  */
 import { URL, URLSearchParams } from 'https://jslib.k6.io/url/1.0.0/index.js'
 import http from 'k6/http'
-import type { Params, Response, ResponseBody } from 'k6/http'
+import type { Params, Response } from 'k6/http'
 export type CreateExampleData201 = {
   /** The data from the body */
   data?: string
@@ -38,7 +38,7 @@ export type CreateExampleDataParams = {
 /**
  * This is the base client to use for interacting with the API.
  */
-export class createExampleAPI {
+export class ExampleAPIClient {
   private cleanBaseUrl: string
   private commonRequestParameters: Params
 
@@ -59,7 +59,7 @@ export class createExampleAPI {
     requestParameters?: Params
   ): {
     response: Response
-    data: CreateExampleData201 | ResponseBody
+    data: CreateExampleData201
   } {
     const url = new URL(
       this.cleanBaseUrl +

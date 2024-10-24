@@ -1,7 +1,7 @@
-import { createK6Client } from './k6Client.ts'
+import { K6ClientClient } from './k6Client.ts'
 
 const baseUrl = '<BASE_URL>'
-const client = new createK6Client({ baseUrl })
+const client = new K6ClientClient({ baseUrl })
 
 export default function () {
   /**

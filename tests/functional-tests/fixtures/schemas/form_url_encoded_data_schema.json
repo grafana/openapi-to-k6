@@ -85,7 +85,7 @@
   "expected_sdk": {
     "fileName": "formURLEncodedAPI.ts",
     "expectedSubstrings": [
-      "export class createFormURLEncodedAPI",
+      "export class FormURLEncodedAPIClient",
       "const url = new URL(this.cleanBaseUrl + `/submit-form`);",
       "const response = http.request( \"POST\", url.toString(), JSON.stringify(postSubmitFormBody), { ...mergedRequestParameters, headers: { \"Content-Type\": \"application/x-www-form-urlencoded\", ...mergedRequestParameters?.headers, }, }, );"
     ]

@@ -1,15 +1,15 @@
 /* eslint-disable import/no-unresolved */
 import { check } from 'k6'
-import { createDefault } from './default.ts'
-import { createItemsForm } from './items-form.ts'
-import { createItems } from './items.ts'
+import { DefaultClient } from './default.ts'
+import { ItemsFormClient } from './items-form.ts'
+import { ItemsClient } from './items.ts'
 
 /* eslint-enable import/no-unresolved */
 
 const baseUrl = 'http://localhost:3000'
-const itemsClient = new createItems({ baseUrl })
-const itemFormClient = new createItemsForm({ baseUrl })
-const defaultClient = new createDefault({ baseUrl })
+const itemsClient = new ItemsClient({ baseUrl })
+const itemFormClient = new ItemsFormClient({ baseUrl })
+const defaultClient = new DefaultClient({ baseUrl })
 
 export const options = {
   thresholds: {
