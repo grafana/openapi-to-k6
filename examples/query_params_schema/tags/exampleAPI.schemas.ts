@@ -3,7 +3,7 @@
  * Do not edit manually.
  * Example API
  * API with all formats of query parameters
- * OpenAPI spec version: 1.0.0
+ * Service version: 1.0.0
  */
 export type GetExampleData200 = {
   age?: number

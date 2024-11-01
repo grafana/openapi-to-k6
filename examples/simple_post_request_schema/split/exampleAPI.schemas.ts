@@ -3,7 +3,7 @@
  * Do not edit manually.
  * Example API
  * API with all formats of data in the POST request body
- * OpenAPI spec version: 1.0.0
+ * Service version: 1.0.0
  */
 export type CreateExampleData201Meta = {
   createdBy?: string

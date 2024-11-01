@@ -3,7 +3,7 @@
  * Do not edit manually.
  * Example API
  * API with a POST request having an object as the body and query parameters
- * OpenAPI spec version: 1.0.0
+ * Service version: 1.0.0
  */
 export type CreateExampleData201 = {
   /** The data from the body */

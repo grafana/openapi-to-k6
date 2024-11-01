@@ -3,7 +3,7 @@
  * Do not edit manually.
  * Simple API
  * An API with a single GET request that takes a path parameter
- * OpenAPI spec version: 1.0.0
+ * Service version: 1.0.0
  */
 import { URL } from 'https://jslib.k6.io/url/1.0.0/index.js'
 import http from 'k6/http'

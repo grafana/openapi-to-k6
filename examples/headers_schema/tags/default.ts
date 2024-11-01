@@ -3,7 +3,7 @@
  * Do not edit manually.
  * Header Demo API
  * An API demonstrating the use of headers in different ways
- * OpenAPI spec version: 1.0.0
+ * Service version: 1.0.0
  */
 import { URL } from 'https://jslib.k6.io/url/1.0.0/index.js'
 import http from 'k6/http'

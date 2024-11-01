@@ -21,7 +21,7 @@ const generatedFileHeaderGenerator = (info: InfoObject) => {
     `Do not edit manually.`,
     ...(info.title ? [info.title] : []),
     ...(info.description ? [info.description] : []),
-    ...(info.version ? [`OpenAPI spec version: ${info.version}`] : []),
+    ...(info.version ? [`Service version: ${info.version}`] : []),
   ]
 }
 

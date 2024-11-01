@@ -3,7 +3,7 @@
  * Do not edit manually.
  * Header Demo API
  * An API demonstrating the use of headers in different ways
- * OpenAPI spec version: 1.0.0
+ * Service version: 1.0.0
  */
 export type GetExampleResponseHeaders200 = {
   status?: string
