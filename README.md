@@ -1,7 +1,7 @@
 <div align="center">
 
   <img
-    src="./images/openapi-to-k6.png"
+    src="https://raw.githubusercontent.com/grafana/openapi-to-k6/main/images/openapi-to-k6.png"
     width="600"
     style="pointer-events: none;" />
   <br />
