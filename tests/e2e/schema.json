@@ -251,6 +251,7 @@
     },
     "/items-header": {
       "get": {
+        "tags": ["ItemsHeader"],
         "summary": "Get an item with custom headers",
         "parameters": [
           {
