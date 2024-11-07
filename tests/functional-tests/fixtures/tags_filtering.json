@@ -1,0 +1,141 @@
+{
+  "openapi": "3.0.0",
+  "info": {
+    "title": "Sample API",
+    "version": "1.0.0"
+  },
+  "paths": {
+    "/users": {
+      "get": {
+        "tags": ["users"],
+        "responses": {
+          "200": {
+            "description": "Success"
+          }
+        }
+      }
+    },
+    "/user-profiles": {
+      "get": {
+        "tags": ["userProfiles"],
+        "responses": {
+          "200": {
+            "description": "Success"
+          }
+        }
+      }
+    },
+    "/pets": {
+      "get": {
+        "tags": ["pets"],
+        "responses": {
+          "200": {
+            "description": "Success"
+          }
+        }
+      }
+    },
+    "/auth": {
+      "post": {
+        "tags": ["auth"],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/AuthRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Success"
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "AuthRequest": {
+        "type": "object",
+        "properties": {
+          "username": {
+            "type": "string",
+            "example": "user123"
+          },
+          "password": {
+            "type": "string",
+            "format": "password",
+            "example": "mypassword"
+          }
+        },
+        "required": ["username", "password"]
+      },
+      "User": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "example": "abc123"
+          },
+          "name": {
+            "type": "string",
+            "example": "John Doe"
+          },
+          "email": {
+            "type": "string",
+            "format": "email",
+            "example": "john.doe@example.com"
+          }
+        },
+        "required": ["id", "name", "email"]
+      },
+      "UserProfile": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "example": "profile123"
+          },
+          "userId": {
+            "type": "string",
+            "example": "abc123"
+          },
+          "bio": {
+            "type": "string",
+            "example": "Software developer with 10 years of experience"
+          },
+          "avatarUrl": {
+            "type": "string",
+            "format": "uri",
+            "example": "https://example.com/avatar.jpg"
+          }
+        },
+        "required": ["id", "userId", "bio"]
+      },
+      "Pet": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "example": "pet123"
+          },
+          "name": {
+            "type": "string",
+            "example": "Buddy"
+          },
+          "species": {
+            "type": "string",
+            "example": "Dog"
+          },
+          "age": {
+            "type": "integer",
+            "example": 3
+          }
+        },
+        "required": ["id", "name", "species"]
+      }
+    }
+  }
+}
