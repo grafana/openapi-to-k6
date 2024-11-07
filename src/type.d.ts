@@ -31,4 +31,5 @@ export interface GenerateK6SDKOptions {
   shouldGenerateSampleK6Script?: boolean
   analyticsData?: AnalyticsData
   mode: Mode
+  tags?: (string | RegExp)[]
 }

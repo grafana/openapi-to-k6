@@ -3,6 +3,7 @@ import { InfoObject } from 'openapi3-ts/oas30'
 import orval from 'orval'
 import path from 'path'
 import { DEFAULT_SCHEMA_TITLE } from '../constants'
+import { NoFilesGeneratedError } from '../errors'
 import {
   formatFileWithPrettier,
   getPackageDetails,
@@ -50,15 +51,20 @@ export default async ({
   shouldGenerateSampleK6Script,
   analyticsData,
   mode,
+  tags,
 }: GenerateK6SDKOptions) => {
   /**
    * Note!
    * 1. override.requestOptions is not supported for the custom K6 client
    * 2. override.mutator is not supported for the custom K6 client
    */
+  const generatedFilePaths: string[] = []
   await outputOverrider.redirectOutputToNullStream(async () => {
     await orval({
-      input: openApiPath,
+      input: {
+        target: openApiPath,
+        filters: { tags: tags && tags.length > 0 ? tags : undefined },
+      },
       output: {
         target: outputDir,
         mode: mode,
@@ -70,8 +76,19 @@ export default async ({
         headers: true,
       },
       hooks: {
-        afterAllFilesWrite: afterAllFilesWriteHandler,
+        afterAllFilesWrite: (filePaths: string[]) => {
+          generatedFilePaths.push(...filePaths)
+          afterAllFilesWriteHandler(filePaths)
+        },
       },
     })
   })
+
+  if (generatedFilePaths.length === 0) {
+    const tagsMessage =
+      tags?.length && tags.length > 0
+        ? ` Applied tag filter(s): ${tags.join(', ')}`
+        : ''
+    throw new NoFilesGeneratedError(`No files were generated.${tagsMessage}`)
+  }
 }
