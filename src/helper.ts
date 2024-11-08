@@ -1,5 +1,7 @@
 import { camel, getFileInfo } from '@orval/core'
 import fs from 'fs'
+import { createSourceFile, ScriptTarget } from 'typescript'
+
 import path from 'path'
 import { format, resolveConfig } from 'prettier'
 import packageJson from '../package.json'
@@ -157,4 +159,42 @@ export function getDirectoryForPath(pathString: string): string {
 
   // If the path has an extension, it is a file
   return path.dirname(pathString)
+}
+
+/**
+ * Checks if a file contains only comments and whitespace, with no actual code.
+ *
+ * This function uses TypeScript's parser to accurately detect and remove all types
+ * of comments (single-line, multi-line, JSDoc) and whitespace from the input text.
+ * If nothing remains after removing comments and whitespace, then the file is
+ * considered to contain only comments.
+ *
+ * @param fileContent - The string content of the file to check
+ * @returns True if the file contains only comments and whitespace, false if it contains any actual code
+ *
+ * @example
+ * // Returns true
+ * hasOnlyComments('// Just a comment');
+ *
+ * // Returns false
+ * hasOnlyComments('// A comment\nconst x = 1;');
+ */
+export function hasOnlyComments(fileContent: string): boolean {
+  // Create a source file
+  const sourceFile = createSourceFile(
+    'temp.ts',
+    fileContent,
+    ScriptTarget.Latest,
+    true
+  )
+
+  // Remove all comments and whitespace
+  const textWithoutComments = sourceFile
+    .getFullText()
+    .replace(/\/\*[\s\S]*?\*\/|\/\/.*/g, '') // Remove comments
+    .replace(/\s+/g, '') // Remove whitespace
+
+  // If there's any content left after removing comments and whitespace,
+  // then there's actual code
+  return textWithoutComments.length === 0
 }

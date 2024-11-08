@@ -1,7 +1,7 @@
 /* eslint-disable import/no-unresolved */
 import { check } from 'k6'
-import { DefaultClient } from './default.ts'
 import { ItemsFormClient } from './items-form.ts'
+import { ItemsHeaderClient } from './items-header.ts'
 import { ItemsClient } from './items.ts'
 
 /* eslint-enable import/no-unresolved */
@@ -9,7 +9,7 @@ import { ItemsClient } from './items.ts'
 const baseUrl = 'http://localhost:3000'
 const itemsClient = new ItemsClient({ baseUrl })
 const itemFormClient = new ItemsFormClient({ baseUrl })
-const defaultClient = new DefaultClient({ baseUrl })
+const itemsHeaderClient = new ItemsHeaderClient({ baseUrl })
 
 export const options = {
   thresholds: {
@@ -98,7 +98,7 @@ export default function () {
   // Items form client call end
 
   // Default client call start
-  const getItemsHeaderResponseData = defaultClient.getItemsHeader({
+  const getItemsHeaderResponseData = itemsHeaderClient.getItemsHeader({
     id: 'test',
   })
   checkResponseStatus(getItemsHeaderResponseData.response, 200)

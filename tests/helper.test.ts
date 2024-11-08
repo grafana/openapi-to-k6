@@ -157,3 +157,62 @@ describe('getDirectoryForPath', () => {
     expect(directory).toEqual(expectedDirectory)
   })
 })
+
+describe('hasOnlyComments', () => {
+  it('should return true if the file has only comments', () => {
+    const expectedResultsAndData = [
+      {
+        fileContent: '// This is a comment',
+        expectedResult: true,
+      },
+      {
+        fileContent: '/* This is a comment */',
+        expectedResult: true,
+      },
+      {
+        fileContent: '// This is a comment\nconst x = 1',
+        expectedResult: false,
+      },
+      {
+        fileContent: '/* This is a comment */\nconst x = 1',
+        expectedResult: false,
+      },
+      {
+        fileContent: 'const x = 1',
+        expectedResult: false,
+      },
+      {
+        fileContent: '',
+        expectedResult: true,
+      },
+      {
+        fileContent: '// This is a comment\n// This is another comment',
+        expectedResult: true,
+      },
+      {
+        fileContent: '/* This is a comment */\n/* This is another comment */',
+        expectedResult: true,
+      },
+      {
+        fileContent: '// This is a comment\n/* This is another comment */',
+        expectedResult: true,
+      },
+      {
+        fileContent: `/**
+ * This is a comment
+ */
+`,
+        expectedResult: true,
+      },
+    ]
+    for (const { fileContent, expectedResult } of expectedResultsAndData) {
+      const result = helper.hasOnlyComments(fileContent)
+      try {
+        expect(result).toBe(expectedResult)
+      } catch (error) {
+        console.log(`Expected ${expectedResult} for content:\n${fileContent}`)
+        throw error
+      }
+    }
+  })
+})

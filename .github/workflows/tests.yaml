@@ -33,6 +33,7 @@ jobs:
           npm run dev -- ./tests/e2e/schema.json ./tests/e2e/single/sdk.ts --disable-analytics --mode single
           npm run dev -- ./tests/e2e/schema.json ./tests/e2e/split/sdk.ts --disable-analytics --mode split
           npm run dev -- ./tests/e2e/schema.json ./tests/e2e/tags/sdk.ts --disable-analytics --mode tags
+          npm run dev -- ./tests/e2e/schema.json ./tests/e2e/single-tag-filter/sdk.ts --disable-analytics --mode single --only-tags ItemsHeader
       - name: Start Mockoon CLI
         uses: mockoon/cli-action@v2
         with:

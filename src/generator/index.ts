@@ -3,9 +3,11 @@ import { InfoObject } from 'openapi3-ts/oas30'
 import orval from 'orval'
 import path from 'path'
 import { DEFAULT_SCHEMA_TITLE } from '../constants'
+import { NoFilesGeneratedError } from '../errors'
 import {
   formatFileWithPrettier,
   getPackageDetails,
+  hasOnlyComments,
   OutputOverrider,
 } from '../helper'
 import { logger } from '../logger'
@@ -26,7 +28,32 @@ const generatedFileHeaderGenerator = (info: InfoObject) => {
 }
 
 const afterAllFilesWriteHandler = async (filePaths: string[]) => {
+  const removeSingleFile = (filePath: string) => {
+    try {
+      fs.unlinkSync(filePath)
+    } catch (error) {
+      // This is non-critical, so we just log it
+      logger.debug(
+        `afterAllFilesWriteHandler ~ Error deleting file ${filePath}: ${error}`
+      )
+    }
+  }
+  const emptyFileList: string[] = []
+
   for (const filePath of filePaths) {
+    // There is a bug in the orval library which generates empty files when tags filter is applied
+    // and no matching endpoints are found and used mode is split or single.
+    // It generates the file with only the header comment.
+    // Hence, we manually remove those empty files.
+    // Issue link - https://github.com/orval-labs/orval/issues/1691
+
+    if (hasOnlyComments(fs.readFileSync(filePath, 'utf-8'))) {
+      emptyFileList.push(filePath)
+      // Delete the file
+      removeSingleFile(filePath)
+      continue
+    }
+
     await formatFileWithPrettier(filePath)
 
     const fileName = path.basename(filePath)
@@ -42,6 +69,28 @@ const afterAllFilesWriteHandler = async (filePaths: string[]) => {
       fs.renameSync(filePath, newPath)
     }
   }
+
+  if (emptyFileList.length > 0) {
+    logger.debug(
+      `afterAllFilesWriteHandler ~ The following files were empty and removed: ${emptyFileList.join(
+        ', '
+      )}`
+    )
+  }
+
+  // Return the list of generated file paths excluding the empty files
+  const filteredFilePaths = filePaths.filter(
+    (filePath) => !emptyFileList.includes(filePath)
+  )
+
+  // Check if all the filtered file path end with `.schemas.ts`
+  if (filteredFilePaths.every((filePath) => filePath.endsWith('.schemas.ts'))) {
+    // If yes we should remove them as only schemas files is not needed
+    filteredFilePaths.map(removeSingleFile)
+    return []
+  }
+
+  return filteredFilePaths
 }
 
 export default async ({
@@ -50,15 +99,20 @@ export default async ({
   shouldGenerateSampleK6Script,
   analyticsData,
   mode,
+  tags,
 }: GenerateK6SDKOptions) => {
   /**
    * Note!
    * 1. override.requestOptions is not supported for the custom K6 client
    * 2. override.mutator is not supported for the custom K6 client
    */
+  const generatedFilePaths: string[] = []
   await outputOverrider.redirectOutputToNullStream(async () => {
     await orval({
-      input: openApiPath,
+      input: {
+        target: openApiPath,
+        filters: { tags: tags && tags.length > 0 ? tags : undefined },
+      },
       output: {
         target: outputDir,
         mode: mode,
@@ -70,8 +124,19 @@ export default async ({
         headers: true,
       },
       hooks: {
-        afterAllFilesWrite: afterAllFilesWriteHandler,
+        afterAllFilesWrite: async (filePaths: string[]) => {
+          const filteredFilePaths = await afterAllFilesWriteHandler(filePaths)
+          generatedFilePaths.push(...filteredFilePaths)
+        },
       },
     })
   })
+
+  if (generatedFilePaths.length === 0) {
+    const tagsMessage =
+      tags?.length && tags.length > 0
+        ? ` Applied tag filter(s): ${tags.join(', ')}`
+        : ''
+    throw new NoFilesGeneratedError(`No files were generated.${tagsMessage}`)
+  }
 }

@@ -4,6 +4,7 @@ import chalk from 'chalk'
 import { Command, InvalidArgumentError } from 'commander'
 import { generateDefaultAnalyticsData, reportUsageAnalytics } from './analytics'
 import { Mode } from './constants'
+import { NoFilesGeneratedError } from './errors'
 import generateK6SDK from './generator'
 import { getPackageDetails } from './helper'
 import { logger } from './logger'
@@ -33,10 +34,21 @@ async function generateSDK({
   shouldGenerateSampleK6Script,
   analyticsData,
   mode,
+  tags,
 }: GenerateK6SDKOptions) {
-  logger.logMessage('Generating TypeScript client for k6...\n')
-  logger.logMessage(`OpenAPI schema: ${openApiPath}`)
-  logger.logMessage(`Output: ${outputDir}\n`)
+  logger.logMessage(
+    'Generating TypeScript client for k6...\n' +
+      'OpenAPI schema: ' +
+      chalk.cyan(openApiPath) +
+      '\n' +
+      'Output: ' +
+      chalk.cyan(outputDir) +
+      '\n' +
+      (tags?.length
+        ? 'Filtering by tag(s): ' + chalk.cyan(tags.join(', '))
+        : '') +
+      '\n'
+  )
 
   await generateK6SDK({
     openApiPath,
@@ -44,16 +56,13 @@ async function generateSDK({
     shouldGenerateSampleK6Script,
     analyticsData,
     mode,
+    tags,
   })
 
-  if (shouldGenerateSampleK6Script) {
-    logger.logMessage(
-      `TypeScript client and sample k6 script generated successfully.`,
-      chalk.green
-    )
-  } else {
-    logger.logMessage(`TypeScript client generated successfully.`, chalk.green)
-  }
+  const message = shouldGenerateSampleK6Script
+    ? 'TypeScript client and sample k6 script generated successfully.'
+    : 'TypeScript client generated successfully.'
+  logger.logMessage(message, chalk.green)
 }
 
 program
@@ -68,6 +77,10 @@ program
     validateMode,
     Mode.SINGLE
   )
+  .option(
+    '--only-tags <filters...>',
+    'list of tags to filter on. Generated client will only include operations with these tags'
+  )
   .option('-v, --verbose', 'enable verbose mode to show debug logs')
   .option('--include-sample-script', 'generate a sample k6 script')
   .option('--disable-analytics', 'disable anonymous usage data collection')
@@ -78,6 +91,7 @@ program
       options: {
         verbose?: boolean
         mode: Mode
+        onlyTags?: (string | RegExp)[]
         disableAnalytics?: boolean
         includeSampleScript?: boolean
       }
@@ -112,16 +126,20 @@ program
           shouldGenerateSampleK6Script: !!options.includeSampleScript,
           analyticsData,
           mode: options.mode,
+          tags: options.onlyTags,
         })
       } catch (error) {
-        logger.error('Failed to generate SDK:')
-        console.error(error)
+        if (error instanceof NoFilesGeneratedError) {
+          logger.logMessage(error.message, chalk.yellow)
+        } else {
+          logger.error('Failed to generate SDK:')
+          console.error(error)
+        }
       }
 
       if (!shouldDisableAnalytics && analyticsData) {
         logger.debug('Reporting following usage analytics data:')
         logger.debug(JSON.stringify(analyticsData, null, 2))
-
         await reportUsageAnalytics(analyticsData)
       }
     }
