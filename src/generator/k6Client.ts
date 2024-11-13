@@ -16,11 +16,18 @@ import {
   GetterPropType,
   GetterResponse,
   pascal,
+  resolveRef,
   sanitize,
   toObjectString,
 } from '@orval/core'
 import Handlebars from 'handlebars'
-import { OperationObject, SchemaObject } from 'openapi3-ts/oas30'
+import {
+  OperationObject,
+  ParameterObject,
+  ReferenceObject,
+  RequestBodyObject,
+  SchemaObject,
+} from 'openapi3-ts/oas30'
 import path from 'path'
 import {
   DEFAULT_SCHEMA_TITLE,
@@ -331,7 +338,16 @@ const k6ScriptBuilder: ClientExtraFilesBuilder = async (
     )}`
   )
 
-  function getExampleValueForSchema(schema: SchemaObject) {
+  function getExampleValueForSchema(
+    schema: SchemaObject | ReferenceObject,
+    context: ContextSpecs
+  ) {
+    // Handle $ref
+    if ('$ref' in schema) {
+      const { schema: resolvedSchema } = resolveRef(schema, context)
+      return getExampleValueForSchema(resolvedSchema as SchemaObject, context)
+    }
+
     if ('example' in schema) {
       return `'${schema.example}'`
     }
@@ -357,10 +373,13 @@ const k6ScriptBuilder: ClientExtraFilesBuilder = async (
       case 'object': {
         let objectString = '{\n'
         for (const property in schema.properties) {
-          const propertyValue = getExampleValueForSchema(
-            schema.properties[property] as SchemaObject
-          )
-          objectString += `${property}: ${propertyValue},\n`
+          if (schema.properties[property]) {
+            const propertyValue = getExampleValueForSchema(
+              schema.properties[property],
+              context
+            )
+            objectString += `${property}: ${propertyValue},\n`
+          }
         }
 
         objectString += '\n}'
@@ -373,7 +392,8 @@ const k6ScriptBuilder: ClientExtraFilesBuilder = async (
 
   function getExampleValues(
     requiredProps: GeneratorVerbOptions['props'],
-    originalOperation: OperationObject
+    originalOperation: OperationObject,
+    context: ContextSpecs
   ): string {
     let exampleValues = ''
     for (const prop of requiredProps) {
@@ -383,8 +403,23 @@ const k6ScriptBuilder: ClientExtraFilesBuilder = async (
         case GetterPropType.QUERY_PARAM: {
           let exampleValue = '{\n'
           for (const param of originalOperation.parameters || []) {
-            if ('name' in param) {
-              exampleValue += `${param.name}: ${getExampleValueForSchema(param.schema as SchemaObject)},\n`
+            let resolvedParam: ParameterObject | ReferenceObject
+
+            if ('$ref' in param) {
+              const { schema: resolvedSchema } = resolveRef<ParameterObject>(
+                param,
+                context
+              )
+              resolvedParam = resolvedSchema
+            } else {
+              resolvedParam = param
+            }
+
+            // Only add required query parameters to the example values
+            if (resolvedParam.required && resolvedParam.in === 'query') {
+              if ('schema' in resolvedParam && resolvedParam.schema) {
+                exampleValue += `'${resolvedParam.name}': ${getExampleValueForSchema(resolvedParam.schema, context)},\n`
+              }
             }
           }
           exampleValue += '\n}'
@@ -393,20 +428,24 @@ const k6ScriptBuilder: ClientExtraFilesBuilder = async (
         }
         // eslint-disable-next-line no-fallthrough
         case GetterPropType.PARAM: {
-          let example, schema
-          const parameter = originalOperation.parameters?.find((p) => {
-            if ('name' in p) {
-              return p.name === prop.name
+          let example, paramSchema: SchemaObject | ReferenceObject | undefined
+
+          for (const parameter of originalOperation.parameters || []) {
+            if ('name' in parameter) {
+              paramSchema = parameter.schema as SchemaObject
+              break
+            } else if ('$ref' in parameter) {
+              const { schema: resolvedSchema } = resolveRef<ParameterObject>(
+                parameter,
+                context
+              )
+              paramSchema = resolvedSchema.schema
+              break
             }
-            return false
-          })
-          if (parameter) {
-            if ('example' in parameter) {
-              example = parameter.example
-            } else if ('schema' in parameter && parameter.schema) {
-              schema = parameter.schema as SchemaObject
-              example = getExampleValueForSchema(schema)
-            }
+          }
+
+          if (paramSchema) {
+            example = getExampleValueForSchema(paramSchema, context)
           }
           if (example) {
             exampleValues += `${prop.name} = ${example};\n`
@@ -417,14 +456,30 @@ const k6ScriptBuilder: ClientExtraFilesBuilder = async (
           // Generate example value from body schema
           const requestBody = originalOperation.requestBody
           let requestBodyExample
-          if (requestBody && 'content' in requestBody) {
+          if (!requestBody) {
+            break
+          }
+          let resolvedSchema
+          if ('$ref' in requestBody) {
+            const { schema } = resolveRef<RequestBodyObject>(
+              requestBody,
+              context
+            )
+            resolvedSchema = schema
+          } else if ('content' in requestBody) {
+            resolvedSchema = requestBody
+          }
+
+          if (resolvedSchema && 'content' in resolvedSchema) {
             // Get the first available content type
-            const contentType = Object.keys(requestBody.content)[0]
+            const contentType = Object.keys(resolvedSchema.content)[0]
             if (contentType) {
-              const requestBodySchema = requestBody.content[contentType]?.schema
+              const requestBodySchema =
+                resolvedSchema.content[contentType]?.schema
               if (requestBodySchema) {
                 requestBodyExample = getExampleValueForSchema(
-                  requestBodySchema as SchemaObject
+                  requestBodySchema,
+                  context
                 )
               }
             }
@@ -444,9 +499,12 @@ const k6ScriptBuilder: ClientExtraFilesBuilder = async (
   for (const verbOption of Object.values(verbOptions)) {
     const { operationName, summary, props, originalOperation } = verbOption
     const requiredProps = props.filter((prop) => prop.required)
-
     // Create example values object
-    const exampleValues = getExampleValues(requiredProps, originalOperation)
+    const exampleValues = getExampleValues(
+      requiredProps,
+      originalOperation,
+      context
+    )
 
     for (const prop of requiredProps) {
       uniqueVariables.add(prop.name)
