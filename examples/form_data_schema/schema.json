@@ -19,15 +19,18 @@
                   "file": {
                     "type": "string",
                     "format": "binary",
-                    "description": "File to upload"
+                    "description": "File to upload",
+                    "example": "example.pdf"
                   },
                   "description": {
                     "type": "string",
-                    "description": "Description of the file"
+                    "description": "Description of the file",
+                    "example": "Monthly report document"
                   },
                   "userId": {
                     "type": "string",
-                    "description": "User ID associated with the upload"
+                    "description": "User ID associated with the upload",
+                    "example": "user123"
                   }
                 },
                 "required": [

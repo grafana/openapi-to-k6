@@ -17,7 +17,8 @@
             "in": "query",
             "required": true,
             "schema": {
-              "type": "string"
+              "type": "string",
+              "example": "John Doe"
             },
             "description": "A string parameter"
           },
@@ -27,7 +28,8 @@
             "required": false,
             "schema": {
               "type": "integer",
-              "format": "int32"
+              "format": "int32",
+              "example": 25
             },
             "description": "An integer parameter"
           },
@@ -36,7 +38,8 @@
             "in": "query",
             "required": false,
             "schema": {
-              "type": "boolean"
+              "type": "boolean",
+              "example": true
             },
             "description": "A boolean parameter"
           },
@@ -49,7 +52,8 @@
             "schema": {
               "type": "array",
               "items": {
-                "type": "string"
+                "type": "string",
+                "example": "tag1"
               }
             },
             "description": "An array of strings parameter"
@@ -60,7 +64,8 @@
             "required": false,
             "schema": {
               "type": "string",
-              "format": "date"
+              "format": "date",
+              "example": "2024-01-01"
             },
             "description": "A date parameter in YYYY-MM-DD format"
           }
@@ -74,24 +79,29 @@
                   "type": "object",
                   "properties": {
                     "name": {
-                      "type": "string"
+                      "type": "string",
+                      "example": "John Doe"
                     },
                     "age": {
                       "type": "integer",
-                      "format": "int32"
+                      "format": "int32",
+                      "example": 25
                     },
                     "isActive": {
-                      "type": "boolean"
+                      "type": "boolean",
+                      "example": true
                     },
                     "tags": {
                       "type": "array",
                       "items": {
-                        "type": "string"
+                        "type": "string",
+                        "example": "tag1"
                       }
                     },
                     "date": {
                       "type": "string",
-                      "format": "date"
+                      "format": "date",
+                      "example": "2024-01-01"
                     }
                   }
                 }

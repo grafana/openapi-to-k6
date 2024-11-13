@@ -18,7 +18,8 @@
             "required": true,
             "description": "ID of the item to retrieve",
             "schema": {
-              "type": "string"
+              "type": "string",
+              "example": "12345"
             }
           }
         ],

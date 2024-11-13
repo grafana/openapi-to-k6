@@ -16,7 +16,8 @@
             "required": true,
             "description": "Authentication token",
             "schema": {
-              "type": "string"
+              "type": "string",
+              "example": "Bearer abcdef12345"
             }
           },
           {
@@ -39,16 +40,19 @@
                 "properties": {
                   "name": {
                     "type": "string",
-                    "description": "Name of the user"
+                    "description": "Name of the user",
+                    "example": "John Doe"
                   },
                   "age": {
                     "type": "integer",
-                    "description": "Age of the user"
+                    "description": "Age of the user",
+                    "example": 25
                   },
                   "email": {
                     "type": "string",
                     "format": "email",
-                    "description": "Email address of the user"
+                    "description": "Email address of the user",
+                    "example": "john.doe@example.com"
                   }
                 },
                 "required": [
