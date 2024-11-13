@@ -8,10 +8,13 @@ const baseUrl = '<BASE_URL>';
 const client = new {{clientFunctionName}}({ baseUrl })
 
 export default function () {
+    {{{this.variableDefinition}}}
+
     {{#each clientFunctionsList}}
     /**
      * {{this.summary}}
      */
+    {{{this.exampleValues}}}
     const {{this.operationName}}ResponseData = client.{{this.operationName}}({{this.requiredParametersString}});
 
     {{/each}}

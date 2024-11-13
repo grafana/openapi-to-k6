@@ -1,3 +1,4 @@
+import { faker } from '@faker-js/faker'
 import {
   ClientDependenciesBuilder,
   ClientExtraFilesBuilder,
@@ -12,12 +13,14 @@ import {
   GeneratorSchema,
   GeneratorVerbOptions,
   GetterBody,
+  GetterPropType,
   GetterResponse,
   pascal,
   sanitize,
   toObjectString,
 } from '@orval/core'
 import Handlebars from 'handlebars'
+import { OperationObject, SchemaObject } from 'openapi3-ts/oas30'
 import path from 'path'
 import {
   DEFAULT_SCHEMA_TITLE,
@@ -328,14 +331,130 @@ const k6ScriptBuilder: ClientExtraFilesBuilder = async (
     )}`
   )
 
-  const clientFunctionsList = []
+  function getExampleValueForSchema(schema: SchemaObject) {
+    if ('example' in schema) {
+      return `'${schema.example}'`
+    }
+    let schemaType = schema.type
+    if (Array.isArray(schemaType)) {
+      schemaType = schemaType[0]
+    }
+    if (!schemaType) {
+      return undefined
+    }
+    const enumValues = schema.enum
+    switch (schemaType) {
+      case 'string':
+        return enumValues ? `'${enumValues[0]}'` : `'${faker.string.sample()}'`
+      case 'number':
+        return enumValues ? enumValues[0] : faker.number.int()
+      case 'integer':
+        return enumValues ? enumValues[0] : faker.number.int()
+      case 'boolean':
+        return enumValues ? enumValues[0] : faker.datatype.boolean()
+      case 'array':
+        return '[]'
+      case 'object': {
+        let objectString = '{\n'
+        for (const property in schema.properties) {
+          const propertyValue = getExampleValueForSchema(
+            schema.properties[property] as SchemaObject
+          )
+          objectString += `${property}: ${propertyValue},\n`
+        }
 
+        objectString += '\n}'
+        return objectString
+      }
+      default:
+        return null
+    }
+  }
+
+  function getExampleValues(
+    requiredProps: GeneratorVerbOptions['props'],
+    originalOperation: OperationObject
+  ): string {
+    let exampleValues = ''
+    for (const prop of requiredProps) {
+      const propType = prop.type as GetterPropType
+
+      switch (propType) {
+        case GetterPropType.QUERY_PARAM: {
+          let exampleValue = '{\n'
+          for (const param of originalOperation.parameters || []) {
+            if ('name' in param) {
+              exampleValue += `${param.name}: ${getExampleValueForSchema(param.schema as SchemaObject)},\n`
+            }
+          }
+          exampleValue += '\n}'
+          exampleValues += `params = ${exampleValue};\n`
+          break
+        }
+        // eslint-disable-next-line no-fallthrough
+        case GetterPropType.PARAM: {
+          let example, schema
+          const parameter = originalOperation.parameters?.find((p) => {
+            if ('name' in p) {
+              return p.name === prop.name
+            }
+            return false
+          })
+          if (parameter) {
+            if ('example' in parameter) {
+              example = parameter.example
+            } else if ('schema' in parameter && parameter.schema) {
+              schema = parameter.schema as SchemaObject
+              example = getExampleValueForSchema(schema)
+            }
+          }
+          if (example) {
+            exampleValues += `${prop.name} = ${example};\n`
+          }
+          break
+        }
+        case GetterPropType.BODY: {
+          // Generate example value from body schema
+          const requestBody = originalOperation.requestBody
+          let requestBodyExample
+          if (requestBody && 'content' in requestBody) {
+            // Get the first available content type
+            const contentType = Object.keys(requestBody.content)[0]
+            if (contentType) {
+              const requestBodySchema = requestBody.content[contentType]?.schema
+              if (requestBodySchema) {
+                requestBodyExample = getExampleValueForSchema(
+                  requestBodySchema as SchemaObject
+                )
+              }
+            }
+          }
+          if (requestBodyExample) {
+            exampleValues += `${prop.name} = ${requestBodyExample};\n`
+          }
+          break
+        }
+      }
+    }
+    return exampleValues
+  }
+
+  const clientFunctionsList = []
+  const uniqueVariables = new Set<string>() // Track unique variable names
   for (const verbOption of Object.values(verbOptions)) {
-    const { operationName, summary, props } = verbOption
+    const { operationName, summary, props, originalOperation } = verbOption
     const requiredProps = props.filter((prop) => prop.required)
+
+    // Create example values object
+    const exampleValues = getExampleValues(requiredProps, originalOperation)
+
+    for (const prop of requiredProps) {
+      uniqueVariables.add(prop.name)
+    }
     clientFunctionsList.push({
       operationName,
       summary,
+      exampleValues,
       requiredParametersString: toObjectString(requiredProps, 'name'),
     })
   }
@@ -344,6 +463,7 @@ const k6ScriptBuilder: ClientExtraFilesBuilder = async (
     clientFunctionName: generateTitle(schemaTitle),
     clientPath: `./${filename}${extension}`,
     clientFunctionsList,
+    variableDefinition: `let ${Array.from(uniqueVariables).join(', ')};`,
   }
   const template = Handlebars.compile(K6_SCRIPT_TEMPLATE)
 
