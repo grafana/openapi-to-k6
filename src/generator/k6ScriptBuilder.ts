@@ -6,6 +6,7 @@ import {
   GeneratorVerbOptions,
   GetterPropType,
   NormalizedOutputOptions,
+  pascal,
   resolveRef,
   toObjectString,
 } from '@orval/core'
@@ -263,7 +264,7 @@ export const k6ScriptBuilder: ClientExtraFilesBuilder = async (
   }
 
   const scriptContentData = {
-    clientFunctionName: generateTitle(schemaTitle),
+    clientFunctionName: generateTitle(pascal(schemaTitle)),
     clientPath: `./${filename}${extension}`,
     clientFunctionsList,
     variableDefinition: `let ${Array.from(uniqueVariables).join(', ')};`,
