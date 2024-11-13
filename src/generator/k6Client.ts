@@ -361,7 +361,7 @@ const k6ScriptBuilder: ClientExtraFilesBuilder = async (
     const enumValues = schema.enum
     switch (schemaType) {
       case 'string':
-        return enumValues ? `'${enumValues[0]}'` : `'${faker.string.sample()}'`
+        return enumValues ? `'${enumValues[0]}'` : `'${faker.word.sample()}'`
       case 'number':
         return enumValues ? enumValues[0] : faker.number.int()
       case 'integer':
@@ -426,7 +426,33 @@ const k6ScriptBuilder: ClientExtraFilesBuilder = async (
           exampleValues += `params = ${exampleValue};\n`
           break
         }
-        // eslint-disable-next-line no-fallthrough
+        case GetterPropType.HEADER: {
+          let exampleValue = '{\n'
+          for (const param of originalOperation.parameters || []) {
+            let resolvedParam: ParameterObject | ReferenceObject
+
+            if ('$ref' in param) {
+              const { schema: resolvedSchema } = resolveRef<ParameterObject>(
+                param,
+                context
+              )
+              resolvedParam = resolvedSchema
+            } else {
+              resolvedParam = param
+            }
+
+            // Only add required query parameters to the example values
+            if (resolvedParam.required && resolvedParam.in === 'header') {
+              if ('schema' in resolvedParam && resolvedParam.schema) {
+                exampleValue += `'${resolvedParam.name}': ${getExampleValueForSchema(resolvedParam.schema, context)},\n`
+              }
+            }
+          }
+          exampleValue += '\n}'
+          exampleValues += `headers = ${exampleValue};\n`
+          break
+          break
+        }
         case GetterPropType.PARAM: {
           let example, paramSchema: SchemaObject | ReferenceObject | undefined
 
