@@ -18,7 +18,7 @@
             "description": "ID of the item to retrieve",
             "schema": {
               "type": "string",
-              "example": "12345"
+              "example": "12345-getItemById"
             }
           },
           {
@@ -50,7 +50,7 @@
             "description": "ID of the item to create",
             "schema": {
               "type": "string",
-              "example": "12345"
+              "example": "123450-createItemById"
             }
           }
         ],
@@ -91,7 +91,7 @@
             "description": "ID of the item to update",
             "schema": {
               "type": "string",
-              "example": "12345"
+              "example": "123450-updateItemById"
             }
           }
         ],
@@ -132,7 +132,7 @@
             "description": "ID of the item to partially update",
             "schema": {
               "type": "string",
-              "example": "12345"
+              "example": "123450-patchItemById"
             }
           }
         ],
@@ -169,7 +169,7 @@
             "description": "ID of the item to delete",
             "schema": {
               "type": "string",
-              "example": "12345"
+              "example": "123450-deleteItemById"
             }
           }
         ],
@@ -190,7 +190,7 @@
             "description": "ID of the item to check",
             "schema": {
               "type": "string",
-              "example": "12345"
+              "example": "123450-checkItemById"
             }
           }
         ],
@@ -276,7 +276,7 @@
             "description": "ID of the item to retrieve",
             "schema": {
               "type": "string",
-              "example": "12345"
+              "example": "123450-getItemByIdWithHeader"
             }
           }
         ],
