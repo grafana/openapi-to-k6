@@ -1,7 +1,7 @@
-import { FormURLEncodedAPIClient } from './formURLEncodedAPI.ts'
+import { DefaultClient } from './default.ts'
 
 const baseUrl = '<BASE_URL>'
-const client = new FormURLEncodedAPIClient({ baseUrl })
+const defaultClient = new DefaultClient({ baseUrl })
 
 export default function () {
   let postSubmitFormBody
@@ -15,5 +15,6 @@ export default function () {
     email: 'john.doe@example.com',
   }
 
-  const postSubmitFormResponseData = client.postSubmitForm(postSubmitFormBody)
+  const postSubmitFormResponseData =
+    defaultClient.postSubmitForm(postSubmitFormBody)
 }

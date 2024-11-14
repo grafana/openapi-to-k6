@@ -1,7 +1,7 @@
 import { ExampleAPIClient } from './exampleAPI.ts'
 
 const baseUrl = '<BASE_URL>'
-const client = new ExampleAPIClient({ baseUrl })
+const exampleAPIClient = new ExampleAPIClient({ baseUrl })
 
 export default function () {
   let createExampleDataBody, params
@@ -16,7 +16,7 @@ export default function () {
     userId: '12345',
   }
 
-  const createExampleDataResponseData = client.createExampleData(
+  const createExampleDataResponseData = exampleAPIClient.createExampleData(
     createExampleDataBody,
     params
   )

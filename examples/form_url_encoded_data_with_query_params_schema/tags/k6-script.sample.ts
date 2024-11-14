@@ -1,7 +1,7 @@
-import { FormURLEncodedAPIwithQueryParametersClient } from './formURLEncodedAPIWithQueryParameters.ts'
+import { DefaultClient } from './default.ts'
 
 const baseUrl = '<BASE_URL>'
-const client = new FormURLEncodedAPIwithQueryParametersClient({ baseUrl })
+const defaultClient = new DefaultClient({ baseUrl })
 
 export default function () {
   let postSubmitFormBody, params
@@ -18,7 +18,7 @@ export default function () {
     token: 'Bearer abcdef12345',
   }
 
-  const postSubmitFormResponseData = client.postSubmitForm(
+  const postSubmitFormResponseData = defaultClient.postSubmitForm(
     postSubmitFormBody,
     params
   )

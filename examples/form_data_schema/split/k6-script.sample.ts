@@ -1,7 +1,7 @@
 import { FormDataAPIClient } from './formDataAPI.ts'
 
 const baseUrl = '<BASE_URL>'
-const client = new FormDataAPIClient({ baseUrl })
+const formDataAPIClient = new FormDataAPIClient({ baseUrl })
 
 export default function () {
   let postUploadBody
@@ -15,5 +15,5 @@ export default function () {
     userId: 'user123',
   }
 
-  const postUploadResponseData = client.postUpload(postUploadBody)
+  const postUploadResponseData = formDataAPIClient.postUpload(postUploadBody)
 }

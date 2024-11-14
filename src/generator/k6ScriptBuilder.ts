@@ -1,10 +1,12 @@
 import { faker } from '@faker-js/faker'
 import {
+  camel,
   ClientExtraFilesBuilder,
   ClientFileBuilder,
   ContextSpecs,
   GeneratorVerbOptions,
   GetterPropType,
+  kebab,
   NormalizedOutputOptions,
   pascal,
   resolveRef,
@@ -207,6 +209,14 @@ function getExampleValues(
   return exampleValues
 }
 
+function getClientClassName(identifier: string) {
+  return generateTitle(pascal(identifier))
+}
+
+function getClientObjectName(identifier: string) {
+  return camel(generateTitle(pascal(identifier)))
+}
+
 export const k6ScriptBuilder: ClientExtraFilesBuilder = async (
   verbOptions: Record<string, GeneratorVerbOptions>,
   output: NormalizedOutputOptions,
@@ -242,7 +252,22 @@ export const k6ScriptBuilder: ClientExtraFilesBuilder = async (
 
   const clientFunctionsList = []
   const uniqueVariables = new Set<string>() // Track unique variable names
+  const allUniqueTags = new Set<string>()
+
   for (const verbOption of Object.values(verbOptions)) {
+    if (verbOption.tags && verbOption.tags.length > 0) {
+      verbOption.tags.forEach((tag) => allUniqueTags.add(tag))
+    } else {
+      allUniqueTags.add('default')
+    }
+
+    let clientObjectName
+    if (output.mode === 'tags') {
+      clientObjectName = getClientObjectName(verbOption.tags[0] || 'default')
+    } else {
+      clientObjectName = getClientObjectName(schemaTitle)
+    }
+
     const { operationName, summary, props, originalOperation } = verbOption
     const requiredProps = props.filter((prop) => prop.required)
     // Create example values object
@@ -260,14 +285,37 @@ export const k6ScriptBuilder: ClientExtraFilesBuilder = async (
       summary,
       exampleValues,
       requiredParametersString: toObjectString(requiredProps, 'name'),
+      clientObjectName,
     })
   }
 
+  let importStatements = ''
+  let clientInitializationStatement = ''
+
+  if (output.mode === 'tags') {
+    for (const tag of allUniqueTags) {
+      const { extension } = await getGeneratedClientPath(
+        output.target!,
+        schemaTitle
+      )
+      const clientName = getClientClassName(tag)
+      importStatements += `import { ${clientName} } from './${kebab(tag)}${extension}';\n`
+      clientInitializationStatement += `const ${getClientObjectName(tag)} = new ${clientName}({ baseUrl });\n`
+    }
+  } else {
+    const clientName = getClientClassName(schemaTitle)
+    importStatements = `import { ${clientName} } from './${filename}${extension}';\n`
+    clientInitializationStatement = `const ${getClientObjectName(schemaTitle)} = new ${clientName}({ baseUrl });\n`
+  }
+
   const scriptContentData = {
-    clientFunctionName: generateTitle(pascal(schemaTitle)),
-    clientPath: `./${filename}${extension}`,
     clientFunctionsList,
-    variableDefinition: `let ${Array.from(uniqueVariables).join(', ')};`,
+    variableDefinition:
+      uniqueVariables.size > 0
+        ? `let ${Array.from(uniqueVariables).join(', ')};`
+        : '',
+    importStatements,
+    clientInitializationStatement,
   }
   const template = Handlebars.compile(K6_SCRIPT_TEMPLATE)
 

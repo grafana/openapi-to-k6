@@ -1,7 +1,7 @@
-import { HeaderDemoAPIClient } from './headerDemoAPI.ts'
+import { DefaultClient } from './default.ts'
 
 const baseUrl = '<BASE_URL>'
-const client = new HeaderDemoAPIClient({ baseUrl })
+const defaultClient = new DefaultClient({ baseUrl })
 
 export default function () {
   let postExamplePostBody, headers
@@ -10,7 +10,7 @@ export default function () {
    * GET request with headers
    */
 
-  const getExampleGetResponseData = client.getExampleGet()
+  const getExampleGetResponseData = defaultClient.getExampleGet()
 
   /**
    * POST request with security headers
@@ -22,7 +22,7 @@ export default function () {
     Authorization: 'Bearer <token>',
   }
 
-  const postExamplePostResponseData = client.postExamplePost(
+  const postExamplePostResponseData = defaultClient.postExamplePost(
     postExamplePostBody,
     headers
   )
@@ -32,5 +32,5 @@ export default function () {
    */
 
   const getExampleResponseHeadersResponseData =
-    client.getExampleResponseHeaders()
+    defaultClient.getExampleResponseHeaders()
 }

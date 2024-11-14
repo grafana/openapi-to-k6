@@ -315,6 +315,7 @@
     "/users/{userId}/posts/{postId}": {
       "get": {
         "operationId": "getUserPost",
+        "tags": ["UsersPosts"],
         "parameters": [
           {
             "name": "userId",
