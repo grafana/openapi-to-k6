@@ -1,11 +1,15 @@
-import { SimpleAPIClient } from './simpleAPI.ts'
+import { DefaultClient } from './default.ts'
 
 const baseUrl = '<BASE_URL>'
-const client = new SimpleAPIClient({ baseUrl })
+const defaultClient = new DefaultClient({ baseUrl })
 
 export default function () {
+  let id
+
   /**
    * Get an item by its ID
    */
-  const getItemByIdResponseData = client.getItemById(id)
+  id = '12345'
+
+  const getItemByIdResponseData = defaultClient.getItemById(id)
 }

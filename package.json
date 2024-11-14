@@ -9,6 +9,7 @@
   "scripts": {
     "build": "tsc",
     "dev": "DISABLE_ANALYTICS=true ts-node src/cli.ts",
+    "dev:inspect": "DISABLE_ANALYTICS=true node --inspect-brk --require ts-node/register src/cli.ts",
     "test": "vitest run --coverage",
     "lint": "eslint --ext .ts,.tsx .",
     "lint:fix": "eslint --ext .ts,.tsx . --fix",
@@ -20,6 +21,7 @@
   "repository": "http://github.com/grafana/openapi-to-k6",
   "license": "AGPL-3.0",
   "dependencies": {
+    "@faker-js/faker": "^9.2.0",
     "@types/k6": "^0.54.0",
     "axios": "^1.7.7",
     "chalk": "^4.1.2",

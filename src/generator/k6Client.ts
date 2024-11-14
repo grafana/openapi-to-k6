@@ -1,6 +1,5 @@
 import {
   ClientDependenciesBuilder,
-  ClientExtraFilesBuilder,
   ClientFooterBuilder,
   ClientGeneratorsBuilder,
   ClientHeaderBuilder,
@@ -17,17 +16,9 @@ import {
   sanitize,
   toObjectString,
 } from '@orval/core'
-import Handlebars from 'handlebars'
-import path from 'path'
-import {
-  DEFAULT_SCHEMA_TITLE,
-  K6_SCRIPT_TEMPLATE,
-  SAMPLE_K6_SCRIPT_FILE_NAME,
-} from '../constants'
-import { getDirectoryForPath, getGeneratedClientPath } from '../helper'
-import { logger } from '../logger'
+import { DEFAULT_SCHEMA_TITLE } from '../constants'
 import { AnalyticsData } from '../type'
-
+import { k6ScriptBuilder } from './k6ScriptBuilder'
 /**
  * In case the supplied schema does not have a title set, it will set the default title to ensure
  * proper client generation
@@ -260,7 +251,7 @@ const generateK6Implementation = (
   `
 }
 
-const generateTitle: ClientTitleBuilder = (title) => {
+export const generateTitle: ClientTitleBuilder = (title) => {
   const sanTitle = sanitize(title || DEFAULT_SCHEMA_TITLE)
   return `${pascal(sanTitle)}Client`
 }
@@ -293,66 +284,6 @@ const generateFooter: ClientFooterBuilder = () => {
 
   `
   return footer
-}
-
-const k6ScriptBuilder: ClientExtraFilesBuilder = async (
-  verbOptions,
-  output,
-  context
-) => {
-  const schemaTitle =
-    context.specs[context.specKey]?.info.title || DEFAULT_SCHEMA_TITLE
-  const {
-    path: pathOfGeneratedClient,
-    filename,
-    extension,
-  } = await getGeneratedClientPath(output.target!, schemaTitle)
-  const directoryPath = getDirectoryForPath(pathOfGeneratedClient)
-  const generateScriptPath = path.join(
-    directoryPath,
-    SAMPLE_K6_SCRIPT_FILE_NAME
-  )
-
-  logger.debug(
-    `k6ScriptBuilder ~ Generating sample K6 Script\n${JSON.stringify(
-      {
-        pathOfGeneratedClient,
-        filename,
-        extension,
-        schemaTitle,
-        directoryPath,
-        generateScriptPath,
-      },
-      null,
-      2
-    )}`
-  )
-
-  const clientFunctionsList = []
-
-  for (const verbOption of Object.values(verbOptions)) {
-    const { operationName, summary, props } = verbOption
-    const requiredProps = props.filter((prop) => prop.required)
-    clientFunctionsList.push({
-      operationName,
-      summary,
-      requiredParametersString: toObjectString(requiredProps, 'name'),
-    })
-  }
-
-  const scriptContentData = {
-    clientFunctionName: generateTitle(schemaTitle),
-    clientPath: `./${filename}${extension}`,
-    clientFunctionsList,
-  }
-  const template = Handlebars.compile(K6_SCRIPT_TEMPLATE)
-
-  return [
-    {
-      path: generateScriptPath,
-      content: template(scriptContentData),
-    },
-  ]
 }
 
 function getK6Client(analyticsData?: AnalyticsData) {

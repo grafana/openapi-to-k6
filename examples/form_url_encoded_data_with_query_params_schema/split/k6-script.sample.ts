@@ -1,14 +1,27 @@
-import { FormURLEncodedAPIwithQueryParametersClient } from './formURLEncodedAPIWithQueryParameters.ts'
+import { FormURLEncodedAPIWithQueryParametersClient } from './formURLEncodedAPIWithQueryParameters.ts'
 
 const baseUrl = '<BASE_URL>'
-const client = new FormURLEncodedAPIwithQueryParametersClient({ baseUrl })
+const formURLEncodedAPIWithQueryParametersClient =
+  new FormURLEncodedAPIWithQueryParametersClient({ baseUrl })
 
 export default function () {
+  let postSubmitFormBody, params
+
   /**
    * Submit form data with query parameters
    */
-  const postSubmitFormResponseData = client.postSubmitForm(
-    postSubmitFormBody,
-    params
-  )
+  postSubmitFormBody = {
+    name: 'John Doe',
+    age: '25',
+    email: 'john.doe@example.com',
+  }
+  params = {
+    token: 'Bearer abcdef12345',
+  }
+
+  const postSubmitFormResponseData =
+    formURLEncodedAPIWithQueryParametersClient.postSubmitForm(
+      postSubmitFormBody,
+      params
+    )
 }

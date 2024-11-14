@@ -17,7 +17,8 @@
             "in": "query",
             "required": true,
             "schema": {
-              "type": "string"
+              "type": "string",
+              "example": "12345"
             },
             "description": "A string query parameter for user ID"
           },
@@ -26,7 +27,8 @@
             "in": "query",
             "required": false,
             "schema": {
-              "type": "boolean"
+              "type": "boolean",
+              "example": true
             },
             "description": "A boolean query parameter"
           }
@@ -40,7 +42,8 @@
                 "properties": {
                   "data": {
                     "type": "string",
-                    "description": "A string field representing data"
+                    "description": "A string field representing data",
+                    "example": "data"
                   }
                 },
                 "required": [
@@ -60,19 +63,23 @@
                   "properties": {
                     "userId": {
                       "type": "string",
-                      "description": "The user ID from the query parameter"
+                      "description": "The user ID from the query parameter",
+                      "example": "12345"
                     },
                     "isActive": {
                       "type": "boolean",
-                      "description": "The active status from the query parameter"
+                      "description": "The active status from the query parameter",
+                      "example": true
                     },
                     "data": {
                       "type": "string",
-                      "description": "The data from the body"
+                      "description": "The data from the body",
+                      "example": "data"
                     },
                     "status": {
                       "type": "string",
-                      "description": "Response status"
+                      "description": "Response status",
+                      "example": "success"
                     }
                   }
                 }

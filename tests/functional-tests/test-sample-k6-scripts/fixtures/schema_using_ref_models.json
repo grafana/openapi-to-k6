@@ -1,0 +1,394 @@
+{
+  "openapi": "3.0.3",
+  "info": {
+    "title": "Comprehensive API",
+    "version": "1.0.0",
+    "description": "API supporting various HTTP methods with query, path parameters, and headers"
+  },
+  "components": {
+    "schemas": {
+      "ItemBase": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string",
+            "example": "Sample Item"
+          },
+          "description": {
+            "type": "string",
+            "example": "This is a sample description for the item."
+          }
+        }
+      },
+      "ItemId": {
+        "type": "string",
+        "example": "12345-getItemById"
+      },
+      "UpdatedItem": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string",
+            "example": "Updated Item Name"
+          },
+          "description": {
+            "type": "string",
+            "example": "Updated description for the item."
+          }
+        }
+      },
+      "PatchItem": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string",
+            "example": "Partially Updated Item Name"
+          }
+        }
+      },
+      "FormUrlEncodedItem": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string",
+            "example": "Form Encoded Item"
+          },
+          "description": {
+            "type": "string",
+            "example": "Description for form-urlencoded item."
+          }
+        },
+        "required": ["name"]
+      },
+      "FormDataItem": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string",
+            "example": "Form Data Item"
+          }
+        },
+        "required": ["file", "name"]
+      },
+      "UserPost": {
+        "type": "object",
+        "properties": {
+          "title": {
+            "type": "string"
+          },
+          "content": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "parameters": {
+      "itemIdPath": {
+        "name": "id",
+        "in": "path",
+        "required": true,
+        "description": "ID of the item to retrieve",
+        "schema": {
+          "$ref": "#/components/schemas/ItemId"
+        }
+      },
+      "detailQuery": {
+        "name": "detail",
+        "in": "query",
+        "required": false,
+        "description": "Whether to return detailed information",
+        "schema": {
+          "type": "boolean",
+          "default": false,
+          "example": true
+        }
+      },
+      "userId": {
+        "name": "userId",
+        "in": "path",
+        "required": true,
+        "schema": {
+          "type": "string"
+        }
+      },
+      "postId": {
+        "name": "postId",
+        "in": "path",
+        "required": true,
+        "schema": {
+          "type": "string"
+        }
+      },
+      "clientIdHeader": {
+        "name": "X-Client-ID",
+        "in": "header",
+        "description": "Client ID for the request",
+        "required": true,
+        "schema": {
+          "type": "string",
+          "example": "client-123"
+        }
+      },
+      "requestIdHeader": {
+        "name": "X-Request-ID",
+        "in": "header",
+        "description": "Unique request identifier",
+        "required": false,
+        "schema": {
+          "type": "string",
+          "example": "req-56789"
+        }
+      },
+      "authTokenHeader": {
+        "name": "X-Auth-Token",
+        "in": "header",
+        "description": "Authentication token",
+        "required": true,
+        "schema": {
+          "type": "string",
+          "example": "Bearer abcdef12345"
+        }
+      },
+      "correlationIdHeader": {
+        "name": "X-Correlation-ID",
+        "in": "header",
+        "description": "Correlation ID for tracking requests",
+        "required": true,
+        "schema": {
+          "type": "string",
+          "example": "correlation-12345"
+        }
+      },
+      "optionalHeader": {
+        "name": "X-Optional-Header",
+        "in": "header",
+        "description": "Optional header",
+        "required": false,
+        "schema": {
+          "type": "string",
+          "example": "optional-header-value"
+        }
+      }
+    }
+  },
+  "paths": {
+    "/items/{id}": {
+      "get": {
+        "tags": ["Items"],
+        "summary": "Get an item by ID",
+        "parameters": [
+          { "$ref": "#/components/parameters/itemIdPath" },
+          { "$ref": "#/components/parameters/detailQuery" }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful response"
+          }
+        }
+      },
+      "post": {
+        "tags": ["Items"],
+        "summary": "Create an item by ID",
+        "parameters": [{ "$ref": "#/components/parameters/itemIdPath" }],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ItemBase"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Item created successfully"
+          }
+        }
+      },
+      "put": {
+        "tags": ["Items"],
+        "summary": "Update an item by ID",
+        "parameters": [{ "$ref": "#/components/parameters/itemIdPath" }],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UpdatedItem"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Item updated successfully"
+          }
+        }
+      },
+      "patch": {
+        "tags": ["Items"],
+        "summary": "Partially update an item by ID",
+        "parameters": [{ "$ref": "#/components/parameters/itemIdPath" }],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/PatchItem"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Item partially updated"
+          }
+        }
+      },
+      "delete": {
+        "tags": ["Items"],
+        "summary": "Delete an item by ID",
+        "parameters": [{ "$ref": "#/components/parameters/itemIdPath" }],
+        "responses": {
+          "204": {
+            "description": "Item deleted successfully"
+          }
+        }
+      },
+      "head": {
+        "tags": ["Items"],
+        "summary": "Check if item exists",
+        "parameters": [{ "$ref": "#/components/parameters/itemIdPath" }],
+        "responses": {
+          "200": {
+            "description": "Item exists"
+          },
+          "404": {
+            "description": "Item not found"
+          }
+        }
+      }
+    },
+    "/items-form-url-encoded": {
+      "post": {
+        "tags": ["ItemsForm", "Items"],
+        "summary": "Create an item using form-urlencoded data",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/x-www-form-urlencoded": {
+              "schema": {
+                "$ref": "#/components/schemas/FormUrlEncodedItem"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Item created successfully"
+          }
+        }
+      }
+    },
+    "/items-form-data": {
+      "post": {
+        "tags": ["ItemsForm", "Items"],
+        "summary": "Create an item using form-data",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "multipart/form-data": {
+              "schema": {
+                "$ref": "#/components/schemas/FormDataItem"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Item created with file upload"
+          }
+        }
+      }
+    },
+    "/items-header": {
+      "get": {
+        "tags": ["ItemsHeader"],
+        "summary": "Get an item with custom headers",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "query",
+            "required": true,
+            "description": "ID of the item to retrieve",
+            "schema": {
+              "type": "string",
+              "example": "123450-getItemByIdWithHeader"
+            }
+          },
+          { "$ref": "#/components/parameters/clientIdHeader" },
+          { "$ref": "#/components/parameters/requestIdHeader" }
+        ],
+        "responses": {
+          "200": {
+            "description": "Item retrieved successfully"
+          }
+        },
+        "requestBody": {
+          "required": false
+        }
+      }
+    },
+    "/users/{userId}/posts/{postId}": {
+      "get": {
+        "operationId": "getUserPost",
+        "parameters": [
+          { "$ref": "#/components/parameters/userId" },
+          { "$ref": "#/components/parameters/postId" }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/UserPost"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/items-new-mandatory-headers": {
+      "get": {
+        "tags": ["ItemsHeader"],
+        "summary": "Retrieve a new item with mandatory headers",
+        "parameters": [
+          {
+            "name": "itemId",
+            "in": "query",
+            "required": true,
+            "description": "ID of the item to retrieve",
+            "schema": {
+              "type": "string",
+              "example": "67890"
+            }
+          },
+          { "$ref": "#/components/parameters/authTokenHeader" },
+          { "$ref": "#/components/parameters/correlationIdHeader" },
+          { "$ref": "#/components/parameters/optionalHeader" }
+        ],
+        "responses": {
+          "200": {
+            "description": "New item retrieved successfully"
+          },
+          "400": {
+            "description": "Invalid request"
+          }
+        }
+      }
+    }
+  }
+}

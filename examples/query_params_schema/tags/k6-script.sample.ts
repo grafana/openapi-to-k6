@@ -1,11 +1,17 @@
-import { ExampleAPIClient } from './exampleAPI.ts'
+import { DefaultClient } from './default.ts'
 
 const baseUrl = '<BASE_URL>'
-const client = new ExampleAPIClient({ baseUrl })
+const defaultClient = new DefaultClient({ baseUrl })
 
 export default function () {
+  let params
+
   /**
    * Get example data
    */
-  const getExampleDataResponseData = client.getExampleData(params)
+  params = {
+    name: 'John Doe',
+  }
+
+  const getExampleDataResponseData = defaultClient.getExampleData(params)
 }
