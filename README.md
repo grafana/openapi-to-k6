@@ -132,4 +132,8 @@ k6 run --compatibility-mode=experimental_enhanced ./K6Script.ts
 2. Install the compiled package locally by using `npm install .` or `npm install -g .`.
 3. Use the CLI `k6-sdkgen <path-to-openapi-schema> <output path>`
 
+## Releasing
+
+To release a new version of the tool, create a new release on GitHub with the new version number as tag (e.g. `0.1.0` ) and the release notes. After the release is created, the GitHub actions will automatically package the tool and publish it to npm.
+
 Special mention for the the open-source library [Orval](https://orval.dev/) which is used for the generation of the TypeScript client.
