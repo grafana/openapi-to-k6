@@ -5,22 +5,22 @@
  * Service version: 1.0.0
  */
 export type PostSubmitForm400 = {
-  error?: string
   success?: boolean
+  error?: string
 }
 
 export type PostSubmitForm200 = {
-  message?: string
   success?: boolean
+  message?: string
 }
 
 export type PostSubmitFormBody = {
+  /** Name of the user */
+  name: string
   /** Age of the user */
   age?: number
   /** Email address of the user */
   email: string
-  /** Name of the user */
-  name: string
 }
 
 export type PostSubmitFormParams = {

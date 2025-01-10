@@ -6,11 +6,11 @@
  * Service version: 1.0.0
  */
 export type GetExampleData200 = {
-  age?: number
-  date?: string
-  isActive?: boolean
   name?: string
+  age?: number
+  isActive?: boolean
   tags?: string[]
+  date?: string
 }
 
 export type GetExampleDataParams = {

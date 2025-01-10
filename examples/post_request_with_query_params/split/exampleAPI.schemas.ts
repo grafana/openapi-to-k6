@@ -6,14 +6,14 @@
  * Service version: 1.0.0
  */
 export type CreateExampleData201 = {
-  /** The data from the body */
-  data?: string
-  /** The active status from the query parameter */
-  isActive?: boolean
-  /** Response status */
-  status?: string
   /** The user ID from the query parameter */
   userId?: string
+  /** The active status from the query parameter */
+  isActive?: boolean
+  /** The data from the body */
+  data?: string
+  /** Response status */
+  status?: string
 }
 
 export type CreateExampleDataBody = {

@@ -5,5 +5,6 @@
  * Service version: 1.0.0
  */
 export type GetExample200 = {
+  /** @pattern ^([a-zA-Z_][a-zA-Z0-9_-]*:)?([a-zA-Z_][a-zA-Z0-9_-]*\/)?([a-zA-Z_][.a-zA-Z0-9_-]*)$ */
   message?: string
 }

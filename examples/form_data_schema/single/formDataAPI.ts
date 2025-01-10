@@ -9,20 +9,20 @@ import { URL } from 'https://jslib.k6.io/url/1.0.0/index.js'
 import http from 'k6/http'
 import type { Params, Response } from 'k6/http'
 export type PostUpload400 = {
-  error?: string
   success?: boolean
+  error?: string
 }
 
 export type PostUpload200 = {
-  message?: string
   success?: boolean
+  message?: string
 }
 
 export type PostUploadBody = {
-  /** Description of the file */
-  description?: string
   /** File to upload */
   file: Blob
+  /** Description of the file */
+  description?: string
   /** User ID associated with the upload */
   userId: string
 }

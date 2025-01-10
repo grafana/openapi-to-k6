@@ -8,22 +8,22 @@ import { URL } from 'https://jslib.k6.io/url/1.0.0/index.js'
 import http from 'k6/http'
 import type { Params, Response } from 'k6/http'
 export type PostSubmitForm400 = {
-  error?: string
   success?: boolean
+  error?: string
 }
 
 export type PostSubmitForm200 = {
-  message?: string
   success?: boolean
+  message?: string
 }
 
 export type PostSubmitFormBody = {
+  /** Name of the user */
+  name: string
   /** Age of the user */
   age?: number
   /** Email address of the user */
   email: string
-  /** Name of the user */
-  name: string
 }
 
 /**

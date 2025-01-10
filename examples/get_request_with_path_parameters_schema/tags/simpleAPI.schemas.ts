@@ -6,7 +6,7 @@
  * Service version: 1.0.0
  */
 export type GetItemById200 = {
-  description?: string
   id?: string
   name?: string
+  description?: string
 }
