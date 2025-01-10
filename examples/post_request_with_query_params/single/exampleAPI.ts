@@ -9,14 +9,14 @@ import { URL, URLSearchParams } from 'https://jslib.k6.io/url/1.0.0/index.js'
 import http from 'k6/http'
 import type { Params, Response } from 'k6/http'
 export type CreateExampleData201 = {
-  /** The data from the body */
-  data?: string
-  /** The active status from the query parameter */
-  isActive?: boolean
-  /** Response status */
-  status?: string
   /** The user ID from the query parameter */
   userId?: string
+  /** The active status from the query parameter */
+  isActive?: boolean
+  /** The data from the body */
+  data?: string
+  /** Response status */
+  status?: string
 }
 
 export type CreateExampleDataBody = {

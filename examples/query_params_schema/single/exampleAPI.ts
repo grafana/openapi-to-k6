@@ -9,11 +9,11 @@ import { URL, URLSearchParams } from 'https://jslib.k6.io/url/1.0.0/index.js'
 import http from 'k6/http'
 import type { Params, Response } from 'k6/http'
 export type GetExampleData200 = {
-  age?: number
-  date?: string
-  isActive?: boolean
   name?: string
+  age?: number
+  isActive?: boolean
   tags?: string[]
+  date?: string
 }
 
 export type GetExampleDataParams = {

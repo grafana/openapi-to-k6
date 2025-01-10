@@ -14,14 +14,14 @@ export type CreateExampleData201Meta = {
 }
 
 export type CreateExampleData201 = {
-  age?: number
-  date?: string
   /** The unique ID of the created resource */
   id?: string
-  isActive?: boolean
-  meta?: CreateExampleData201Meta
   name?: string
+  age?: number
+  isActive?: boolean
   tags?: string[]
+  date?: string
+  meta?: CreateExampleData201Meta
 }
 
 /**
@@ -35,18 +35,18 @@ export type CreateExampleDataBodyMeta = {
 }
 
 export type CreateExampleDataBody = {
-  /** An integer parameter */
-  age: number
-  /** A date parameter in YYYY-MM-DD format */
-  date?: string
-  /** A boolean parameter */
-  isActive: boolean
-  /** An object parameter containing metadata */
-  meta?: CreateExampleDataBodyMeta
   /** A string parameter */
   name: string
+  /** An integer parameter */
+  age: number
+  /** A boolean parameter */
+  isActive: boolean
   /** An array of strings */
   tags?: string[]
+  /** A date parameter in YYYY-MM-DD format */
+  date?: string
+  /** An object parameter containing metadata */
+  meta?: CreateExampleDataBodyMeta
 }
 
 /**

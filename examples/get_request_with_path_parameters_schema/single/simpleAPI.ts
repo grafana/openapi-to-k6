@@ -9,9 +9,9 @@ import { URL } from 'https://jslib.k6.io/url/1.0.0/index.js'
 import http from 'k6/http'
 import type { Params, Response } from 'k6/http'
 export type GetItemById200 = {
-  description?: string
   id?: string
   name?: string
+  description?: string
 }
 
 /**

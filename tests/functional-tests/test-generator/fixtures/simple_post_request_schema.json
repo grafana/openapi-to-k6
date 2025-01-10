@@ -124,7 +124,7 @@
       "const url = new URL(this.cleanBaseUrl + `/example`);",
       "JSON.stringify(createExampleDataBody),",
       "POST",
-      "export type CreateExampleData201 = { age?: number; date?: string; /** The unique ID of the created resource */ id?: string; isActive?: boolean; meta?: CreateExampleData201Meta; name?: string; tags?: string[];"
+      "export type CreateExampleData201 = { /** The unique ID of the created resource */ id?: string; name?: string; age?: number; isActive?: boolean; tags?: string[]; date?: string; meta?: CreateExampleData201Meta; };"
     ]
   }
 }

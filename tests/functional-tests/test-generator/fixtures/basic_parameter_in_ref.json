@@ -1,0 +1,59 @@
+{
+  "openapi_schema": {
+    "openapi": "3.0.0",
+    "info": {
+      "title": "Simple API",
+      "version": "1.0.0"
+    },
+    "paths": {
+      "/example": {
+        "get": {
+          "summary": "Retrieve example data",
+          "parameters": [
+            {
+              "$ref": "#/components/parameters/stackId"
+            }
+          ],
+          "responses": {
+            "200": {
+              "description": "Successful response",
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "type": "object",
+                    "properties": {
+                      "message": {
+                        "type": "string",
+                        "example": "Hello, World!"
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "components": {
+      "parameters": {
+        "stackId": {
+          "in": "header",
+          "name": "X-Stack-Id",
+          "schema": {
+            "type": "integer"
+          },
+          "required": true
+        }
+      }
+    }
+  },
+  "expected_sdk": {
+    "fileName": "simpleAPI.ts",
+    "expectedSubstrings": [
+      "export class SimpleAPIClient",
+      "export type StackIdParameter = number;",
+      "export type GetExampleHeaders = { \"X-Stack-Id\": StackIdParameter; };"
+    ]
+  }
+}
