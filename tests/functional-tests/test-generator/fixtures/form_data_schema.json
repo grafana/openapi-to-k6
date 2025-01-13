@@ -88,7 +88,7 @@
       "export class FormDataAPIClient",
       "const formData = new FormData(); formData.append(\"file\", postUploadBody.file); if (postUploadBody.description !== undefined) { formData.append(\"description\", postUploadBody.description); } formData.append(\"userId\", postUploadBody.userId);",
       "const url = new URL(this.cleanBaseUrl + `/upload`);",
-      "const response = http.request(\"POST\", url.toString(), formData.body(), { ...mergedRequestParameters, headers: { \"Content-Type\": \"multipart/form-data; boundary=\" + formData.boundary, ...mergedRequestParameters?.headers, }, });"
+      "const response = http.request(\"POST\", url.toString(), formData.body(), { ...mergedRequestParameters, headers: { ...mergedRequestParameters?.headers, \"Content-Type\": \"multipart/form-data; boundary=\" + formData.boundary, }, });"
     ]
   }
 }

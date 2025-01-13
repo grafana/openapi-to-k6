@@ -55,22 +55,23 @@ function _getRequestParametersMergerFunctionImplementation() {
  * Merges the provided request parameters with default parameters for the client.
  *
  * @param {Params} requestParameters - The parameters provided specifically for the request
+ * @param {Params} commonRequestParameters - Common parameters for all requests
  * @returns {Params} - The merged parameters
  */
-  private _mergeRequestParameters (requestParameters?: Params): Params {
+  private _mergeRequestParameters (requestParameters?: Params, commonRequestParameters?: Params): Params {
     return {
-        ...this.commonRequestParameters,  // Default to common parameters
+        ...commonRequestParameters,  // Default to common parameters
         ...requestParameters,        // Override with request-specific parameters
         headers: {
-            ...this.commonRequestParameters?.headers || {},  // Ensure headers are defined
+            ...commonRequestParameters?.headers || {},  // Ensure headers are defined
             ...requestParameters?.headers || {},
         },
         cookies: {
-            ...this.commonRequestParameters?.cookies || {},  // Ensure cookies are defined
+            ...commonRequestParameters?.cookies || {},  // Ensure cookies are defined
             ...requestParameters?.cookies || {},
         },
         tags: {
-            ...this.commonRequestParameters?.tags || {},     // Ensure tags are defined
+            ...commonRequestParameters?.tags || {},     // Ensure tags are defined
             ...requestParameters?.tags || {},
         },
     };
@@ -234,7 +235,7 @@ const generateK6Implementation = (
 
   return `${operationName}(\n    ${toObjectString(props, 'implementation')} requestParameters?: Params): ${_generateResponseTypeDefinition(response)} {\n${bodyForm}
         ${urlGeneration}
-        const mergedRequestParameters = this._mergeRequestParameters(requestParameters || {});
+        const mergedRequestParameters = this._mergeRequestParameters(requestParameters || {}, this.commonRequestParameters);
         const response = http.request(${options});
         let data;
 

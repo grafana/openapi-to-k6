@@ -3,8 +3,15 @@ import { check } from 'k6'
 import { ComprehensiveAPIClient } from './sdk.ts'
 /* eslint-enable import/no-unresolved */
 
+const commonRequestParameters = {
+  headers: {
+    'Only-Common-Header': 'test',
+    'Only-Common-Header-2': 'test-2',
+    'X-Correlation-ID': 'only-common-header-value',
+  },
+}
 const baseUrl = 'http://localhost:3000'
-const client = new ComprehensiveAPIClient({ baseUrl })
+const client = new ComprehensiveAPIClient({ baseUrl, commonRequestParameters })
 
 export const options = {
   thresholds: {
@@ -79,4 +86,50 @@ export default function () {
     id: 'test',
   })
   checkResponseStatus(getItemsHeaderResponseData.response, 200)
+
+  const requestParameters = {
+    headers: {
+      'Only-Common-Header-2': 'test-common-header-2-parameter',
+      'X-Correlation-ID': 'test-request-parameter',
+    },
+  }
+  const getItemsNewMandatoryHeadersResponseData =
+    client.getItemsNewMandatoryHeaders(
+      {
+        itemId: 'test',
+      },
+      {
+        'X-Auth-Token': 'test',
+        'X-Correlation-ID': 'test-function-argument',
+      },
+      requestParameters
+    )
+  checkResponseStatus(getItemsNewMandatoryHeadersResponseData.response, 200)
+
+  const requestHeaders =
+    getItemsNewMandatoryHeadersResponseData.response.request.headers
+  console.log('requestHeaders')
+  console.log(requestHeaders)
+
+  // Validate that the header present only in common request parameters is present in the request
+  check(requestHeaders, {
+    'has only-common-header': (r) => r['Only-Common-Header'][0] === 'test',
+  })
+
+  // Validate that the header present only in the request parameters is present in the request
+  check(requestHeaders, {
+    'has X-Auth-Token': (r) => r['X-Auth-Token'][0] === 'test',
+  })
+
+  // Validate that the header present in the requestParameters takes precedence over the value in common request parameters
+  check(requestHeaders, {
+    'has correct value of Only-Common-Header-2 from request parameters': (r) =>
+      r['Only-Common-Header-2'][0] === 'test-common-header-2-parameter',
+  })
+
+  // Validate that the value of the header present in function arguments takes precedence over the value in common request parameters and request parameters
+  check(requestHeaders, {
+    'has correct value X-Correlation-ID from function arguments': (r) =>
+      r['X-Correlation-Id'][0] === 'test-function-argument',
+  })
 }
