@@ -123,6 +123,23 @@ export class OutputOverrider {
     process.stdout.write = this.originalStdoutWrite
     process.stderr.write = this.originalStderrWrite
   }
+
+  // Method to temporarily write to stdout and stderr
+  public async temporarilyWriteToStdoutAndStderr(
+    callback: () => Promise<void>
+  ) {
+    const currentStdoutWrite = process.stdout.write
+    const currentStderrWrite = process.stderr.write
+
+    process.stdout.write = this.originalStdoutWrite
+    process.stderr.write = this.originalStderrWrite
+    try {
+      await callback()
+    } finally {
+      process.stdout.write = currentStdoutWrite
+      process.stderr.write = currentStderrWrite
+    }
+  }
 }
 
 /**
