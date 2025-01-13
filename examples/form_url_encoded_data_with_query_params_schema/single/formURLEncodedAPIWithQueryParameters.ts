@@ -49,6 +49,8 @@ export class FormURLEncodedAPIWithQueryParametersClient {
     commonRequestParameters?: Params
   }) {
     this.cleanBaseUrl = clientOptions.baseUrl.replace(/\/+$/, '')
+
+    this.commonRequestParameters = clientOptions.commonRequestParameters || {}
   }
 
   /**
@@ -79,8 +81,8 @@ export class FormURLEncodedAPIWithQueryParametersClient {
       {
         ...mergedRequestParameters,
         headers: {
-          'Content-Type': 'application/x-www-form-urlencoded',
           ...mergedRequestParameters?.headers,
+          'Content-Type': 'application/x-www-form-urlencoded',
         },
       }
     )

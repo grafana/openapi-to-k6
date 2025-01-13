@@ -23,6 +23,8 @@ export class K6ClientClient {
     commonRequestParameters?: Params
   }) {
     this.cleanBaseUrl = clientOptions.baseUrl.replace(/\/+$/, '')
+
+    this.commonRequestParameters = clientOptions.commonRequestParameters || {}
   }
 
   /**

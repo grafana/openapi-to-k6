@@ -28,6 +28,8 @@ export class DefaultClient {
     commonRequestParameters?: Params
   }) {
     this.cleanBaseUrl = clientOptions.baseUrl.replace(/\/+$/, '')
+
+    this.commonRequestParameters = clientOptions.commonRequestParameters || {}
   }
 
   /**
@@ -49,6 +51,7 @@ export class DefaultClient {
     const response = http.request('GET', url.toString(), undefined, {
       ...mergedRequestParameters,
       headers: {
+        ...mergedRequestParameters?.headers,
         // In the schema, headers can be of any type like number but k6 accepts only strings as headers, hence converting all headers to string
         ...Object.fromEntries(
           Object.entries(headers || {}).map(([key, value]) => [
@@ -56,7 +59,6 @@ export class DefaultClient {
             String(value),
           ])
         ),
-        ...mergedRequestParameters?.headers,
       },
     })
     let data
@@ -95,6 +97,7 @@ export class DefaultClient {
       {
         ...mergedRequestParameters,
         headers: {
+          ...mergedRequestParameters?.headers,
           'Content-Type': 'application/json',
           // In the schema, headers can be of any type like number but k6 accepts only strings as headers, hence converting all headers to string
           ...Object.fromEntries(
@@ -103,7 +106,6 @@ export class DefaultClient {
               String(value),
             ])
           ),
-          ...mergedRequestParameters?.headers,
         },
       }
     )

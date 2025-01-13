@@ -24,6 +24,8 @@ export class FormURLEncodedAPIClient {
     commonRequestParameters?: Params
   }) {
     this.cleanBaseUrl = clientOptions.baseUrl.replace(/\/+$/, '')
+
+    this.commonRequestParameters = clientOptions.commonRequestParameters || {}
   }
 
   /**
@@ -49,8 +51,8 @@ export class FormURLEncodedAPIClient {
       {
         ...mergedRequestParameters,
         headers: {
-          'Content-Type': 'application/x-www-form-urlencoded',
           ...mergedRequestParameters?.headers,
+          'Content-Type': 'application/x-www-form-urlencoded',
         },
       }
     )

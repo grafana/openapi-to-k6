@@ -22,6 +22,8 @@ export class FormDataAPIClient {
     commonRequestParameters?: Params
   }) {
     this.cleanBaseUrl = clientOptions.baseUrl.replace(/\/+$/, '')
+
+    this.commonRequestParameters = clientOptions.commonRequestParameters || {}
   }
 
   /**
@@ -50,8 +52,8 @@ export class FormDataAPIClient {
     const response = http.request('POST', url.toString(), formData.body(), {
       ...mergedRequestParameters,
       headers: {
-        'Content-Type': 'multipart/form-data; boundary=' + formData.boundary,
         ...mergedRequestParameters?.headers,
+        'Content-Type': 'multipart/form-data; boundary=' + formData.boundary,
       },
     })
     let data

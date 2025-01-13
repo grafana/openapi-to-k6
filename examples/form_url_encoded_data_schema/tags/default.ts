@@ -24,6 +24,8 @@ export class DefaultClient {
     commonRequestParameters?: Params
   }) {
     this.cleanBaseUrl = clientOptions.baseUrl.replace(/\/+$/, '')
+
+    this.commonRequestParameters = clientOptions.commonRequestParameters || {}
   }
 
   /**
@@ -49,8 +51,8 @@ export class DefaultClient {
       {
         ...mergedRequestParameters,
         headers: {
-          'Content-Type': 'application/x-www-form-urlencoded',
           ...mergedRequestParameters?.headers,
+          'Content-Type': 'application/x-www-form-urlencoded',
         },
       }
     )
