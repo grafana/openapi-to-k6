@@ -27,7 +27,10 @@ const generatedFileHeaderGenerator = (info: InfoObject) => {
   ]
 }
 
-const afterAllFilesWriteHandler = async (filePaths: string[]) => {
+const afterAllFilesWriteHandler = async (
+  filePaths: string[],
+  outputOverrider: OutputOverrider
+) => {
   const removeSingleFile = (filePath: string) => {
     try {
       fs.unlinkSync(filePath)
@@ -53,8 +56,13 @@ const afterAllFilesWriteHandler = async (filePaths: string[]) => {
       removeSingleFile(filePath)
       continue
     }
-
-    await formatFileWithPrettier(filePath)
+    try {
+      await formatFileWithPrettier(filePath)
+    } catch (error) {
+      await outputOverrider.temporarilyWriteToStdoutAndStderr(async () => {
+        logger.error(`Error in formatting file ${filePath}: ${error}`)
+      })
+    }
 
     const fileName = path.basename(filePath)
 
@@ -125,7 +133,10 @@ export default async ({
       },
       hooks: {
         afterAllFilesWrite: async (filePaths: string[]) => {
-          const filteredFilePaths = await afterAllFilesWriteHandler(filePaths)
+          const filteredFilePaths = await afterAllFilesWriteHandler(
+            filePaths,
+            outputOverrider
+          )
           generatedFilePaths.push(...filteredFilePaths)
         },
       },
@@ -135,8 +146,10 @@ export default async ({
   if (generatedFilePaths.length === 0) {
     const tagsMessage =
       tags?.length && tags.length > 0
-        ? ` Applied tag filter(s): ${tags.join(', ')}`
-        : ''
-    throw new NoFilesGeneratedError(`No files were generated.${tagsMessage}`)
+        ? ` Applied tag filter(s): ${tags.join(', ')}. `
+        : ' '
+    throw new NoFilesGeneratedError(
+      `No files were generated.${tagsMessage}Try running with --verbose flag to get more details.`
+    )
   }
 }
