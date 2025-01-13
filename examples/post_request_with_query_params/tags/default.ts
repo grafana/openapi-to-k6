@@ -26,6 +26,8 @@ export class DefaultClient {
     commonRequestParameters?: Params
   }) {
     this.cleanBaseUrl = clientOptions.baseUrl.replace(/\/+$/, '')
+
+    this.commonRequestParameters = clientOptions.commonRequestParameters || {}
   }
 
   /**
@@ -56,8 +58,8 @@ export class DefaultClient {
       {
         ...mergedRequestParameters,
         headers: {
-          'Content-Type': 'application/json',
           ...mergedRequestParameters?.headers,
+          'Content-Type': 'application/json',
         },
       }
     )

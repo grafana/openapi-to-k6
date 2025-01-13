@@ -47,6 +47,8 @@ export class ExampleAPIClient {
     commonRequestParameters?: Params
   }) {
     this.cleanBaseUrl = clientOptions.baseUrl.replace(/\/+$/, '')
+
+    this.commonRequestParameters = clientOptions.commonRequestParameters || {}
   }
 
   /**
@@ -77,8 +79,8 @@ export class ExampleAPIClient {
       {
         ...mergedRequestParameters,
         headers: {
-          'Content-Type': 'application/json',
           ...mergedRequestParameters?.headers,
+          'Content-Type': 'application/json',
         },
       }
     )

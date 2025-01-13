@@ -102,6 +102,7 @@ const _getRequestParamsValue = ({
   // Expand the headers
   if (body.contentType || headers) {
     let headersValue = `\n       headers: {`
+    headersValue += '\n...mergedRequestParameters?.headers,'
     if (body.contentType) {
       if (body.formData) {
         headersValue += `\n'Content-Type': '${body.contentType}; boundary=' + formData.boundary,`
@@ -115,7 +116,7 @@ const _getRequestParamsValue = ({
       headersValue += `\n...Object.fromEntries(Object.entries(headers || {}).map(([key, value]) => [key, String(value)])),`
     }
 
-    headersValue += `\n...mergedRequestParameters?.headers},`
+    headersValue += `\n},`
     value += headersValue
   }
 
@@ -270,6 +271,7 @@ const generateK6Header: ClientHeaderBuilder = ({ title }) => {
     commonRequestParameters?: Params
 }) {
        this.cleanBaseUrl = clientOptions.baseUrl.replace(/\\/+$/, '');\n
+       this.commonRequestParameters = clientOptions.commonRequestParameters || {};
       }\n
 `
 }
