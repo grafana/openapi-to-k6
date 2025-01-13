@@ -55,23 +55,22 @@ function _getRequestParametersMergerFunctionImplementation() {
  * Merges the provided request parameters with default parameters for the client.
  *
  * @param {Params} requestParameters - The parameters provided specifically for the request
- * @param {Params} commonRequestParameters - Common parameters for all requests
  * @returns {Params} - The merged parameters
  */
-  private _mergeRequestParameters (requestParameters?: Params, commonRequestParameters?: Params): Params {
+  private _mergeRequestParameters (requestParameters?: Params): Params {
     return {
-        ...commonRequestParameters,  // Default to common parameters
+        ...this.commonRequestParameters,  // Default to common parameters
         ...requestParameters,        // Override with request-specific parameters
         headers: {
-            ...commonRequestParameters?.headers || {},  // Ensure headers are defined
+            ...this.commonRequestParameters?.headers || {},  // Ensure headers are defined
             ...requestParameters?.headers || {},
         },
         cookies: {
-            ...commonRequestParameters?.cookies || {},  // Ensure cookies are defined
+            ...this.commonRequestParameters?.cookies || {},  // Ensure cookies are defined
             ...requestParameters?.cookies || {},
         },
         tags: {
-            ...commonRequestParameters?.tags || {},     // Ensure tags are defined
+            ...this.commonRequestParameters?.tags || {},     // Ensure tags are defined
             ...requestParameters?.tags || {},
         },
     };
@@ -102,6 +101,7 @@ const _getRequestParamsValue = ({
   // Expand the headers
   if (body.contentType || headers) {
     let headersValue = `\n       headers: {`
+    headersValue += '\n...mergedRequestParameters?.headers,'
     if (body.contentType) {
       if (body.formData) {
         headersValue += `\n'Content-Type': '${body.contentType}; boundary=' + formData.boundary,`
@@ -115,7 +115,7 @@ const _getRequestParamsValue = ({
       headersValue += `\n...Object.fromEntries(Object.entries(headers || {}).map(([key, value]) => [key, String(value)])),`
     }
 
-    headersValue += `\n...mergedRequestParameters?.headers},`
+    headersValue += `\n},`
     value += headersValue
   }
 
@@ -234,7 +234,7 @@ const generateK6Implementation = (
 
   return `${operationName}(\n    ${toObjectString(props, 'implementation')} requestParameters?: Params): ${_generateResponseTypeDefinition(response)} {\n${bodyForm}
         ${urlGeneration}
-        const mergedRequestParameters = this._mergeRequestParameters(requestParameters || {}, this.commonRequestParameters);
+        const mergedRequestParameters = this._mergeRequestParameters(requestParameters || {});
         const response = http.request(${options});
         let data;
 
@@ -270,6 +270,7 @@ const generateK6Header: ClientHeaderBuilder = ({ title }) => {
     commonRequestParameters?: Params
 }) {
        this.cleanBaseUrl = clientOptions.baseUrl.replace(/\\/+$/, '');\n
+       this.commonRequestParameters = clientOptions.commonRequestParameters || {};
       }\n
 `
 }
