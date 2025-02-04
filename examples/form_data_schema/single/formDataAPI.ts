@@ -8,16 +8,6 @@ import { FormData } from 'https://jslib.k6.io/formdata/0.0.2/index.js'
 import { URL } from 'https://jslib.k6.io/url/1.0.0/index.js'
 import http from 'k6/http'
 import type { Params, Response } from 'k6/http'
-export type PostUpload400 = {
-  success?: boolean
-  error?: string
-}
-
-export type PostUpload200 = {
-  success?: boolean
-  message?: string
-}
-
 export type PostUploadBody = {
   /** File to upload */
   file: Blob
@@ -25,6 +15,16 @@ export type PostUploadBody = {
   description?: string
   /** User ID associated with the upload */
   userId: string
+}
+
+export type PostUpload200 = {
+  success?: boolean
+  message?: string
+}
+
+export type PostUpload400 = {
+  success?: boolean
+  error?: string
 }
 
 /**

@@ -7,14 +7,15 @@
 import { URL, URLSearchParams } from 'https://jslib.k6.io/url/1.0.0/index.js'
 import http from 'k6/http'
 import type { Params, Response } from 'k6/http'
-export type PostSubmitForm400 = {
-  success?: boolean
-  error?: string
-}
-
-export type PostSubmitForm200 = {
-  success?: boolean
-  message?: string
+export type PostSubmitFormParams = {
+  /**
+   * Authentication token
+   */
+  token: string
+  /**
+   * Locale of the user
+   */
+  locale?: string
 }
 
 export type PostSubmitFormBody = {
@@ -26,15 +27,14 @@ export type PostSubmitFormBody = {
   email: string
 }
 
-export type PostSubmitFormParams = {
-  /**
-   * Authentication token
-   */
-  token: string
-  /**
-   * Locale of the user
-   */
-  locale?: string
+export type PostSubmitForm200 = {
+  success?: boolean
+  message?: string
+}
+
+export type PostSubmitForm400 = {
+  success?: boolean
+  error?: string
 }
 
 /**

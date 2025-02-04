@@ -8,14 +8,6 @@
 import { URL, URLSearchParams } from 'https://jslib.k6.io/url/1.0.0/index.js'
 import http from 'k6/http'
 import type { Params, Response } from 'k6/http'
-export type GetExampleData200 = {
-  name?: string
-  age?: number
-  isActive?: boolean
-  tags?: string[]
-  date?: string
-}
-
 export type GetExampleDataParams = {
   /**
    * A string parameter
@@ -36,6 +28,14 @@ export type GetExampleDataParams = {
   /**
    * A date parameter in YYYY-MM-DD format
    */
+  date?: string
+}
+
+export type GetExampleData200 = {
+  name?: string
+  age?: number
+  isActive?: boolean
+  tags?: string[]
   date?: string
 }
 

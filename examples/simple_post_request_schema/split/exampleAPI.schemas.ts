@@ -5,22 +5,6 @@
  * API with all formats of data in the POST request body
  * Service version: 1.0.0
  */
-export type CreateExampleData201Meta = {
-  createdBy?: string
-  updatedBy?: string
-}
-
-export type CreateExampleData201 = {
-  /** The unique ID of the created resource */
-  id?: string
-  name?: string
-  age?: number
-  isActive?: boolean
-  tags?: string[]
-  date?: string
-  meta?: CreateExampleData201Meta
-}
-
 /**
  * An object parameter containing metadata
  */
@@ -44,4 +28,20 @@ export type CreateExampleDataBody = {
   date?: string
   /** An object parameter containing metadata */
   meta?: CreateExampleDataBodyMeta
+}
+
+export type CreateExampleData201Meta = {
+  createdBy?: string
+  updatedBy?: string
+}
+
+export type CreateExampleData201 = {
+  /** The unique ID of the created resource */
+  id?: string
+  name?: string
+  age?: number
+  isActive?: boolean
+  tags?: string[]
+  date?: string
+  meta?: CreateExampleData201Meta
 }

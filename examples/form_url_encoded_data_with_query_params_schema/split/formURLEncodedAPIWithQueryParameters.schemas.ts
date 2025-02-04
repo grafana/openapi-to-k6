@@ -4,14 +4,15 @@
  * Form URL Encoded API with Query Parameters
  * Service version: 1.0.0
  */
-export type PostSubmitForm400 = {
-  success?: boolean
-  error?: string
-}
-
-export type PostSubmitForm200 = {
-  success?: boolean
-  message?: string
+export type PostSubmitFormParams = {
+  /**
+   * Authentication token
+   */
+  token: string
+  /**
+   * Locale of the user
+   */
+  locale?: string
 }
 
 export type PostSubmitFormBody = {
@@ -23,13 +24,12 @@ export type PostSubmitFormBody = {
   email: string
 }
 
-export type PostSubmitFormParams = {
-  /**
-   * Authentication token
-   */
-  token: string
-  /**
-   * Locale of the user
-   */
-  locale?: string
+export type PostSubmitForm200 = {
+  success?: boolean
+  message?: string
+}
+
+export type PostSubmitForm400 = {
+  success?: boolean
+  error?: string
 }

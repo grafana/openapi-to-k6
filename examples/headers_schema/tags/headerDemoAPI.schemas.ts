@@ -5,12 +5,15 @@
  * An API demonstrating the use of headers in different ways
  * Service version: 1.0.0
  */
-export type GetExampleResponseHeaders200 = {
-  status?: string
+export type GetExampleGetHeaders = {
+  /**
+   * A custom header for this request
+   */
+  'X-Custom-Header'?: string
 }
 
-export type PostExamplePostBody = {
-  data?: string
+export type GetExampleGet200 = {
+  message?: string
 }
 
 export type PostExamplePostHeaders = {
@@ -20,13 +23,10 @@ export type PostExamplePostHeaders = {
   Authorization: string
 }
 
-export type GetExampleGet200 = {
-  message?: string
+export type PostExamplePostBody = {
+  data?: string
 }
 
-export type GetExampleGetHeaders = {
-  /**
-   * A custom header for this request
-   */
-  'X-Custom-Header'?: string
+export type GetExampleResponseHeaders200 = {
+  status?: string
 }
