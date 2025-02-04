@@ -8,12 +8,15 @@
 import { URL } from 'https://jslib.k6.io/url/1.0.0/index.js'
 import http from 'k6/http'
 import type { Params, Response } from 'k6/http'
-export type GetExampleResponseHeaders200 = {
-  status?: string
+export type GetExampleGetHeaders = {
+  /**
+   * A custom header for this request
+   */
+  'X-Custom-Header'?: string
 }
 
-export type PostExamplePostBody = {
-  data?: string
+export type GetExampleGet200 = {
+  message?: string
 }
 
 export type PostExamplePostHeaders = {
@@ -23,15 +26,12 @@ export type PostExamplePostHeaders = {
   Authorization: string
 }
 
-export type GetExampleGet200 = {
-  message?: string
+export type PostExamplePostBody = {
+  data?: string
 }
 
-export type GetExampleGetHeaders = {
-  /**
-   * A custom header for this request
-   */
-  'X-Custom-Header'?: string
+export type GetExampleResponseHeaders200 = {
+  status?: string
 }
 
 /**
