@@ -48,8 +48,8 @@ jobs:
           # Mockoon local data file or URL
           data-file: './tests/e2e/schema.json'
           port: 3000
-      - uses: grafana/setup-k6-action@v1 # zizmor: ignore[unpinned-uses] # Ignore unpinned uses because the action is Grafana's
-      - uses: grafana/run-k6-action@v1 # zizmor: ignore[unpinned-uses] # Ignore unpinned uses because the action is Grafana's
+      - uses: grafana/setup-k6-action@v1
+      - uses: grafana/run-k6-action@v1
         with:
           path: './tests/e2e/*/k6Script.ts'
           flags: '--compatibility-mode=experimental_enhanced'
