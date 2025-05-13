@@ -28,7 +28,7 @@ jobs:
         env:
           NEW_VERSION: ${{ github.event.release.tag_name }}
         run: |
-          npm version "${NEW_VERSION}" --no-git-tag-version
+          npm version "$NEW_VERSION" --no-git-tag-version
       - name: Update generated examples
         run: npm run update-examples
       - name: Commit updated package.json
@@ -38,7 +38,7 @@ jobs:
           git config --global user.name 'github-actions[bot]'
           git config --global user.email 'github-actions[bot]@users.noreply.github.com'
           git add package.json package-lock.json examples/
-          git commit -m "Update package.json version to ${VERSION_TAG}"
+          git commit -m "Update package.json version to $VERSION_TAG"
           git push origin HEAD:main
       - run: npm run build
       - run: npm publish --access public
