@@ -6,7 +6,6 @@ metadata:
   description: |
     A CLI tool to convert an OpenAPI schema to a TypeScript client to use with k6.
   annotations:
-    backstage.io/techdocs-ref: dir:.
     github.com/project-slug: grafana/openapi-to-k6
 spec:
   type: tool
