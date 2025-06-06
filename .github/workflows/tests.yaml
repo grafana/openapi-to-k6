@@ -8,8 +8,12 @@ on:
 jobs:
   test:
     runs-on: ubuntu-latest
+    permissions:
+      contents: read
     steps:
       - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
       - uses: actions/setup-node@v4
         with:
           node-version: '21'
@@ -20,8 +24,12 @@ jobs:
       - run: npm test
   e2e-test:
     runs-on: ubuntu-latest
+    permissions:
+      contents: read
     steps:
       - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
       - uses: actions/setup-node@v4
         with:
           node-version: '21'
@@ -35,7 +43,7 @@ jobs:
           npm run dev -- ./tests/e2e/schema.json ./tests/e2e/tags/sdk.ts --disable-analytics --mode tags
           npm run dev -- ./tests/e2e/schema.json ./tests/e2e/single-tag-filter/sdk.ts --disable-analytics --mode single --only-tags ItemsHeader
       - name: Start Mockoon CLI
-        uses: mockoon/cli-action@v2
+        uses: mockoon/cli-action@971589e873f22f7c9604e4236d6dfae3164efa6c # v2 - https://github.com/mockoon/cli-action/commit/971589e873f22f7c9604e4236d6dfae3164efa6c
         with:
           # Mockoon local data file or URL
           data-file: './tests/e2e/schema.json'
@@ -48,8 +56,12 @@ jobs:
           inspect-flags: '--compatibility-mode=experimental_enhanced'
   run-examples:
     runs-on: ubuntu-latest
+    permissions:
+      contents: read
     steps:
       - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
       - uses: actions/setup-node@v4
         with:
           node-version: '21'
