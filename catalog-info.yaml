@@ -1,0 +1,13 @@
+apiVersion: backstage.io/v1alpha1
+kind: Component
+metadata:
+  name: openapi-to-k6
+  title: openapi-to-k6
+  description: |
+    A CLI tool to convert an OpenAPI schema to a TypeScript client to use with k6.
+  annotations:
+    github.com/project-slug: grafana/openapi-to-k6
+spec:
+  type: tool
+  owner: group:default/k6-cloud-provisioning
+  lifecycle: production
