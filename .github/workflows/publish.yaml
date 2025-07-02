@@ -11,7 +11,14 @@ jobs:
     permissions:
       contents: write
       packages: write
+      id-token: write
     steps:
+      - uses: grafana/shared-workflows/actions/get-vault-secrets@get-vault-secrets-v1.1.0
+        with:
+          # Secrets placed in the ci/repo/grafana/<repo>/<path> path in Vault
+          # Also stored in 1Password as "k6 Cloud CI/CD Secrets" (Vault is write-only)
+          repo_secrets: |
+            NPM_TOKEN=npm:token
       - uses: actions/checkout@v4
         with:
           fetch-depth: 0 # Fetch all history for all branches and tags
@@ -43,4 +50,4 @@ jobs:
       - run: npm run build
       - run: npm publish --access public
         env:
-          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+          NODE_AUTH_TOKEN: ${{ env.NPM_TOKEN }}
