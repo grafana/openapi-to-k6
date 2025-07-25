@@ -27,3 +27,9 @@ export enum Mode {
   SPLIT = 'split',
   TAGS = 'tags',
 }
+
+export enum EnumGenerationType {
+  ENUM = 'enum',
+  CONST = 'const',
+  UNION = 'union',
+}

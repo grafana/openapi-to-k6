@@ -3,7 +3,7 @@
 import chalk from 'chalk'
 import { Command, InvalidArgumentError } from 'commander'
 import { generateDefaultAnalyticsData, reportUsageAnalytics } from './analytics'
-import { Mode } from './constants'
+import { EnumGenerationType, Mode } from './constants'
 import { NoFilesGeneratedError } from './errors'
 import generateK6SDK from './generator'
 import { getPackageDetails } from './helper'
@@ -28,6 +28,23 @@ function validateMode(value: string): Mode {
   return value as Mode
 }
 
+/**
+ * Validate that the mode argument is one of the supported modes.
+ *
+ * @param {string} value - The mode value to validate
+ * @return {Mode} - The validated mode value
+ */
+function validateEnumGenerationType(value: string): EnumGenerationType {
+  if (
+    !Object.values(EnumGenerationType).includes(value as EnumGenerationType)
+  ) {
+    throw new InvalidArgumentError(
+      `Supported enum generation types: ${Object.values(EnumGenerationType).join(', ')}`
+    )
+  }
+  return value as EnumGenerationType
+}
+
 async function generateSDK({
   openApiPath,
   outputDir,
@@ -35,6 +52,7 @@ async function generateSDK({
   analyticsData,
   mode,
   tags,
+  enumGenerationType,
 }: GenerateK6SDKOptions) {
   logger.logMessage(
     'Generating TypeScript client for k6...\n' +
@@ -45,9 +63,11 @@ async function generateSDK({
       chalk.cyan(outputDir) +
       '\n' +
       (tags?.length
-        ? 'Filtering by tag(s): ' + chalk.cyan(tags.join(', '))
+        ? 'Filtering by tag(s): ' + chalk.cyan(tags.join(', ')) + '\n'
         : '') +
-      '\n'
+      (enumGenerationType
+        ? 'Enum generation type: ' + chalk.cyan(enumGenerationType) + '\n'
+        : '')
   )
 
   await generateK6SDK({
@@ -57,6 +77,7 @@ async function generateSDK({
     analyticsData,
     mode,
     tags,
+    enumGenerationType,
   })
 
   const message = shouldGenerateSampleK6Script
@@ -81,6 +102,12 @@ program
     '--only-tags <filters...>',
     'list of tags to filter on. Generated client will only include operations with these tags'
   )
+  .option(
+    '--enum-generation-type <type>',
+    `Enum generation type to use. Valid values - ${Object.values(EnumGenerationType).join(', ')}`,
+    validateEnumGenerationType,
+    EnumGenerationType.CONST
+  )
   .option('-v, --verbose', 'enable verbose mode to show debug logs')
   .option('--include-sample-script', 'generate a sample k6 script')
   .option('--disable-analytics', 'disable anonymous usage data collection')
@@ -94,6 +121,7 @@ program
         onlyTags?: (string | RegExp)[]
         disableAnalytics?: boolean
         includeSampleScript?: boolean
+        enumGenerationType?: EnumGenerationType
       }
     ) => {
       let analyticsData: AnalyticsData | undefined
@@ -127,6 +155,7 @@ program
           analyticsData,
           mode: options.mode,
           tags: options.onlyTags,
+          enumGenerationType: options.enumGenerationType,
         })
       } catch (error) {
         if (error instanceof NoFilesGeneratedError) {
