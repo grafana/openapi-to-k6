@@ -29,10 +29,10 @@ function validateMode(value: string): Mode {
 }
 
 /**
- * Validate that the mode argument is one of the supported modes.
+ * Validate that the enum generation type argument is one of the supported types.
  *
- * @param {string} value - The mode value to validate
- * @return {Mode} - The validated mode value
+ * @param {string} value - The enum generation type value to validate
+ * @return {EnumGenerationType} - The validated enum generation type value
  */
 function validateEnumGenerationType(value: string): EnumGenerationType {
   if (
