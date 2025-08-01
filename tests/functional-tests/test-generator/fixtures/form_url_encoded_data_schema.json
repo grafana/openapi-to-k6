@@ -87,7 +87,7 @@
     "expectedSubstrings": [
       "export class FormURLEncodedAPIClient",
       "const url = new URL(this.cleanBaseUrl + `/submit-form`);",
-      "const response = http.request( \"POST\", url.toString(), JSON.stringify(postSubmitFormBody), { ...mergedRequestParameters, headers: { ...mergedRequestParameters?.headers, \"Content-Type\": \"application/x-www-form-urlencoded\", }, }, );"
+      "const response = http.request( \"POST\", url.toString(), // k6 accepts JS objects for form URL encoded requests, but all properties must be strings Object.fromEntries( Object.entries(postSubmitFormBody).map(([key, value]) => [ key, String(value), ]), ), { ...mergedRequestParameters, headers: { ...mergedRequestParameters?.headers, \"Content-Type\": \"application/x-www-form-urlencoded\", }, }, );"
     ]
   }
 }

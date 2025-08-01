@@ -10,7 +10,7 @@ import http from 'k6/http'
 import type { Params, Response } from 'k6/http'
 export type PostUploadBody = {
   /** File to upload */
-  file: Blob
+  file: ArrayBuffer
   /** Description of the file */
   description?: string
   /** User ID associated with the upload */
