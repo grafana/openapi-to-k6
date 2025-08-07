@@ -1,0 +1,60 @@
+{
+  "openapi_schema": {
+    "openapi": "3.0.3",
+    "info": {
+      "title": "Example API",
+      "description": "API with enum (const) of query parameters",
+      "version": "1.0.0"
+    },
+    "paths": {
+      "/example": {
+        "get": {
+          "summary": "Get example data",
+          "description": "This endpoint demonstrates the use of enum (const) query parameters",
+          "operationId": "getExampleData",
+          "parameters": [
+            {
+              "name": "status",
+              "in": "query",
+              "required": false,
+              "schema": {
+                "type": "string",
+                "enum": ["active", "inactive"]
+              },
+              "description": "Status filter"
+            }
+          ],
+          "responses": {
+            "200": {
+              "description": "Successful operation",
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "type": "object",
+                    "properties": {
+                      "status": {
+                        "type": "string",
+                        "enum": ["active", "inactive"]
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "expected_sdk": {
+    "fileName": "exampleAPI.ts",
+    "enumGenerationType": "union",
+    "expectedSubstrings": [
+      "export type GetExampleDataStatus = \"active\" | \"inactive\"",
+      "export type GetExampleData200Status = \"active\" | \"inactive\"",
+      "export class ExampleAPIClient {",
+      "this.cleanBaseUrl + `/example` + `?${new URLSearchParams(params).toString()}`",
+      "getExampleData("
+    ]
+  }
+}
