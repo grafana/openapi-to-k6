@@ -1,4 +1,4 @@
-import { Mode } from './constants'
+import { Mode, EnumGenerationType } from './constants'
 
 export interface PackageDetails {
   name: string
@@ -32,4 +32,5 @@ export interface GenerateK6SDKOptions {
   analyticsData?: AnalyticsData
   mode: Mode
   tags?: (string | RegExp)[]
+  enumGenerationType?: EnumGenerationType
 }

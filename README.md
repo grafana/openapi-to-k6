@@ -56,12 +56,16 @@ Following are some of the configuration options supported by the tool.
    3. `tags`: This modes splits your OpenAPI schema based on the tags and generates a separate client for each tag. If a route has no tag set, it will be available in `default.ts` file.
 
    To check how the output looks for each mode, check out the [examples](./examples) directory.
-2. `--only-tags`: Filter the generated client to only include routes with specific tags from your OpenAPI schema. Multiple tags can be specified to include routes matching any of those tags. Routes without tags will be excluded. This is useful for generating focused clients that only contain the endpoints you need.
+2. `--enum-generation-type`: Specify how enums are generated:
+   1. `const`: Generates a const object.
+   2. `enum`: Generates a native enum.
+   3. `union`: Generates a simple union type.
+3. `--only-tags`: Filter the generated client to only include routes with specific tags from your OpenAPI schema. Multiple tags can be specified to include routes matching any of those tags. Routes without tags will be excluded. This is useful for generating focused clients that only contain the endpoints you need.
 e.g. `openapi-to-k6 <path-to-openapi-schema> <output path> --only-tags ItemsHeader` will generate a client with only the routes that have the `ItemsHeader` tag. Multiple tags can be specified by using multiple `--only-tags` flags or by separating them with spaces.
-3. `--disable-analytics`: Disable anonymous usage analytics reporting which helping making the tool better. You can also set an environment variable `DISABLE_ANALYTICS=true` to disable the analytics.
-4. `--include-sample-script`: Generate a sample k6 script. The generated sample script uses the examples defined in the OpenAPI schema requests to make the script usable out of the box. If the examples are not defined, it will use Faker to generate random data.
-5. `--verbose` or `-v` : Enable verbose logging to see more detailed logging output.
-6. `--help` or `-h` : Show help message.
+4. `--disable-analytics`: Disable anonymous usage analytics reporting which helping making the tool better. You can also set an environment variable `DISABLE_ANALYTICS=true` to disable the analytics.
+5. `--include-sample-script`: Generate a sample k6 script. The generated sample script uses the examples defined in the OpenAPI schema requests to make the script usable out of the box. If the examples are not defined, it will use Faker to generate random data.
+6. `--verbose` or `-v` : Enable verbose logging to see more detailed logging output.
+7. `--help` or `-h` : Show help message.
 
 ## Developing locally
 
