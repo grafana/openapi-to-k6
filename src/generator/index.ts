@@ -50,12 +50,22 @@ const afterAllFilesWriteHandler = async (
     // Hence, we manually remove those empty files.
     // Issue link - https://github.com/orval-labs/orval/issues/1691
 
-    if (hasOnlyComments(fs.readFileSync(filePath, 'utf-8'))) {
+    const fileContent = fs.readFileSync(filePath, 'utf-8')
+    if (hasOnlyComments(fileContent)) {
       emptyFileList.push(filePath)
       // Delete the file
       removeSingleFile(filePath)
       continue
     }
+
+    // Replace usages of Blob type with the k6-compatible ArrayBuffer
+    const newFileContent = fileContent.replaceAll(
+      /(^|\W)Blob(?!\w)/g,
+      '$1ArrayBuffer'
+    )
+
+    fs.writeFileSync(filePath, newFileContent)
+
     try {
       await formatFileWithPrettier(filePath)
     } catch (error) {

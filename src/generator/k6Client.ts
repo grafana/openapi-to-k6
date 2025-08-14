@@ -130,8 +130,13 @@ const _getK6RequestOptions = (verbOptions: GeneratorVerbOptions) => {
   if (body.formData) {
     // Use the FormData.body() method to get the body of the request
     fetchBodyOption = 'formData.body()'
-  } else if (body.formUrlEncoded || body.implementation) {
+  } else if (body.contentType === 'application/json') {
     fetchBodyOption = `JSON.stringify(${body.implementation})`
+  } else if (body.formUrlEncoded) {
+    fetchBodyOption = `\n// k6 accepts JS objects for form URL encoded requests, but all properties must be strings`
+    fetchBodyOption += `\nObject.fromEntries(Object.entries(${body.implementation}).map(([key, value]) => [key, String(value)]))`
+  } else if (body.implementation) {
+    fetchBodyOption = body.implementation
   }
 
   // Generate the params input for the call
