@@ -61,7 +61,14 @@ export class FormURLEncodedAPIClient {
     const response = http.request(
       'POST',
       url.toString(),
-      JSON.stringify(postSubmitFormBody),
+
+      // k6 accepts JS objects for form URL encoded requests, but all properties must be strings
+      Object.fromEntries(
+        Object.entries(postSubmitFormBody).map(([key, value]) => [
+          key,
+          String(value),
+        ])
+      ),
       {
         ...mergedRequestParameters,
         headers: {

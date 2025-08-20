@@ -1,0 +1,79 @@
+{
+  "openapi_schema": {
+    "openapi": "3.0.0",
+    "info": {
+      "title": "Binary String API",
+      "version": "1.0.0"
+    },
+    "paths": {
+      "/upload": {
+        "post": {
+          "summary": "Upload binary data",
+          "description": "This endpoint accepts binary data.",
+          "requestBody": {
+            "required": true,
+            "content": {
+              "application/octet-stream": {
+                "schema": {
+                  "type": "string",
+                  "format": "binary"
+                }
+              }
+            }
+          },
+          "responses": {
+            "200": {
+              "description": "File uploaded successfully",
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "type": "object",
+                    "properties": {
+                      "success": {
+                        "type": "boolean",
+                        "example": true
+                      },
+                      "message": {
+                        "type": "string",
+                        "example": "File uploaded successfully"
+                      }
+                    }
+                  }
+                }
+              }
+            },
+            "400": {
+              "description": "Bad Request",
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "type": "object",
+                    "properties": {
+                      "success": {
+                        "type": "boolean",
+                        "example": false
+                      },
+                      "error": {
+                        "type": "string",
+                        "example": "Invalid file or data"
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "expected_sdk": {
+    "fileName": "binaryStringAPI.ts",
+    "expectedSubstrings": [
+      "export class BinaryStringAPIClient",
+      "postUploadBody: ArrayBuffer",
+      "const url = new URL(this.cleanBaseUrl + `/upload`);",
+      "const response = http.request(\"POST\", url.toString(), postUploadBody, { ...mergedRequestParameters, headers: { ...mergedRequestParameters?.headers, \"Content-Type\": \"application/octet-stream\", }, });"
+    ]
+  }
+}
