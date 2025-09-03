@@ -108,6 +108,7 @@ export default async ({
   analyticsData,
   mode,
   tags,
+  enumGenerationType,
 }: GenerateK6SDKOptions) => {
   /**
    * Note!
@@ -128,6 +129,7 @@ export default async ({
           getK6ClientBuilder(shouldGenerateSampleK6Script, analyticsData),
         override: {
           header: generatedFileHeaderGenerator,
+          enumGenerationType: enumGenerationType,
         },
         headers: true,
       },

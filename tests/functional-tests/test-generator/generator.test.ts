@@ -74,6 +74,7 @@ describe('generator', () => {
           openApiPath,
           outputDir: generatedSchemaPath,
           mode: Mode.SINGLE,
+          enumGenerationType: expectedGeneratedCode.enumGenerationType,
         })
 
         const generatedFiles = fs.readdirSync(generatedSchemaPath)
