@@ -32,9 +32,8 @@ function _setDefaultSchemaTitle(context: ContextSpecs) {
   }
 }
 
-function _generateResponseTypeDefinition(response: GetterResponse): string {
+function _getResponseDataType(response: GetterResponse): string {
   let responseDataType = ''
-
   if (
     response.definition.success &&
     !['any', 'unknown'].includes(response.definition.success)
@@ -44,9 +43,13 @@ function _generateResponseTypeDefinition(response: GetterResponse): string {
     responseDataType += 'ResponseBody'
   }
 
+  return responseDataType
+}
+
+function _generateResponseTypeDefinition(response: GetterResponse): string {
   return `{
     response: Response
-    data: ${responseDataType}
+    data: ${_getResponseDataType(response)}
 }`
 }
 
@@ -233,16 +236,18 @@ const generateK6Implementation = (
 
   const options = _getK6RequestOptions(verbOptions)
 
+  const responseDataType = _getResponseDataType(response)
+
   return `${operationName}(\n    ${toObjectString(props, 'implementation')} requestParameters?: Params): ${_generateResponseTypeDefinition(response)} {\n${bodyForm}
         ${urlGeneration}
         const mergedRequestParameters = this._mergeRequestParameters(requestParameters || {}, this.commonRequestParameters);
         const response = http.request(${options});
-        let data;
+        let data: ${responseDataType};
 
         try {
-            data = response.json();
+            data = response.json() as unknown as ${responseDataType};
         } catch {
-            data = response.body;
+            data = JSON.parse(response.body as string) as ${responseDataType};
         }
       return {
         response,
