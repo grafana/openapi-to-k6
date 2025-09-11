@@ -89,10 +89,8 @@ This will generate the SDK files in the corresponding directory.
 4. Import them in your k6 script and run the script using the following command:
 
 ```shell
-k6 run --compatibility-mode=experimental_enhanced <path-to-k6-script>.ts
+k6 run <path-to-k6-script>.ts
 ```
-
-Note: `--compatibility-mode` is needed to use a TypeScript file as k6 script. To learn more about it, click [here](https://grafana.com/docs/k6/latest/using-k6/javascript-typescript-compatibility-mode/).
 
 ## Running E2E tests
 
@@ -120,7 +118,7 @@ npm run dev -- ./schema.json ./sdk.ts
 4. Run the k6 script:
 
 ```shell
-k6 run --compatibility-mode=experimental_enhanced ./K6Script.ts
+k6 run ./K6Script.ts
 ```
 
 ## Packaging
