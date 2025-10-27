@@ -35,14 +35,14 @@ export class SimpleAPIClient {
     response: Response
     data: GetExample200
   } {
-    const url = new URL(this.cleanBaseUrl + `/example`)
+    const k6url = new URL(this.cleanBaseUrl + `/example`)
     const mergedRequestParameters = this._mergeRequestParameters(
       requestParameters || {},
       this.commonRequestParameters
     )
     const response = http.request(
       'GET',
-      url.toString(),
+      k6url.toString(),
       undefined,
       mergedRequestParameters
     )

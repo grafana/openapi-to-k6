@@ -42,7 +42,7 @@ export class ExampleAPIClient {
     response: Response
     data: CreateExampleData201
   } {
-    const url = new URL(
+    const k6url = new URL(
       this.cleanBaseUrl +
         `/example` +
         `?${new URLSearchParams(params).toString()}`
@@ -53,7 +53,7 @@ export class ExampleAPIClient {
     )
     const response = http.request(
       'POST',
-      url.toString(),
+      k6url.toString(),
       JSON.stringify(createExampleDataBody),
       {
         ...mergedRequestParameters,
