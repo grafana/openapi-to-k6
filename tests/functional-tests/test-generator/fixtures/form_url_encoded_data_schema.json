@@ -86,8 +86,8 @@
     "fileName": "formURLEncodedAPI.ts",
     "expectedSubstrings": [
       "export class FormURLEncodedAPIClient",
-      "const url = new URL(this.cleanBaseUrl + `/submit-form`);",
-      "const response = http.request( \"POST\", url.toString(), JSON.stringify(postSubmitFormBody), { ...mergedRequestParameters, headers: { ...mergedRequestParameters?.headers, \"Content-Type\": \"application/x-www-form-urlencoded\", }, }, );"
+      "const k6url = new URL(this.cleanBaseUrl + `/submit-form`);",
+      "const response = http.request( \"POST\", k6url.toString(), JSON.stringify(postSubmitFormBody), { ...mergedRequestParameters, headers: { ...mergedRequestParameters?.headers, \"Content-Type\": \"application/x-www-form-urlencoded\", }, }, );"
     ]
   }
 }

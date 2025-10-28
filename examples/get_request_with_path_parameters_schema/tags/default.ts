@@ -37,14 +37,14 @@ export class DefaultClient {
     response: Response
     data: GetItemById200
   } {
-    const url = new URL(this.cleanBaseUrl + `/items/${id}`)
+    const k6url = new URL(this.cleanBaseUrl + `/items/${id}`)
     const mergedRequestParameters = this._mergeRequestParameters(
       requestParameters || {},
       this.commonRequestParameters
     )
     const response = http.request(
       'GET',
-      url.toString(),
+      k6url.toString(),
       undefined,
       mergedRequestParameters
     )

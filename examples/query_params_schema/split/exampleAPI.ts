@@ -40,7 +40,7 @@ export class ExampleAPIClient {
     response: Response
     data: GetExampleData200
   } {
-    const url = new URL(
+    const k6url = new URL(
       this.cleanBaseUrl +
         `/example` +
         `?${new URLSearchParams(params).toString()}`
@@ -49,7 +49,7 @@ export class ExampleAPIClient {
       requestParameters || {},
       this.commonRequestParameters
     )
-    const response = http.request('GET', url.toString(), undefined, {
+    const response = http.request('GET', k6url.toString(), undefined, {
       ...mergedRequestParameters,
     })
     let data

@@ -41,7 +41,7 @@ export class DefaultClient {
     response: Response
     data: PostSubmitForm200
   } {
-    const url = new URL(
+    const k6url = new URL(
       this.cleanBaseUrl +
         `/submit-form` +
         `?${new URLSearchParams(params).toString()}`
@@ -52,7 +52,7 @@ export class DefaultClient {
     )
     const response = http.request(
       'POST',
-      url.toString(),
+      k6url.toString(),
       JSON.stringify(postSubmitFormBody),
       {
         ...mergedRequestParameters,
