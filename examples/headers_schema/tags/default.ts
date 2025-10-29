@@ -43,12 +43,12 @@ export class DefaultClient {
     response: Response
     data: GetExampleGet200
   } {
-    const url = new URL(this.cleanBaseUrl + `/example-get`)
+    const k6url = new URL(this.cleanBaseUrl + `/example-get`)
     const mergedRequestParameters = this._mergeRequestParameters(
       requestParameters || {},
       this.commonRequestParameters
     )
-    const response = http.request('GET', url.toString(), undefined, {
+    const response = http.request('GET', k6url.toString(), undefined, {
       ...mergedRequestParameters,
       headers: {
         ...mergedRequestParameters?.headers,
@@ -79,14 +79,14 @@ export class DefaultClient {
   ): {
     response: Response
   } {
-    const url = new URL(this.cleanBaseUrl + `/example-post`)
+    const k6url = new URL(this.cleanBaseUrl + `/example-post`)
     const mergedRequestParameters = this._mergeRequestParameters(
       requestParameters || {},
       this.commonRequestParameters
     )
     const response = http.request(
       'POST',
-      url.toString(),
+      k6url.toString(),
       JSON.stringify(postExamplePostBody),
       {
         ...mergedRequestParameters,
@@ -116,14 +116,14 @@ export class DefaultClient {
     response: Response
     data: GetExampleResponseHeaders200
   } {
-    const url = new URL(this.cleanBaseUrl + `/example-response-headers`)
+    const k6url = new URL(this.cleanBaseUrl + `/example-response-headers`)
     const mergedRequestParameters = this._mergeRequestParameters(
       requestParameters || {},
       this.commonRequestParameters
     )
     const response = http.request(
       'GET',
-      url.toString(),
+      k6url.toString(),
       undefined,
       mergedRequestParameters
     )

@@ -66,6 +66,8 @@ function _generateResponseTypeDefinition(response: GetterResponse): string {
 }`
 }
 
+const INTERNAL_URL_TOKEN = 'k6url'
+
 function _getRequestParametersMergerFunctionImplementation() {
   return `/**
  * Merges the provided request parameters with default parameters for the client.
@@ -163,7 +165,7 @@ const _getK6RequestOptions = (verbOptions: GeneratorVerbOptions) => {
   // 'GET', 'http://test.com/route', <body>, <options>
 
   return `"${verb.toUpperCase()}",
-        url.toString(),
+        ${INTERNAL_URL_TOKEN}.toString(),
         ${fetchBodyOption},
         ${requestParametersValue}`
 }
@@ -245,7 +247,8 @@ const generateK6Implementation = (
   if (queryParams) {
     url += '+`?${new URLSearchParams(params).toString()}`'
   }
-  const urlGeneration = `const url = new URL(${url});`
+  const urlGeneration = `const ${INTERNAL_URL_TOKEN} = new URL(${url});`
+
   const options = _getK6RequestOptions(verbOptions)
   const shouldJsonParseResponse = _shouldJsonParseResponse(response)
 

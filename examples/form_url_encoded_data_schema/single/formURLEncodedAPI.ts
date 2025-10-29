@@ -53,14 +53,14 @@ export class FormURLEncodedAPIClient {
     response: Response
     data: PostSubmitForm200
   } {
-    const url = new URL(this.cleanBaseUrl + `/submit-form`)
+    const k6url = new URL(this.cleanBaseUrl + `/submit-form`)
     const mergedRequestParameters = this._mergeRequestParameters(
       requestParameters || {},
       this.commonRequestParameters
     )
     const response = http.request(
       'POST',
-      url.toString(),
+      k6url.toString(),
       JSON.stringify(postSubmitFormBody),
       {
         ...mergedRequestParameters,

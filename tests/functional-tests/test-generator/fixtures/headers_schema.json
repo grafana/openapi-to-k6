@@ -152,12 +152,12 @@
     "expectedSubstrings": [
       "export class HeaderDemoAPIClient",
       "getExampleGet( headers?: GetExampleGetHeaders, requestParameters?: Params, ): { response: Response; data: GetExampleGet200; }",
-      "response = http.request(\"GET\", url.toString(), undefined, { ...mergedRequestParameters, headers: { ...mergedRequestParameters?.headers, // In the schema, headers can be of any type like number but k6 accepts only strings as headers, hence converting all headers to string ...Object.fromEntries( Object.entries(headers || {}).map(([key, value]) => [ key, String(value), ]), ), }, });",
+      "response = http.request(\"GET\", k6url.toString(), undefined, { ...mergedRequestParameters, headers: { ...mergedRequestParameters?.headers, // In the schema, headers can be of any type like number but k6 accepts only strings as headers, hence converting all headers to string ...Object.fromEntries( Object.entries(headers || {}).map(([key, value]) => [ key, String(value), ]), ), }, });",
       "const data = response.json() as GetExampleGet200;",
       "postExamplePost( postExamplePostBody: PostExamplePostBody, headers: PostExamplePostHeaders, requestParameters?: Params, ): { response: Response; }",
-      "response = http.request( \"POST\", url.toString(), JSON.stringify(postExamplePostBody), { ...mergedRequestParameters, headers: { ...mergedRequestParameters?.headers, \"Content-Type\": \"application/json\", // In the schema, headers can be of any type like number but k6 accepts only strings as headers, hence converting all headers to string ...Object.fromEntries( Object.entries(headers || {}).map(([key, value]) => [ key, String(value), ]), ), }, }, );",
+      "response = http.request( \"POST\", k6url.toString(), JSON.stringify(postExamplePostBody), { ...mergedRequestParameters, headers: { ...mergedRequestParameters?.headers, \"Content-Type\": \"application/json\", // In the schema, headers can be of any type like number but k6 accepts only strings as headers, hence converting all headers to string ...Object.fromEntries( Object.entries(headers || {}).map(([key, value]) => [ key, String(value), ]), ), }, }, );",
       "getExampleResponseHeaders(requestParameters?: Params): { response: Response; data: GetExampleResponseHeaders200; }",
-      "response = http.request( \"GET\", url.toString(), undefined, mergedRequestParameters, );"
+      "response = http.request( \"GET\", k6url.toString(), undefined, mergedRequestParameters, );"
     ]
   }
 }

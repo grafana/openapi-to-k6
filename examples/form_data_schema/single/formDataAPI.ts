@@ -61,12 +61,12 @@ export class FormDataAPIClient {
     }
     formData.append('userId', postUploadBody.userId)
 
-    const url = new URL(this.cleanBaseUrl + `/upload`)
+    const k6url = new URL(this.cleanBaseUrl + `/upload`)
     const mergedRequestParameters = this._mergeRequestParameters(
       requestParameters || {},
       this.commonRequestParameters
     )
-    const response = http.request('POST', url.toString(), formData.body(), {
+    const response = http.request('POST', k6url.toString(), formData.body(), {
       ...mergedRequestParameters,
       headers: {
         ...mergedRequestParameters?.headers,

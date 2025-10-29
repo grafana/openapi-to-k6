@@ -76,14 +76,14 @@ export class ExampleAPIClient {
     response: Response
     data: CreateExampleData201
   } {
-    const url = new URL(this.cleanBaseUrl + `/example`)
+    const k6url = new URL(this.cleanBaseUrl + `/example`)
     const mergedRequestParameters = this._mergeRequestParameters(
       requestParameters || {},
       this.commonRequestParameters
     )
     const response = http.request(
       'POST',
-      url.toString(),
+      k6url.toString(),
       JSON.stringify(createExampleDataBody),
       {
         ...mergedRequestParameters,

@@ -60,7 +60,7 @@
     "fileName": "simpleAPI.ts",
     "expectedSubstrings": [
       "getItemById( id: string, requestParameters?: Params, ): ",
-      "const url = new URL(this.cleanBaseUrl + `/items/${id}`);"
+      "const k6url = new URL(this.cleanBaseUrl + `/items/${id}`);"
     ]
   }
 }
