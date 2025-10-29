@@ -32,21 +32,37 @@ function _setDefaultSchemaTitle(context: ContextSpecs) {
   }
 }
 
-function _generateResponseTypeDefinition(response: GetterResponse): string {
-  let responseDataType = ''
+function _isVoidResponse(response: GetterResponse): boolean {
+  return response.definition.success === 'void'
+}
 
-  if (
-    response.definition.success &&
-    !['any', 'unknown'].includes(response.definition.success)
-  ) {
-    responseDataType += response.definition.success
+function _isValidResponse(response: GetterResponse): boolean {
+  return (
+    !!response.definition.success &&
+    !['any', 'unknown'].includes(response.definition.success) &&
+    _shouldJsonParseResponse(response)
+  )
+}
+
+function _shouldJsonParseResponse(response: GetterResponse): boolean {
+  return (
+    response.contentTypes.length === 1 &&
+    response.contentTypes[0] === 'application/json'
+  )
+}
+
+function _getResponseDataType(response: GetterResponse): string {
+  if (_isValidResponse(response)) {
+    return response.definition.success
   } else {
-    responseDataType += 'ResponseBody'
+    return 'ResponseBody'
   }
+}
 
+function _generateResponseTypeDefinition(response: GetterResponse): string {
   return `{
     response: Response
-    data: ${responseDataType}
+    ${_isVoidResponse(response) ? '' : `data: ${_getResponseDataType(response)}`}
 }`
 }
 
@@ -230,23 +246,27 @@ const generateK6Implementation = (
     url += '+`?${new URLSearchParams(params).toString()}`'
   }
   const urlGeneration = `const url = new URL(${url});`
-
   const options = _getK6RequestOptions(verbOptions)
+  const shouldJsonParseResponse = _shouldJsonParseResponse(response)
+
+  let dataVar = 'const data = '
+  if (_isVoidResponse(response)) {
+    dataVar = ''
+  } else if (shouldJsonParseResponse) {
+    dataVar += `response.json() as ${_getResponseDataType(response)};`
+  } else {
+    dataVar += 'response.body;'
+  }
 
   return `${operationName}(\n    ${toObjectString(props, 'implementation')} requestParameters?: Params): ${_generateResponseTypeDefinition(response)} {\n${bodyForm}
         ${urlGeneration}
         const mergedRequestParameters = this._mergeRequestParameters(requestParameters || {}, this.commonRequestParameters);
         const response = http.request(${options});
-        let data;
-
-        try {
-            data = response.json();
-        } catch {
-            data = response.body;
-        }
+        ${dataVar}
+        
       return {
         response,
-        data
+        ${_isVoidResponse(response) ? '' : 'data,'}
       }
     }
   `

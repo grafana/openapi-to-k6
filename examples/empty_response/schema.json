@@ -1,0 +1,20 @@
+{
+  "openapi": "3.0.3",
+  "info": {
+    "title": "Example API",
+    "description": "API with all formats of data in the POST request body",
+    "version": "1.0.0"
+  },
+  "paths": {
+    "/empty-response": {
+      "post": {
+        "operationId": "empty-response",
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        }
+      }
+    }
+  }
+}

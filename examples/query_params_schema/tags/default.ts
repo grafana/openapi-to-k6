@@ -52,13 +52,8 @@ export class DefaultClient {
     const response = http.request('GET', url.toString(), undefined, {
       ...mergedRequestParameters,
     })
-    let data
+    const data = response.json() as GetExampleData200
 
-    try {
-      data = response.json()
-    } catch {
-      data = response.body
-    }
     return {
       response,
       data,

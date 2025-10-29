@@ -56,13 +56,8 @@ export class FormDataAPIClient {
         'Content-Type': 'multipart/form-data; boundary=' + formData.boundary,
       },
     })
-    let data
+    const data = response.json() as PostUpload200
 
-    try {
-      data = response.json()
-    } catch {
-      data = response.body
-    }
     return {
       response,
       data,

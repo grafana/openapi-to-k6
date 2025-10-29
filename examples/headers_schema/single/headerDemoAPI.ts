@@ -79,13 +79,8 @@ export class HeaderDemoAPIClient {
         ),
       },
     })
-    let data
+    const data = response.json() as GetExampleGet200
 
-    try {
-      data = response.json()
-    } catch {
-      data = response.body
-    }
     return {
       response,
       data,
@@ -102,7 +97,6 @@ export class HeaderDemoAPIClient {
     requestParameters?: Params
   ): {
     response: Response
-    data: void
   } {
     const url = new URL(this.cleanBaseUrl + `/example-post`)
     const mergedRequestParameters = this._mergeRequestParameters(
@@ -128,16 +122,9 @@ export class HeaderDemoAPIClient {
         },
       }
     )
-    let data
 
-    try {
-      data = response.json()
-    } catch {
-      data = response.body
-    }
     return {
       response,
-      data,
     }
   }
 
@@ -160,13 +147,8 @@ export class HeaderDemoAPIClient {
       undefined,
       mergedRequestParameters
     )
-    let data
+    const data = response.json() as GetExampleResponseHeaders200
 
-    try {
-      data = response.json()
-    } catch {
-      data = response.body
-    }
     return {
       response,
       data,
