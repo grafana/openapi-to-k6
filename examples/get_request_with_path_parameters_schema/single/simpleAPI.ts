@@ -52,13 +52,8 @@ export class SimpleAPIClient {
       undefined,
       mergedRequestParameters
     )
-    let data
+    response.json() as GetItemById200
 
-    try {
-      data = response.json()
-    } catch {
-      data = response.body
-    }
     return {
       response,
       data,

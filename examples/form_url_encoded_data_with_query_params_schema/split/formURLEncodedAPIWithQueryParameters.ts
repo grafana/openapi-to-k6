@@ -62,13 +62,8 @@ export class FormURLEncodedAPIWithQueryParametersClient {
         },
       }
     )
-    let data
+    response.json() as PostSubmitForm200
 
-    try {
-      data = response.json()
-    } catch {
-      data = response.body
-    }
     return {
       response,
       data,
