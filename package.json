@@ -22,7 +22,7 @@
   "license": "AGPL-3.0",
   "dependencies": {
     "@faker-js/faker": "^9.2.0",
-    "@types/k6": "^0.57.0",
+    "@types/k6": "^1.0.0",
     "axios": "^1.7.7",
     "chalk": "^4.1.2",
     "commander": "^12.1.0",
