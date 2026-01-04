@@ -19,6 +19,7 @@ import {
 import { DEFAULT_SCHEMA_TITLE } from '../constants'
 import { AnalyticsData } from '../type'
 import { k6ScriptBuilder } from './k6ScriptBuilder'
+import { jsStringEscape } from 'orval'
 /**
  * In case the supplied schema does not have a title set, it will set the default title to ensure
  * proper client generation
@@ -47,6 +48,7 @@ function _generateResponseTypeDefinition(response: GetterResponse): string {
   return `{
     response: Response
     data: ${responseDataType}
+    operationId: string
 }`
 }
 
@@ -207,6 +209,7 @@ const generateK6Implementation = (
   const {
     queryParams,
     operationName,
+    operationId,
     response,
     body,
     props,
@@ -248,7 +251,8 @@ const generateK6Implementation = (
         }
       return {
         response,
-        data
+        data,
+        operationId: '${jsStringEscape(operationId)}'
       }
     }
   `
