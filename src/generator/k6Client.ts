@@ -15,11 +15,11 @@ import {
   pascal,
   sanitize,
   toObjectString,
+  jsStringEscape,
 } from '@orval/core'
 import { DEFAULT_SCHEMA_TITLE } from '../constants'
 import { AnalyticsData } from '../type'
 import { k6ScriptBuilder } from './k6ScriptBuilder'
-import { jsStringEscape } from 'orval'
 /**
  * In case the supplied schema does not have a title set, it will set the default title to ensure
  * proper client generation
