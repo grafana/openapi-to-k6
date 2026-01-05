@@ -38,6 +38,7 @@ export class DefaultClient {
   ): {
     response: Response
     data: PostSubmitForm200
+    operationId: string
   } {
     const k6url = new URL(this.cleanBaseUrl + `/submit-form`)
     const mergedRequestParameters = this._mergeRequestParameters(
@@ -66,6 +67,7 @@ export class DefaultClient {
     return {
       response,
       data,
+      operationId: 'PostSubmitForm',
     }
   }
 

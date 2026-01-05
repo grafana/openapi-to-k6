@@ -28,7 +28,10 @@ const commonSubstringsForAllSDK = [
   'Service version',
   'const mergedRequestParameters = this._mergeRequestParameters( requestParameters || {}, this.commonRequestParameters, );',
   'try { data = response.json(); } catch { data = response.body; }',
-  'return { response, data, };',
+]
+
+const commonMatchesForAllSDK = [
+  /return { response, data, operationId: "[^"]*", };/,
 ]
 
 const commonSubstringsForK6SampleScript = [`const baseUrl = "<BASE_URL>";`]
@@ -94,6 +97,11 @@ describe('generator', () => {
           expect(
             replaceSpacesAndNewLineToSingleSpace(generatedContent)
           ).toContain(expectedString)
+        }
+        for (const expectedToMatch of commonMatchesForAllSDK) {
+          expect(
+            replaceSpacesAndNewLineToSingleSpace(generatedContent)
+          ).toMatch(expectedToMatch)
         }
       })
 
