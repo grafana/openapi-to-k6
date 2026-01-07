@@ -40,6 +40,7 @@ export class DefaultClient {
   ): {
     response: Response
     data: PostSubmitForm200
+    operationId: string
   } {
     const k6url = new URL(
       this.cleanBaseUrl +
@@ -72,6 +73,7 @@ export class DefaultClient {
     return {
       response,
       data,
+      operationId: 'PostSubmitForm',
     }
   }
 

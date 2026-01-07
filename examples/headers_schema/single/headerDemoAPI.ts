@@ -60,6 +60,7 @@ export class HeaderDemoAPIClient {
   ): {
     response: Response
     data: GetExampleGet200
+    operationId: string
   } {
     const k6url = new URL(this.cleanBaseUrl + `/example-get`)
     const mergedRequestParameters = this._mergeRequestParameters(
@@ -89,6 +90,7 @@ export class HeaderDemoAPIClient {
     return {
       response,
       data,
+      operationId: 'GetExampleGet',
     }
   }
 
@@ -103,6 +105,7 @@ export class HeaderDemoAPIClient {
   ): {
     response: Response
     data: void
+    operationId: string
   } {
     const k6url = new URL(this.cleanBaseUrl + `/example-post`)
     const mergedRequestParameters = this._mergeRequestParameters(
@@ -138,6 +141,7 @@ export class HeaderDemoAPIClient {
     return {
       response,
       data,
+      operationId: 'PostExamplePost',
     }
   }
 
@@ -148,6 +152,7 @@ export class HeaderDemoAPIClient {
   getExampleResponseHeaders(requestParameters?: Params): {
     response: Response
     data: GetExampleResponseHeaders200
+    operationId: string
   } {
     const k6url = new URL(this.cleanBaseUrl + `/example-response-headers`)
     const mergedRequestParameters = this._mergeRequestParameters(
@@ -170,6 +175,7 @@ export class HeaderDemoAPIClient {
     return {
       response,
       data,
+      operationId: 'GetExampleResponseHeaders',
     }
   }
 

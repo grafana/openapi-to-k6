@@ -36,6 +36,7 @@ export class DefaultClient {
   ): {
     response: Response
     data: PostUpload200
+    operationId: string
   } {
     const formData = new FormData()
     formData.append('file', postUploadBody.file)
@@ -66,6 +67,7 @@ export class DefaultClient {
     return {
       response,
       data,
+      operationId: 'PostUpload',
     }
   }
 

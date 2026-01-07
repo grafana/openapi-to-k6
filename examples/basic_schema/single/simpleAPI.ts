@@ -34,6 +34,7 @@ export class SimpleAPIClient {
   getExample(requestParameters?: Params): {
     response: Response
     data: GetExample200
+    operationId: string
   } {
     const k6url = new URL(this.cleanBaseUrl + `/example`)
     const mergedRequestParameters = this._mergeRequestParameters(
@@ -56,6 +57,7 @@ export class SimpleAPIClient {
     return {
       response,
       data,
+      operationId: 'GetExample',
     }
   }
 

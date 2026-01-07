@@ -15,6 +15,7 @@ import {
   pascal,
   sanitize,
   toObjectString,
+  jsStringEscape,
 } from '@orval/core'
 import { DEFAULT_SCHEMA_TITLE } from '../constants'
 import { AnalyticsData } from '../type'
@@ -47,6 +48,7 @@ function _generateResponseTypeDefinition(response: GetterResponse): string {
   return `{
     response: Response
     data: ${responseDataType}
+    operationId: string
 }`
 }
 
@@ -207,6 +209,7 @@ const generateK6Implementation = (
   const {
     queryParams,
     operationName,
+    operationId,
     response,
     body,
     props,
@@ -248,7 +251,8 @@ const generateK6Implementation = (
         }
       return {
         response,
-        data
+        data,
+        operationId: '${jsStringEscape(operationId)}'
       }
     }
   `

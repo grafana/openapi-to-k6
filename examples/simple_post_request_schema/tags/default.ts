@@ -39,6 +39,7 @@ export class DefaultClient {
   ): {
     response: Response
     data: CreateExampleData201
+    operationId: string
   } {
     const k6url = new URL(this.cleanBaseUrl + `/example`)
     const mergedRequestParameters = this._mergeRequestParameters(
@@ -67,6 +68,7 @@ export class DefaultClient {
     return {
       response,
       data,
+      operationId: 'createExampleData',
     }
   }
 
