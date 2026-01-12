@@ -27,7 +27,6 @@ const commonSubstringsForAllSDK = [
   'Do not edit manually',
   'Service version',
   'const mergedRequestParameters = this._mergeRequestParameters( requestParameters || {}, this.commonRequestParameters, );',
-  'try { data = response.json(); } catch { data = response.body; }',
   'return { response, data, };',
 ]
 

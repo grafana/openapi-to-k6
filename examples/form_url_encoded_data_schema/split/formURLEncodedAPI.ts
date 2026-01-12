@@ -56,13 +56,8 @@ export class FormURLEncodedAPIClient {
         },
       }
     )
-    let data
+    const data = response.json() as PostSubmitForm200
 
-    try {
-      data = response.json()
-    } catch {
-      data = response.body
-    }
     return {
       response,
       data,

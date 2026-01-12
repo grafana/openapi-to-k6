@@ -43,13 +43,8 @@ export class DefaultClient {
       undefined,
       mergedRequestParameters
     )
-    let data
+    const data = response.json() as GetExample200
 
-    try {
-      data = response.json()
-    } catch {
-      data = response.body
-    }
     return {
       response,
       data,

@@ -8,10 +8,6 @@
 import { URL } from 'https://jslib.k6.io/url/1.0.0/index.js'
 import http from 'k6/http'
 import type { Params, Response } from 'k6/http'
-import type {
-  CreateExampleData201,
-  CreateExampleDataBody,
-} from './exampleAPI.schemas'
 
 /**
  * This is the base client to use for interacting with the API.
@@ -29,39 +25,23 @@ export class ExampleAPIClient {
     this.commonRequestParameters = clientOptions.commonRequestParameters || {}
   }
 
-  /**
-   * This endpoint demonstrates the use of various data formats in the input body
-   * @summary Create example data
-   */
-  createExampleData(
-    createExampleDataBody: CreateExampleDataBody,
-    requestParameters?: Params
-  ): {
+  emptyResponse(requestParameters?: Params): {
     response: Response
-    data: CreateExampleData201
   } {
-    const k6url = new URL(this.cleanBaseUrl + `/example`)
+    const url = new URL(this.cleanBaseUrl + `/empty-response`)
     const mergedRequestParameters = this._mergeRequestParameters(
       requestParameters || {},
       this.commonRequestParameters
     )
     const response = http.request(
       'POST',
-      k6url.toString(),
-      JSON.stringify(createExampleDataBody),
-      {
-        ...mergedRequestParameters,
-        headers: {
-          ...mergedRequestParameters?.headers,
-          'Content-Type': 'application/json',
-        },
-      }
+      url.toString(),
+      undefined,
+      mergedRequestParameters
     )
-    const data = response.json() as CreateExampleData201
 
     return {
       response,
-      data,
     }
   }
 

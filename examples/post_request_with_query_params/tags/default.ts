@@ -63,13 +63,8 @@ export class DefaultClient {
         },
       }
     )
-    let data
+    const data = response.json() as CreateExampleData201
 
-    try {
-      data = response.json()
-    } catch {
-      data = response.body
-    }
     return {
       response,
       data,
