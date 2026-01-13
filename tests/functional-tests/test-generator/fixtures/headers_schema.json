@@ -151,11 +151,11 @@
     "fileName": "headerDemoAPI.ts",
     "expectedSubstrings": [
       "export class HeaderDemoAPIClient",
-      "getExampleGet( headers?: GetExampleGetHeaders, requestParameters?: Params, ): { response: Response; data: GetExampleGet200; }",
+      "getExampleGet( headers?: GetExampleGetHeaders, requestParameters?: Params, ): { response: Response; data: GetExampleGet200; operationId: string; }",
       "response = http.request(\"GET\", k6url.toString(), undefined, { ...mergedRequestParameters, headers: { ...mergedRequestParameters?.headers, // In the schema, headers can be of any type like number but k6 accepts only strings as headers, hence converting all headers to string ...Object.fromEntries( Object.entries(headers || {}).map(([key, value]) => [ key, String(value), ]), ), }, });",
-      "postExamplePost( postExamplePostBody: PostExamplePostBody, headers: PostExamplePostHeaders, requestParameters?: Params, ): { response: Response; data: void; }",
+      "postExamplePost( postExamplePostBody: PostExamplePostBody, headers: PostExamplePostHeaders, requestParameters?: Params, ): { response: Response; data: void; operationId: string; }",
       "response = http.request( \"POST\", k6url.toString(), JSON.stringify(postExamplePostBody), { ...mergedRequestParameters, headers: { ...mergedRequestParameters?.headers, \"Content-Type\": \"application/json\", // In the schema, headers can be of any type like number but k6 accepts only strings as headers, hence converting all headers to string ...Object.fromEntries( Object.entries(headers || {}).map(([key, value]) => [ key, String(value), ]), ), }, }, );",
-      "getExampleResponseHeaders(requestParameters?: Params): { response: Response; data: GetExampleResponseHeaders200; }",
+      "getExampleResponseHeaders(requestParameters?: Params): { response: Response; data: GetExampleResponseHeaders200; operationId: string; }",
       "response = http.request( \"GET\", k6url.toString(), undefined, mergedRequestParameters, );"
     ]
   }
