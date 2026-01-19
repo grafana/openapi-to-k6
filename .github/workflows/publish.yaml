@@ -9,7 +9,7 @@ jobs:
   build:
     runs-on: ubuntu-latest
     permissions:
-      contents: write
+      contents: read
       packages: write
       id-token: write
     steps:
@@ -22,7 +22,6 @@ jobs:
       - uses: actions/checkout@8e8c483db84b4bee98b60c0593521ed34d9990e8 # v6
         with:
           fetch-depth: 0 # Fetch all history for all branches and tags
-          persist-credentials: true # persist credentials to push changes to the repository
       - uses: actions/setup-node@395ad3262231945c25e8478fd5baf05154b1d79f # v6
         with:
           node-version: '21'
@@ -31,22 +30,37 @@ jobs:
           cache: 'npm'
           cache-dependency-path: 'package-lock.json'
       - run: npm ci
-      - name: Update version in package.json
+      - name: Validate version matches release tag
         env:
-          NEW_VERSION: ${{ github.event.release.tag_name }}
+          RELEASE_TAG: ${{ github.event.release.tag_name }}
         run: |
-          npm version "$NEW_VERSION" --no-git-tag-version
+          # Remove 'v' prefix from tag if present (e.g., v1.2.3 -> 1.2.3)
+          EXPECTED_VERSION="${RELEASE_TAG#v}"
+
+          # Get version from package.json
+          PACKAGE_VERSION=$(node -p "require('./package.json').version")
+
+          echo "Release tag: $RELEASE_TAG"
+          echo "Expected version: $EXPECTED_VERSION"
+          echo "Package.json version: $PACKAGE_VERSION"
+
+          if [ "$PACKAGE_VERSION" != "$EXPECTED_VERSION" ]; then
+            echo "Error: package.json version ($PACKAGE_VERSION) does not match release tag ($RELEASE_TAG)"
+            exit 1
+          fi
+
+          echo "✓ Version validation passed"
+
       - name: Update generated examples
         run: npm run update-examples
-      - name: Commit updated package.json
-        env:
-          VERSION_TAG: ${{ github.event.release.tag_name }}
+      - name: Verify examples are up to date
         run: |
-          git config --global user.name 'github-actions[bot]'
-          git config --global user.email 'github-actions[bot]@users.noreply.github.com'
-          git add package.json package-lock.json examples/
-          git commit -m "Update package.json version to $VERSION_TAG"
-          git push origin HEAD:main
+          if [ "$(git diff --ignore-space-at-eol --text examples/ | wc -l)" -gt "0" ]; then
+            echo "Error: Generated examples are out of date. Please run 'npm run update-examples' and commit the changes before creating a release."
+            git diff --ignore-space-at-eol --text examples/
+            exit 1
+          fi
+          echo "✓ Examples are up to date"
       - run: npm run build
       - run: npm publish --access public
         env:
