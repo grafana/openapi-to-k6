@@ -242,7 +242,7 @@ const generateK6Implementation = (
         ${urlGeneration}
         const mergedRequestParameters = this._mergeRequestParameters(requestParameters || {}, this.commonRequestParameters);
         const response = http.request(${options});
-        let data;
+        let data: any;
 
         try {
             data = response.json();
