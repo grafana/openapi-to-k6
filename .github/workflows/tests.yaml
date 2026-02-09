@@ -44,7 +44,7 @@ jobs:
           npm run dev -- ./tests/e2e/schema.json ./tests/e2e/tags/sdk.ts --disable-analytics --mode tags
           npm run dev -- ./tests/e2e/schema.json ./tests/e2e/single-tag-filter/sdk.ts --disable-analytics --mode single --only-tags ItemsHeader
       - name: Start Mockoon CLI
-        uses: mockoon/cli-action@971589e873f22f7c9604e4236d6dfae3164efa6c # v2 - https://github.com/mockoon/cli-action/commit/971589e873f22f7c9604e4236d6dfae3164efa6c
+        uses: mockoon/cli-action@b935e787f80cca275e3834423e7bffb6256180e2 # v3 - https://github.com/mockoon/cli-action/commit/971589e873f22f7c9604e4236d6dfae3164efa6c
         with:
           # Mockoon local data file or URL
           data-file: './tests/e2e/schema.json'
