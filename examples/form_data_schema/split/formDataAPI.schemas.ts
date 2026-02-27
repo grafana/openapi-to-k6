@@ -6,7 +6,7 @@
  */
 export type PostUploadBody = {
   /** File to upload */
-  file: Blob
+  file: ArrayBuffer
   /** Description of the file */
   description?: string
   /** User ID associated with the upload */
