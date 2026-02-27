@@ -3,7 +3,8 @@ name: Run Tests
 on:
   push:
     branches:
-      - "**"
+      - main
+  pull_request:
 
 jobs:
   test:
@@ -11,10 +12,10 @@ jobs:
     permissions:
       contents: read
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6
         with:
           persist-credentials: false
-      - uses: actions/setup-node@v4
+      - uses: actions/setup-node@6044e13b5dc448c55e2357c09f80417699197238 # v6
         with:
           node-version: '21'
           cache: 'npm'
@@ -27,10 +28,10 @@ jobs:
     permissions:
       contents: read
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6
         with:
           persist-credentials: false
-      - uses: actions/setup-node@v4
+      - uses: actions/setup-node@6044e13b5dc448c55e2357c09f80417699197238 # v6
         with:
           node-version: '21'
           cache: 'npm'
@@ -43,13 +44,13 @@ jobs:
           npm run dev -- ./tests/e2e/schema.json ./tests/e2e/tags/sdk.ts --disable-analytics --mode tags
           npm run dev -- ./tests/e2e/schema.json ./tests/e2e/single-tag-filter/sdk.ts --disable-analytics --mode single --only-tags ItemsHeader
       - name: Start Mockoon CLI
-        uses: mockoon/cli-action@971589e873f22f7c9604e4236d6dfae3164efa6c # v2 - https://github.com/mockoon/cli-action/commit/971589e873f22f7c9604e4236d6dfae3164efa6c
+        uses: mockoon/cli-action@b935e787f80cca275e3834423e7bffb6256180e2 # v3 - https://github.com/mockoon/cli-action/commit/971589e873f22f7c9604e4236d6dfae3164efa6c
         with:
           # Mockoon local data file or URL
           data-file: './tests/e2e/schema.json'
           port: 3000
-      - uses: grafana/setup-k6-action@v1
-      - uses: grafana/run-k6-action@v1
+      - uses: grafana/setup-k6-action@ffe7d7290dfa715e48c2ccc924d068444c94bde2 # v1
+      - uses: grafana/run-k6-action@a15e2072ede004e8d46141e33d7f7dad8ad08d9d # v1
         with:
           path: './tests/e2e/*/k6Script.ts'
           flags: '--compatibility-mode=experimental_enhanced'
@@ -59,10 +60,10 @@ jobs:
     permissions:
       contents: read
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6
         with:
           persist-credentials: false
-      - uses: actions/setup-node@v4
+      - uses: actions/setup-node@6044e13b5dc448c55e2357c09f80417699197238 # v6
         with:
           node-version: '21'
           cache: 'npm'

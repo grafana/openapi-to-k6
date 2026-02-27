@@ -15,6 +15,7 @@ import {
   pascal,
   sanitize,
   toObjectString,
+  jsStringEscape,
 } from '@orval/core'
 import { DEFAULT_SCHEMA_TITLE } from '../constants'
 import { AnalyticsData } from '../type'
@@ -47,8 +48,11 @@ function _generateResponseTypeDefinition(response: GetterResponse): string {
   return `{
     response: Response
     data: ${responseDataType}
+    operationId: string
 }`
 }
+
+const INTERNAL_URL_TOKEN = 'k6url'
 
 function _getRequestParametersMergerFunctionImplementation() {
   return `/**
@@ -152,7 +156,7 @@ const _getK6RequestOptions = (verbOptions: GeneratorVerbOptions) => {
   // 'GET', 'http://test.com/route', <body>, <options>
 
   return `"${verb.toUpperCase()}",
-        url.toString(),
+        ${INTERNAL_URL_TOKEN}.toString(),
         ${fetchBodyOption},
         ${requestParametersValue}`
 }
@@ -210,6 +214,7 @@ const generateK6Implementation = (
   const {
     queryParams,
     operationName,
+    operationId,
     response,
     body,
     props,
@@ -234,7 +239,7 @@ const generateK6Implementation = (
   if (queryParams) {
     url += '+`?${new URLSearchParams(params).toString()}`'
   }
-  const urlGeneration = `const url = new URL(${url});`
+  const urlGeneration = `const ${INTERNAL_URL_TOKEN} = new URL(${url});`
 
   const options = _getK6RequestOptions(verbOptions)
 
@@ -251,7 +256,8 @@ const generateK6Implementation = (
         }
       return {
         response,
-        data
+        data,
+        operationId: '${jsStringEscape(operationId)}'
       }
     }
   `
