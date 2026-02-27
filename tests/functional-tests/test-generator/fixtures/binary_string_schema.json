@@ -72,8 +72,8 @@
     "expectedSubstrings": [
       "export class BinaryStringAPIClient",
       "postUploadBody: ArrayBuffer",
-      "const url = new URL(this.cleanBaseUrl + `/upload`);",
-      "const response = http.request(\"POST\", url.toString(), postUploadBody, { ...mergedRequestParameters, headers: { ...mergedRequestParameters?.headers, \"Content-Type\": \"application/octet-stream\", }, });"
+      "const k6url = new URL(this.cleanBaseUrl + `/upload`);",
+      "const response = http.request(\"POST\", k6url.toString(), postUploadBody, { ...mergedRequestParameters, headers: { ...mergedRequestParameters?.headers, \"Content-Type\": \"application/octet-stream\", }, });"
     ]
   }
 }
