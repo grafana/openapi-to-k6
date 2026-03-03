@@ -3,7 +3,7 @@ import {
   camel,
   ClientExtraFilesBuilder,
   ClientFileBuilder,
-  ContextSpecs,
+  ContextSpec,
   GeneratorVerbOptions,
   GetterPropType,
   kebab,
@@ -11,15 +11,13 @@ import {
   pascal,
   resolveRef,
   toObjectString,
+  OpenApiOperationObject,
+  OpenApiParameterObject,
+  OpenApiReferenceObject,
+  OpenApiRequestBodyObject,
+  OpenApiSchemaObject,
 } from '@orval/core'
 import Handlebars from 'handlebars'
-import {
-  OperationObject,
-  ParameterObject,
-  ReferenceObject,
-  RequestBodyObject,
-  SchemaObject,
-} from 'openapi3-ts/oas30'
 import path from 'path'
 import {
   DEFAULT_SCHEMA_TITLE,
@@ -31,17 +29,27 @@ import { logger } from '../logger'
 import { generateTitle } from './k6Client'
 
 function getExampleValueForSchema(
-  schema: SchemaObject | ReferenceObject,
-  context: ContextSpecs
+  schema: OpenApiSchemaObject | OpenApiReferenceObject,
+  context: ContextSpec
 ) {
   // Handle $ref
   if ('$ref' in schema) {
     const { schema: resolvedSchema } = resolveRef(schema, context)
-    return getExampleValueForSchema(resolvedSchema as SchemaObject, context)
+    return getExampleValueForSchema(
+      resolvedSchema as OpenApiSchemaObject,
+      context
+    )
   }
 
   if ('example' in schema) {
     return `'${schema.example}'`
+  }
+  if (
+    'examples' in schema &&
+    Array.isArray(schema.examples) &&
+    schema.examples.length > 0
+  ) {
+    return `'${schema.examples[0]}'`
   }
   let schemaType = schema.type
   if (Array.isArray(schemaType)) {
@@ -84,8 +92,8 @@ function getExampleValueForSchema(
 
 function getExampleValues(
   requiredProps: GeneratorVerbOptions['props'],
-  originalOperation: OperationObject,
-  context: ContextSpecs
+  originalOperation: OpenApiOperationObject,
+  context: ContextSpec
 ): string {
   let exampleValues = ''
   for (const prop of requiredProps) {
@@ -95,13 +103,11 @@ function getExampleValues(
       case GetterPropType.QUERY_PARAM: {
         let exampleValue = '{\n'
         for (const param of originalOperation.parameters || []) {
-          let resolvedParam: ParameterObject | ReferenceObject
+          let resolvedParam: OpenApiParameterObject | OpenApiReferenceObject
 
           if ('$ref' in param) {
-            const { schema: resolvedSchema } = resolveRef<ParameterObject>(
-              param,
-              context
-            )
+            const { schema: resolvedSchema } =
+              resolveRef<OpenApiParameterObject>(param, context)
             resolvedParam = resolvedSchema
           } else {
             resolvedParam = param
@@ -121,13 +127,11 @@ function getExampleValues(
       case GetterPropType.HEADER: {
         let exampleValue = '{\n'
         for (const param of originalOperation.parameters || []) {
-          let resolvedParam: ParameterObject | ReferenceObject
+          let resolvedParam: OpenApiParameterObject | OpenApiReferenceObject
 
           if ('$ref' in param) {
-            const { schema: resolvedSchema } = resolveRef<ParameterObject>(
-              param,
-              context
-            )
+            const { schema: resolvedSchema } =
+              resolveRef<OpenApiParameterObject>(param, context)
             resolvedParam = resolvedSchema
           } else {
             resolvedParam = param
@@ -146,17 +150,16 @@ function getExampleValues(
         break
       }
       case GetterPropType.PARAM: {
-        let example, paramSchema: SchemaObject | ReferenceObject | undefined
+        let example,
+          paramSchema: OpenApiSchemaObject | OpenApiReferenceObject | undefined
 
         for (const parameter of originalOperation.parameters || []) {
           if ('name' in parameter) {
-            paramSchema = parameter.schema as SchemaObject
+            paramSchema = parameter.schema as OpenApiSchemaObject
             break
           } else if ('$ref' in parameter) {
-            const { schema: resolvedSchema } = resolveRef<ParameterObject>(
-              parameter,
-              context
-            )
+            const { schema: resolvedSchema } =
+              resolveRef<OpenApiParameterObject>(parameter, context)
             paramSchema = resolvedSchema.schema
             break
           }
@@ -179,7 +182,10 @@ function getExampleValues(
         }
         let resolvedSchema
         if ('$ref' in requestBody) {
-          const { schema } = resolveRef<RequestBodyObject>(requestBody, context)
+          const { schema } = resolveRef<OpenApiRequestBodyObject>(
+            requestBody,
+            context
+          )
           resolvedSchema = schema
         } else if ('content' in requestBody) {
           resolvedSchema = requestBody
@@ -220,10 +226,9 @@ function getClientObjectName(identifier: string) {
 export const k6ScriptBuilder: ClientExtraFilesBuilder = async (
   verbOptions: Record<string, GeneratorVerbOptions>,
   output: NormalizedOutputOptions,
-  context: ContextSpecs
+  context: ContextSpec
 ): Promise<ClientFileBuilder[]> => {
-  const schemaTitle =
-    context.specs[context.specKey]?.info.title || DEFAULT_SCHEMA_TITLE
+  const schemaTitle = context.spec?.info?.title || DEFAULT_SCHEMA_TITLE
   const {
     path: pathOfGeneratedClient,
     filename,

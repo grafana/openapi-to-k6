@@ -334,9 +334,6 @@
           "200": {
             "description": "Item retrieved successfully"
           }
-        },
-        "requestBody": {
-          "required": false
         }
       }
     },
