@@ -98,9 +98,14 @@ export default function () {
   // Items form client call end
 
   // Default client call start
-  const getItemsHeaderResponseData = itemsHeaderClient.getItemsHeader({
-    id: 'test',
-  })
+  const getItemsHeaderResponseData = itemsHeaderClient.getItemsHeader(
+    {
+      id: 'test',
+    },
+    {
+      'X-Client-ID': 'test-client',
+    }
+  )
   checkResponseStatus(getItemsHeaderResponseData.response, 200)
   // Default client call end
 }
