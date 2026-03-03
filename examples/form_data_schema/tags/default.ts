@@ -5,9 +5,12 @@
  * Service version: 1.0.0
  */
 import { FormData } from 'https://jslib.k6.io/formdata/0.0.2/index.js'
+
 import { URL } from 'https://jslib.k6.io/url/1.0.0/index.js'
+
 import http from 'k6/http'
 import type { Params, Response } from 'k6/http'
+
 import type { PostUpload200, PostUploadBody } from './formDataAPI.schemas'
 
 /**
@@ -39,11 +42,11 @@ export class DefaultClient {
     operationId: string
   } {
     const formData = new FormData()
-    formData.append('file', postUploadBody.file)
+    formData.append(`file`, postUploadBody.file)
     if (postUploadBody.description !== undefined) {
-      formData.append('description', postUploadBody.description)
+      formData.append(`description`, postUploadBody.description)
     }
-    formData.append('userId', postUploadBody.userId)
+    formData.append(`userId`, postUploadBody.userId)
 
     const k6url = new URL(this.cleanBaseUrl + `/upload`)
     const mergedRequestParameters = this._mergeRequestParameters(
