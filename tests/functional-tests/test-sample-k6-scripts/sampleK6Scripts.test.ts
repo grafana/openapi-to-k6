@@ -39,7 +39,7 @@ describe('validate sample k6 script', async () => {
     'schema_with_examples.json': {
       common: {
         expected_string: [
-          `let id, postItemsIdBody, putItemsIdBody, patchItemsIdBody, postItemsFormUrlEncodedBody, postItemsFormDataBody, params, userId, postId, headers;`,
+          `let id, postItemsIdBody, putItemsIdBody, patchItemsIdBody, postItemsFormUrlEncodedBody, postItemsFormDataBody, params, headers, userId, postId;`,
           `id = "12345-getItemById";`,
           `id = "123450-createItemById";`,
           `id = "123450-updateItemById";`,

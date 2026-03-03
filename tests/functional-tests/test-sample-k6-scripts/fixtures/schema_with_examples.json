@@ -278,17 +278,7 @@
               "type": "string",
               "example": "123450-getItemByIdWithHeader"
             }
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "Item retrieved successfully"
-          }
-        },
-        "requestBody": {
-          "required": false
-        },
-        "headers": [
+          },
           {
             "name": "X-Client-ID",
             "in": "header",
@@ -309,7 +299,12 @@
               "example": "req-56789"
             }
           }
-        ]
+        ],
+        "responses": {
+          "200": {
+            "description": "Item retrieved successfully"
+          }
+        }
       }
     },
     "/users/{userId}/posts/{postId}": {
