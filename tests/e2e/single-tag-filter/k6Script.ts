@@ -43,8 +43,13 @@ export default function () {
     }
   }
 
-  const getItemsHeaderResponseData = client.getItemsHeader({
-    id: 'test',
-  })
+  const getItemsHeaderResponseData = client.getItemsHeader(
+    {
+      id: 'test',
+    },
+    {
+      'X-Client-ID': 'test-client',
+    }
+  )
   checkResponseStatus(getItemsHeaderResponseData.response, 200)
 }
