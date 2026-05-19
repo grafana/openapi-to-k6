@@ -28,6 +28,26 @@ import { getDirectoryForPath, getGeneratedClientPath } from '../helper'
 import { logger } from '../logger'
 import { generateTitle } from './k6Client'
 
+/**
+ * Format a raw example value for embedding in generated code, preserving type.
+ * Strings are quoted and escaped; numbers/booleans stay as-is; objects/arrays are JSON-serialized.
+ */
+function formatExampleForOutput(value: unknown): string {
+  if (value === null || value === undefined) {
+    return 'undefined'
+  }
+  if (typeof value === 'string') {
+    return `'${value.replace(/\\/g, '\\\\').replace(/'/g, "\\'")}'`
+  }
+  if (typeof value === 'number' || typeof value === 'boolean') {
+    return String(value)
+  }
+  if (typeof value === 'object') {
+    return JSON.stringify(value)
+  }
+  return `'${String(value)}'`
+}
+
 function getExampleValueForSchema(
   schema: OpenApiSchemaObject | OpenApiReferenceObject,
   context: ContextSpec
@@ -41,15 +61,15 @@ function getExampleValueForSchema(
     )
   }
 
-  if ('example' in schema) {
-    return `'${schema.example}'`
+  if ('example' in schema && schema.example !== undefined) {
+    return formatExampleForOutput(schema.example)
   }
   if (
     'examples' in schema &&
     Array.isArray(schema.examples) &&
     schema.examples.length > 0
   ) {
-    return `'${schema.examples[0]}'`
+    return formatExampleForOutput(schema.examples[0])
   }
   let schemaType = schema.type
   if (Array.isArray(schemaType)) {
