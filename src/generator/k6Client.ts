@@ -4,7 +4,7 @@ import {
   ClientGeneratorsBuilder,
   ClientHeaderBuilder,
   ClientTitleBuilder,
-  ContextSpecs,
+  ContextSpec,
   generateFormDataAndUrlEncodedFunction,
   generateVerbImports,
   GeneratorOptions,
@@ -26,9 +26,9 @@ import { k6ScriptBuilder } from './k6ScriptBuilder'
  *
  * @param context - The context object containing the schema details
  */
-function _setDefaultSchemaTitle(context: ContextSpecs) {
-  const schemaDetails = context.specs[context.specKey]
-  if (schemaDetails && !schemaDetails.info.title) {
+function _setDefaultSchemaTitle(context: ContextSpec) {
+  const schemaDetails = context.spec
+  if (schemaDetails && !schemaDetails.info?.title) {
     schemaDetails.info.title = DEFAULT_SCHEMA_TITLE
   }
 }
@@ -312,10 +312,10 @@ function getK6Client(analyticsData?: AnalyticsData) {
       options,
       analyticsData
     )
-    const specData = Object.values(options.context.specs)
-    if (specData[0]) {
+    const specData = options.context.spec
+    if (specData) {
       if (analyticsData) {
-        analyticsData.openApiSpecVersion = specData[0].openapi
+        analyticsData.openApiSpecVersion = specData.openapi
       }
     }
 

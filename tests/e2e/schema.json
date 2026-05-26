@@ -284,32 +284,7 @@
           "200": {
             "description": "Item retrieved successfully"
           }
-        },
-        "requestBody": {
-          "required": false
-        },
-        "headers": [
-          {
-            "name": "X-Client-ID",
-            "in": "header",
-            "description": "Client ID for the request",
-            "required": true,
-            "schema": {
-              "type": "string",
-              "example": "client-123"
-            }
-          },
-          {
-            "name": "X-Request-ID",
-            "in": "header",
-            "description": "Unique request identifier",
-            "required": false,
-            "schema": {
-              "type": "string",
-              "example": "req-56789"
-            }
-          }
-        ]
+        }
       }
     },
     "/users/{userId}/posts/{postId}": {

@@ -5,8 +5,10 @@
  * Service version: 1.0.0
  */
 import { URL } from 'https://jslib.k6.io/url/1.0.0/index.js'
+
 import http from 'k6/http'
 import type { Params, Response } from 'k6/http'
+
 import type { GetExample200 } from './k6Client.schemas'
 
 /**
