@@ -31,7 +31,7 @@
     "openapi-typescript": "^7.4.1",
     "orval": "^7.5.0",
     "prettier": "^3.3.3",
-    "uuid": "^10.0.0"
+    "uuid": "^11.0.0"
   },
   "devDependencies": {
     "@types/uuid": "10.0.0",
