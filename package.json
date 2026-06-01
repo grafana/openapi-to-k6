@@ -26,7 +26,7 @@
     "@types/k6": "^1.0.0",
     "axios": "^1.7.7",
     "chalk": "^4.1.2",
-    "commander": "^14.0.0",
+    "commander": "^15.0.0",
     "handlebars": "^4.7.8",
     "openapi-typescript": "^7.4.1",
     "orval": "^7.5.0",
