@@ -51,6 +51,9 @@
     "vite-tsconfig-paths": "6.0.4",
     "vitest": "4.0.17"
   },
+  "overrides": {
+    "@asyncapi/specs": "6.11.1"
+  },
   "lint-staged": {
     "*.{js,jsx,ts,tsx}": [
       "eslint --fix",
