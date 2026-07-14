@@ -27,8 +27,7 @@ jobs:
           node-version: '21'
           registry-url: 'https://registry.npmjs.org'
           scope: '@grafana'
-          cache: 'npm'
-          cache-dependency-path: 'package-lock.json'
+          package-manager-cache: false
       - run: npm ci
       - name: Validate version matches release tag
         env:
