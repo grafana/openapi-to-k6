@@ -61,8 +61,9 @@ The following are some of the configuration options supported by the tool:
 
 3. `--disable-analytics`: Disable anonymous usage analytics reporting. You can also set an environment variable `DISABLE_ANALYTICS=true` to disable analytics.
 4. `--include-sample-script`: Generate a sample k6 script. The generated sample script uses the examples defined in the OpenAPI schema requests to make the script usable out of the box. If the examples are not defined, it will use Faker to generate random data.
-5. `--verbose` or `-v` : Enable verbose logging to see more detailed logging output.
-6. `--help` or `-h` : Show help message.
+5. `--include-prepared-requests`: Generate `prepare<Operation>()` methods and a typed `batch()` helper for collecting requests before executing them with `http.batch`. Existing operation methods remain available and execute requests immediately.
+6. `--verbose` or `-v` : Enable verbose logging to see more detailed logging output.
+7. `--help` or `-h` : Show help message.
 
 ## Developing locally
 

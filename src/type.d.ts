@@ -29,6 +29,7 @@ export interface GenerateK6SDKOptions {
   openApiPath: string
   outputDir: string
   shouldGenerateSampleK6Script?: boolean
+  shouldGeneratePreparedRequests?: boolean
   analyticsData?: AnalyticsData
   mode: Mode
   tags?: (string | RegExp)[]
