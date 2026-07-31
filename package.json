@@ -24,19 +24,19 @@
   "dependencies": {
     "@faker-js/faker": "^9.2.0",
     "@types/k6": "^1.0.0",
-    "axios": "^1.7.7",
+    "axios": "^1.19.0",
     "chalk": "^4.1.2",
     "commander": "^14.0.0",
     "handlebars": "^4.7.8",
     "openapi-typescript": "^7.4.1",
-    "orval": "^7.5.0",
+    "orval": "^7.20.0",
     "prettier": "^3.3.3",
     "uuid": "^11.0.0"
   },
   "devDependencies": {
     "@types/uuid": "10.0.0",
     "@typescript-eslint/eslint-plugin": "8.53.0",
-    "@vitest/coverage-v8": "4.0.17",
+    "@vitest/coverage-v8": "4.1.10",
     "eslint": "8.57.1",
     "eslint-config-prettier": "10.1.8",
     "eslint-import-resolver-typescript": "4.4.4",
@@ -48,11 +48,34 @@
     "prettier": "3.8.0",
     "ts-node": "10.9.2",
     "typescript": "5.9.3",
+    "vite": "8.2.0",
     "vite-tsconfig-paths": "6.0.4",
-    "vitest": "4.0.17"
+    "vitest": "4.1.10"
   },
   "overrides": {
-    "@asyncapi/specs": "6.11.1"
+    "@asyncapi/specs": "6.11.1",
+    "ajv@6": "6.14.0",
+    "ajv@8": "8.20.0",
+    "brace-expansion": "5.0.9",
+    "cross-spawn@7": "7.0.6",
+    "diff": "8.0.3",
+    "fast-uri@3": "3.1.5",
+    "flatted": "3.4.4",
+    "form-data@4": "4.0.6",
+    "js-yaml@4": "4.3.0",
+    "jsonpath-plus": "10.4.0",
+    "linkify-it@5": "5.0.2",
+    "lodash": "4.18.1",
+    "markdown-it@14": "14.1.1",
+    "minimatch@3": "3.1.5",
+    "minimatch@5": "5.1.9",
+    "minimatch@6": "6.2.3",
+    "minimatch@9": "9.0.9",
+    "picomatch@2": "2.3.2",
+    "picomatch@4": "4.0.5",
+    "postcss": "8.5.25",
+    "validator": "13.15.35",
+    "vite": "8.2.0"
   },
   "lint-staged": {
     "*.{js,jsx,ts,tsx}": [
