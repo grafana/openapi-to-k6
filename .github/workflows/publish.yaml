@@ -24,7 +24,7 @@ jobs:
           fetch-depth: 0 # Fetch all history for all branches and tags
       - uses: actions/setup-node@6044e13b5dc448c55e2357c09f80417699197238 # v6
         with:
-          node-version: '21'
+          node-version: '24'
           registry-url: 'https://registry.npmjs.org'
           scope: '@grafana'
           package-manager-cache: false
