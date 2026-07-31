@@ -6,8 +6,10 @@
  * Service version: 1.0.0
  */
 import { URL, URLSearchParams } from 'https://jslib.k6.io/url/1.0.0/index.js'
+
 import http from 'k6/http'
 import type { Params, Response } from 'k6/http'
+
 import type {
   CreateExampleData201,
   CreateExampleDataBody,
