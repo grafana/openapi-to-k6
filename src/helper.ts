@@ -4,9 +4,9 @@ import { createSourceFile, ScriptTarget } from 'typescript'
 
 import path from 'path'
 import { format, resolveConfig } from 'prettier'
-import packageJson from '../package.json'
-import { logger } from './logger'
-import { PackageDetails } from './type'
+import packageJson from '../package.json' with { type: 'json' }
+import { logger } from './logger.js'
+import { PackageDetails } from './type.js'
 
 export const getPackageDetails = (): PackageDetails => {
   const commandName = Object.keys(packageJson.bin)[0] || 'openapi-to-k6'

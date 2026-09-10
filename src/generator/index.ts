@@ -1,18 +1,18 @@
+import { OpenApiInfoObject as InfoObject } from '@orval/core'
 import fs from 'fs'
-import { InfoObject } from 'openapi3-ts/oas30'
 import orval from 'orval'
 import path from 'path'
-import { DEFAULT_SCHEMA_TITLE } from '../constants'
-import { NoFilesGeneratedError } from '../errors'
+import { DEFAULT_SCHEMA_TITLE } from '../constants.js'
+import { NoFilesGeneratedError } from '../errors.js'
 import {
   formatFileWithPrettier,
   getPackageDetails,
   hasOnlyComments,
   OutputOverrider,
-} from '../helper'
-import { logger } from '../logger'
-import { GenerateK6SDKOptions } from '../type'
-import { getK6ClientBuilder } from './k6Client'
+} from '../helper.js'
+import { logger } from '../logger.js'
+import { GenerateK6SDKOptions } from '../type.js'
+import { getK6ClientBuilder } from './k6Client.js'
 
 const outputOverrider = OutputOverrider.getInstance()
 const packageDetails = getPackageDetails()
@@ -129,7 +129,18 @@ export default async ({
     await orval({
       input: {
         target: openApiPath,
-        filters: { tags: tags && tags.length > 0 ? tags : undefined },
+        filters: {
+          tags: tags && tags.length > 0 ? tags : undefined,
+          // Orval 8 defaults to pruning component schemas that aren't referenced
+          // by the tag-filtered operations. Keep all schemas available regardless
+          // of tag filtering, matching the previous (orval 7) behavior.
+          includeUnreferencedSchemas: true,
+        },
+        // Orval 8 validates the input schema strictly by default and aborts generation
+        // on minor spec issues (e.g. missing `info.title`) that orval 7 tolerated.
+        // Keep the previous lenient behavior since this tool's fallback logic
+        // (e.g. _setDefaultSchemaTitle) is designed to handle such cases.
+        unsafeDisableValidation: true,
       },
       output: {
         target: outputDir,
@@ -142,7 +153,8 @@ export default async ({
         headers: true,
       },
       hooks: {
-        afterAllFilesWrite: async (filePaths: string[]) => {
+        afterAllFilesWrite: async (...args: unknown[]) => {
+          const filePaths = args[0] as string[]
           const filteredFilePaths = await afterAllFilesWriteHandler(
             filePaths,
             outputOverrider
