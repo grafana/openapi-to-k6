@@ -4,7 +4,7 @@ import {
   ClientGeneratorsBuilder,
   ClientHeaderBuilder,
   ClientTitleBuilder,
-  ContextSpecs,
+  ContextSpec,
   generateFormDataAndUrlEncodedFunction,
   generateVerbImports,
   GeneratorOptions,
@@ -17,18 +17,20 @@ import {
   toObjectString,
   jsStringEscape,
 } from '@orval/core'
-import { DEFAULT_SCHEMA_TITLE } from '../constants'
-import { AnalyticsData } from '../type'
-import { k6ScriptBuilder } from './k6ScriptBuilder'
+import { DEFAULT_SCHEMA_TITLE } from '../constants.js'
+import { AnalyticsData } from '../type.js'
+import { k6ScriptBuilder } from './k6ScriptBuilder.js'
 /**
  * In case the supplied schema does not have a title set, it will set the default title to ensure
  * proper client generation
  *
  * @param context - The context object containing the schema details
  */
-function _setDefaultSchemaTitle(context: ContextSpecs) {
-  const schemaDetails = context.specs[context.specKey]
-  if (schemaDetails && !schemaDetails.info.title) {
+function _setDefaultSchemaTitle(context: ContextSpec) {
+  const schemaDetails = context.spec
+  if (!schemaDetails.info) {
+    schemaDetails.info = { title: DEFAULT_SCHEMA_TITLE, version: '' }
+  } else if (!schemaDetails.info.title) {
     schemaDetails.info.title = DEFAULT_SCHEMA_TITLE
   }
 }
@@ -222,8 +224,12 @@ const generateK6Implementation = (
     formData,
     formUrlEncoded,
   } = verbOptions
-  if (analyticsData) {
-    analyticsData.generatedRequestsCount[verb] += 1
+  if (analyticsData && verb in analyticsData.generatedRequestsCount) {
+    const generatedRequestsCount = analyticsData.generatedRequestsCount as Record<
+      string,
+      number
+    >
+    generatedRequestsCount[verb] = (generatedRequestsCount[verb] ?? 0) + 1
   }
 
   const bodyForm = generateFormDataAndUrlEncodedFunction({
@@ -312,11 +318,8 @@ function getK6Client(analyticsData?: AnalyticsData) {
       options,
       analyticsData
     )
-    const specData = Object.values(options.context.specs)
-    if (specData[0]) {
-      if (analyticsData) {
-        analyticsData.openApiSpecVersion = specData[0].openapi
-      }
+    if (analyticsData) {
+      analyticsData.openApiSpecVersion = options.context.spec.openapi ?? ''
     }
 
     return { implementation, imports }

@@ -1,9 +1,9 @@
 import axios from 'axios'
 import os from 'os'
 import { v4 as uuidv4 } from 'uuid'
-import { djb2Hash } from './helper'
-import { logger } from './logger'
-import { AnalyticsData, PackageDetails } from './type'
+import { djb2Hash } from './helper.js'
+import { logger } from './logger.js'
+import { AnalyticsData, PackageDetails } from './type.js'
 
 function getAnonymousUserId(): string {
   try {

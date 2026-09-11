@@ -2,13 +2,13 @@
 
 import chalk from 'chalk'
 import { Command, InvalidArgumentError } from 'commander'
-import { generateDefaultAnalyticsData, reportUsageAnalytics } from './analytics'
-import { Mode } from './constants'
-import { NoFilesGeneratedError } from './errors'
-import generateK6SDK from './generator'
-import { getPackageDetails } from './helper'
-import { logger } from './logger'
-import { AnalyticsData, GenerateK6SDKOptions } from './type'
+import { generateDefaultAnalyticsData, reportUsageAnalytics } from './analytics.js'
+import { Mode } from './constants.js'
+import { NoFilesGeneratedError } from './errors.js'
+import generateK6SDK from './generator/index.js'
+import { getPackageDetails } from './helper.js'
+import { logger } from './logger.js'
+import { AnalyticsData, GenerateK6SDKOptions } from './type.js'
 
 const program = new Command()
 const packageDetails = getPackageDetails()

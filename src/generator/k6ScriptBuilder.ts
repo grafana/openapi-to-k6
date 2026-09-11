@@ -3,36 +3,34 @@ import {
   camel,
   ClientExtraFilesBuilder,
   ClientFileBuilder,
-  ContextSpecs,
+  ContextSpec,
   GeneratorVerbOptions,
   GetterPropType,
   kebab,
   NormalizedOutputOptions,
+  OpenApiOperationObject as OperationObject,
+  OpenApiParameterObject as ParameterObject,
+  OpenApiReferenceObject as ReferenceObject,
+  OpenApiRequestBodyObject as RequestBodyObject,
+  OpenApiSchemaObject as SchemaObject,
   pascal,
   resolveRef,
   toObjectString,
 } from '@orval/core'
 import Handlebars from 'handlebars'
-import {
-  OperationObject,
-  ParameterObject,
-  ReferenceObject,
-  RequestBodyObject,
-  SchemaObject,
-} from 'openapi3-ts/oas30'
 import path from 'path'
 import {
   DEFAULT_SCHEMA_TITLE,
   K6_SCRIPT_TEMPLATE,
   SAMPLE_K6_SCRIPT_FILE_NAME,
-} from '../constants'
-import { getDirectoryForPath, getGeneratedClientPath } from '../helper'
-import { logger } from '../logger'
-import { generateTitle } from './k6Client'
+} from '../constants.js'
+import { getDirectoryForPath, getGeneratedClientPath } from '../helper.js'
+import { logger } from '../logger.js'
+import { generateTitle } from './k6Client.js'
 
 function getExampleValueForSchema(
   schema: SchemaObject | ReferenceObject,
-  context: ContextSpecs
+  context: ContextSpec
 ) {
   // Handle $ref
   if ('$ref' in schema) {
@@ -42,6 +40,15 @@ function getExampleValueForSchema(
 
   if ('example' in schema) {
     return `'${schema.example}'`
+  }
+  // Orval 8 upgrades OpenAPI 3.0 documents to 3.1 internally, which normalizes
+  // the singular `example` keyword into the JSON Schema `examples` array.
+  if (
+    'examples' in schema &&
+    Array.isArray(schema.examples) &&
+    schema.examples.length > 0
+  ) {
+    return `'${schema.examples[0]}'`
   }
   let schemaType = schema.type
   if (Array.isArray(schemaType)) {
@@ -85,7 +92,7 @@ function getExampleValueForSchema(
 function getExampleValues(
   requiredProps: GeneratorVerbOptions['props'],
   originalOperation: OperationObject,
-  context: ContextSpecs
+  context: ContextSpec
 ): string {
   let exampleValues = ''
   for (const prop of requiredProps) {
@@ -220,10 +227,9 @@ function getClientObjectName(identifier: string) {
 export const k6ScriptBuilder: ClientExtraFilesBuilder = async (
   verbOptions: Record<string, GeneratorVerbOptions>,
   output: NormalizedOutputOptions,
-  context: ContextSpecs
+  context: ContextSpec
 ): Promise<ClientFileBuilder[]> => {
-  const schemaTitle =
-    context.specs[context.specKey]?.info.title || DEFAULT_SCHEMA_TITLE
+  const schemaTitle = context.spec.info?.title || DEFAULT_SCHEMA_TITLE
   const {
     path: pathOfGeneratedClient,
     filename,

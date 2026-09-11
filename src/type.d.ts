@@ -1,4 +1,4 @@
-import { Mode } from './constants'
+import { Mode } from './constants.js'
 
 export interface PackageDetails {
   name: string
