@@ -47,7 +47,7 @@
     "lint-staged": "17.0.5",
     "prettier": "3.8.0",
     "ts-node": "10.9.2",
-    "typescript": "5.9.3",
+    "typescript": "7.0.2",
     "vite": "8.2.0",
     "vite-tsconfig-paths": "6.0.4",
     "vitest": "4.1.10"
