@@ -1,0 +1,93 @@
+{
+  "openapi": "3.0.3",
+  "info": {
+    "title": "Example API",
+    "description": "API with a POST request having an object as the body and query parameters",
+    "version": "1.0.0"
+  },
+  "paths": {
+    "/example": {
+      "post": {
+        "summary": "Create example data",
+        "description": "This endpoint demonstrates a POST request with query parameters and a single field object in the body",
+        "operationId": "createExampleData",
+        "parameters": [
+          {
+            "name": "userId",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "example": "12345"
+            },
+            "description": "A string query parameter for user ID"
+          },
+          {
+            "name": "isActive",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "boolean",
+              "example": true
+            },
+            "description": "A boolean query parameter"
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "data": {
+                    "type": "string",
+                    "description": "A string field representing data",
+                    "example": "data"
+                  }
+                },
+                "required": [
+                  "data"
+                ]
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Successfully created data",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "userId": {
+                      "type": "string",
+                      "description": "The user ID from the query parameter",
+                      "example": "12345"
+                    },
+                    "isActive": {
+                      "type": "boolean",
+                      "description": "The active status from the query parameter",
+                      "example": true
+                    },
+                    "data": {
+                      "type": "string",
+                      "description": "The data from the body",
+                      "example": "data"
+                    },
+                    "status": {
+                      "type": "string",
+                      "description": "Response status",
+                      "example": "success"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}
