@@ -153,10 +153,60 @@ describe('generator', () => {
 
         const generatedFilePath = path.join(generatedSchemaPath, clientFile!)
         const generatedContent = await readFile(generatedFilePath, 'utf-8')
-
         expect(generatedContent).not.toContain('export type')
         expect(generatedContent).not.toContain('export interface')
       })
     })
   }
+
+  describe('prepared requests', () => {
+    const fixture = loadFixture(
+      path.join(__dirname, 'fixtures', 'headers_schema.json')
+    )
+
+    async function generatePreparedRequestsFixture() {
+      const directory = await mkdtemp(path.join(tempDir, 'prepared-requests-'))
+      const openApiPath = path.join(directory, 'openapi-schema.json')
+      const outputDir = path.join(directory, 'generated-schema')
+      await writeFile(openApiPath, JSON.stringify(fixture['openapi_schema']))
+      await generator({
+        openApiPath,
+        outputDir,
+        mode: Mode.SINGLE,
+        shouldGeneratePreparedRequests: true,
+      })
+
+      const [generatedFile] = fs.readdirSync(outputDir)
+      const content = await readFile(
+        path.join(outputDir, generatedFile!),
+        'utf-8'
+      )
+      await rmdir(directory, { recursive: true })
+      return replaceSpacesAndNewLineToSingleSpace(content)
+    }
+
+    it('generates prepared requests and batch execution when enabled', async () => {
+      const generatedContent = await generatePreparedRequestsFixture()
+
+      expect(generatedContent).toContain(
+        'prepareGetExampleGet( headers?: GetExampleGetHeaders, requestParameters?: Params, ): PreparedRequest<GetExampleGet200>'
+      )
+      expect(generatedContent).toContain(
+        'return this.execute(this.prepareGetExampleGet(headers, requestParameters));'
+      )
+      expect(generatedContent).toContain(
+        'body: JSON.stringify(postExamplePostBody)'
+      )
+      expect(generatedContent).toContain(
+        'return response.json() as unknown as GetExampleGet200'
+      )
+      expect(generatedContent).toContain('parse: () => undefined')
+      expect(generatedContent).toContain(
+        'batch<const Requests extends readonly PreparedRequest<unknown>[]>( preparedRequests: Requests, ): BatchResults<Requests>'
+      )
+      expect(generatedContent).toContain(
+        'const responses = http.batch( preparedRequests.map(({ request }) => request), );'
+      )
+    })
+  })
 })

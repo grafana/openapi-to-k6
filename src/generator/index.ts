@@ -115,6 +115,7 @@ export default async ({
   openApiPath,
   outputDir,
   shouldGenerateSampleK6Script,
+  shouldGeneratePreparedRequests,
   analyticsData,
   mode,
   tags,
@@ -135,7 +136,11 @@ export default async ({
         target: outputDir,
         mode: mode,
         client: () =>
-          getK6ClientBuilder(shouldGenerateSampleK6Script, analyticsData),
+          getK6ClientBuilder(
+            shouldGenerateSampleK6Script,
+            analyticsData,
+            shouldGeneratePreparedRequests
+          ),
         override: {
           header: generatedFileHeaderGenerator,
         },
