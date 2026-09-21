@@ -25,6 +25,24 @@ The real error (a stack trace or a parser warning) is only printed with `--verbo
 Any automation calling this tool must grep stdout for `No files were generated`
 rather than relying on the exit code.
 
+## ⚠️ General caveat: a dot in the output path breaks generation
+
+Unrelated to spec version: if the output directory's last path segment contains a
+dot (e.g. `out.dir`, or any name embedding a version number like `3.2-tags-example`),
+the CLI misreads it as a single output *file* instead of a directory. It still writes
+something at that exact path, but as one raw, unformatted file, and logs a formatting
+error while still claiming success:
+
+```
+[ERROR] Error in formatting file <path>: UndefinedParserError: No parser could be
+inferred for file "<path>".
+🎉 <Title> - Your OpenAPI spec has been converted into ready to use orval!
+TypeScript client generated successfully.
+```
+
+Reproduces with any spec, e.g. `openapi-to-k6 openapi-org/petstore.json out.dir`.
+**Workaround**: never pass an output directory whose name contains a dot.
+
 ## Swagger 2.0 (`swagger: "2.0"`)
 
 **Single-file specs: fully supported.** `petstore-minimal`, `petstore-simple`,
@@ -100,6 +118,22 @@ specific generator code paths (parameter styles, request body encodings, missing
 All ten are OpenAPI 3.0.x (`3.0.0` or `3.0.3`) and all generate successfully, which is
 expected since they're this tool's own working examples, not edge cases collected from
 elsewhere.
+
+## Generated reference output
+
+Both `openapi-org/generated/` and `openapi-to-k6/generated/` hold the actual output of
+running `openapi-to-k6` (`--mode single`, the default) against every fixture that
+successfully produces a client: the real generated `.ts` client, byte-for-byte as
+written by the tool (renamed to `<fixture-name>.ts`), plus a `<fixture-name>.d.ts`
+extracted from it with `tsc --emitDeclarationOnly` for a quick, implementation-free
+look at the generated API surface (exported types and class method signatures only).
+
+Two fixtures produce no output at all and so have nothing under `generated/`:
+`petstore-separate` and `3.2-query-example` (see above for why).
+
+This snapshot is tied to `openapi-to-k6` v0.4.1 and its current dependencies; it will
+drift from reality after any upgrade to `orval`, `swagger-parser`, or the formatter,
+and would need regenerating at that point.
 
 ## Summary
 

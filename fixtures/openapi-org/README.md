@@ -17,5 +17,10 @@ upstream state these files were copied from, browse the source repo at the
 pinned commit:
 [github.com/OAI/learn.openapis.org/tree/43756549c27cbf84107b190b82c65e0336f2f09f/examples](https://github.com/OAI/learn.openapis.org/tree/43756549c27cbf84107b190b82c65e0336f2f09f/examples).
 
-See [`../COMPAT.md`](../COMPAT.md) for compatibility findings from running
-these fixtures through `openapi-to-k6`.
+[`generated/`](generated/) holds the actual `openapi-to-k6` output for each
+fixture that produces one: the generated client and a declaration-only
+`.d.ts` extracted from it, for reference. Unlike the specs above, these
+files aren't untouched upstream content, and they're tied to the tool
+version that produced them; see [`../COMPAT.md`](../COMPAT.md) for details
+and for compatibility findings from running these fixtures through
+`openapi-to-k6`.

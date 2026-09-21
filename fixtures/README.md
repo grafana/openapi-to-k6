@@ -14,9 +14,12 @@ planned Go rewrite of `openapi-to-k6` (as a k6 subcommand extension).
   etc.) rather than spec-version coverage.
 
 Each subfolder has its own `README.md` and `ORIGIN.json` recording exactly
-where its files came from (source repo, path, and commit), since the files
-themselves are kept byte-identical to their source with no injected
-metadata.
+where its files came from (source repo, path, and commit), since the input
+specs themselves are kept byte-identical to their source with no injected
+metadata. Each subfolder also has a `generated/` directory with the actual
+`openapi-to-k6` output for its fixtures (client + a declaration-only
+`.d.ts`), for reference; unlike the input specs, those files are tied to
+the tool version that produced them.
 
 See [`COMPAT.md`](COMPAT.md) for compatibility findings from running the
 original JS `openapi-to-k6` against every fixture here.

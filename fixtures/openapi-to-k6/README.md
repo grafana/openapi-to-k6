@@ -17,5 +17,9 @@ upstream state these files were copied from, browse the source repo at the
 pinned commit:
 [github.com/grafana/openapi-to-k6/tree/d2105fd0d3ffec8a0c5b9aa30bab1088eee56615/examples](https://github.com/grafana/openapi-to-k6/tree/d2105fd0d3ffec8a0c5b9aa30bab1088eee56615/examples).
 
-See [`../COMPAT.md`](../COMPAT.md) for compatibility findings from running
-these fixtures through `openapi-to-k6`.
+[`generated/`](generated/) holds the actual `openapi-to-k6` output for each
+fixture: the generated client and a declaration-only `.d.ts` extracted from
+it, for reference. Unlike the specs above, these files aren't untouched
+upstream content, and they're tied to the tool version that produced them;
+see [`../COMPAT.md`](../COMPAT.md) for details and for compatibility
+findings from running these fixtures through `openapi-to-k6`.
