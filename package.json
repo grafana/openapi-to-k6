@@ -3,14 +3,18 @@
   "version": "0.4.1",
   "packageManager": "npm@11.15.0",
   "description": "A CLI tool to generate helper modules for K6 from OpenAPI schema",
+  "type": "module",
   "main": "dist/cli.js",
+  "engines": {
+    "node": ">=20.11"
+  },
   "bin": {
     "openapi-to-k6": "dist/cli.js"
   },
   "scripts": {
     "build": "tsc",
-    "dev": "DISABLE_ANALYTICS=true ts-node src/cli.ts",
-    "dev:inspect": "DISABLE_ANALYTICS=true node --inspect-brk --require ts-node/register src/cli.ts",
+    "dev": "tsc && DISABLE_ANALYTICS=true node --enable-source-maps dist/cli.js",
+    "dev:inspect": "tsc && DISABLE_ANALYTICS=true node --enable-source-maps --inspect-brk dist/cli.js",
     "test": "vitest run --coverage",
     "lint": "eslint --ext .ts,.tsx .",
     "lint:fix": "eslint --ext .ts,.tsx . --fix",
@@ -46,7 +50,6 @@
     "husky": "9.1.7",
     "lint-staged": "17.0.5",
     "prettier": "3.8.0",
-    "ts-node": "10.9.2",
     "typescript": "5.9.3",
     "vite": "8.2.0",
     "vite-tsconfig-paths": "6.0.4",
