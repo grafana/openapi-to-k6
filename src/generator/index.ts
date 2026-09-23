@@ -1,18 +1,18 @@
 import fs from 'fs'
 import { InfoObject } from 'openapi3-ts/oas30'
-import orval from 'orval'
+import { generate as orval } from 'orval'
 import path from 'path'
-import { DEFAULT_SCHEMA_TITLE } from '../constants'
-import { NoFilesGeneratedError } from '../errors'
+import { DEFAULT_SCHEMA_TITLE } from '../constants.js'
+import { NoFilesGeneratedError } from '../errors.js'
 import {
   formatFileWithPrettier,
   getPackageDetails,
   hasOnlyComments,
   OutputOverrider,
-} from '../helper'
-import { logger } from '../logger'
-import { GenerateK6SDKOptions } from '../type'
-import { getK6ClientBuilder } from './k6Client'
+} from '../helper.js'
+import { logger } from '../logger.js'
+import { GenerateK6SDKOptions } from '../type.js'
+import { getK6ClientBuilder } from './k6Client.js'
 
 const outputOverrider = OutputOverrider.getInstance()
 const packageDetails = getPackageDetails()

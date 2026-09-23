@@ -25,10 +25,10 @@ import {
   DEFAULT_SCHEMA_TITLE,
   K6_SCRIPT_TEMPLATE,
   SAMPLE_K6_SCRIPT_FILE_NAME,
-} from '../constants'
-import { getDirectoryForPath, getGeneratedClientPath } from '../helper'
-import { logger } from '../logger'
-import { generateTitle } from './k6Client'
+} from '../constants.js'
+import { getDirectoryForPath, getGeneratedClientPath } from '../helper.js'
+import { logger } from '../logger.js'
+import { generateTitle } from './k6Client.js'
 
 function getExampleValueForSchema(
   schema: SchemaObject | ReferenceObject,
