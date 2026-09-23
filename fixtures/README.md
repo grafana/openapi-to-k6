@@ -22,4 +22,8 @@ metadata. Each subfolder also has a `generated/` directory with the actual
 the tool version that produced them.
 
 See [`COMPAT.md`](COMPAT.md) for compatibility findings from running the
-original JS `openapi-to-k6` against every fixture here.
+original JS `openapi-to-k6` against every fixture here, [`DIGEST.md`](DIGEST.md)
+for a context extract of how that tool turns a spec into a client (naming
+rules, type mapping, parameter handling, and so on), written for whoever
+designs the Go rewrite, and [`IDEAS.md`](IDEAS.md) for the actual ideas and
+bug fixes that came out of writing the two documents above.
