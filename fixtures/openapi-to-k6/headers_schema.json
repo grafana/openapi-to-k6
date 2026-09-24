@@ -1,0 +1,149 @@
+{
+  "openapi": "3.0.3",
+  "info": {
+    "title": "Header Demo API",
+    "version": "1.0.0",
+    "description": "An API demonstrating the use of headers in different ways"
+  },
+  "paths": {
+    "/example-get": {
+      "get": {
+        "summary": "GET request with headers",
+        "description": "This GET request demonstrates the use of custom request headers",
+        "parameters": [
+          {
+            "name": "X-Custom-Header",
+            "in": "header",
+            "required": false,
+            "description": "A custom header for this request",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful response with response headers",
+            "headers": {
+              "X-Response-Custom-Header": {
+                "description": "A custom response header",
+                "schema": {
+                  "type": "string"
+                }
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": {
+                      "type": "string",
+                      "example": "GET request successful"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/example-post": {
+      "post": {
+        "summary": "POST request with security headers",
+        "description": "This POST request uses a security header for authentication",
+        "parameters": [
+          {
+            "name": "Authorization",
+            "in": "header",
+            "required": true,
+            "description": "Bearer token for authorization",
+            "schema": {
+              "type": "string",
+              "example": "Bearer <token>"
+            }
+          }
+        ],
+        "requestBody": {
+          "description": "Request body",
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "data": {
+                    "type": "string",
+                    "example": "redevelop"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "POST request successful"
+          },
+          "401": {
+            "description": "Unauthorized"
+          }
+        }
+      }
+    },
+    "/example-response-headers": {
+      "get": {
+        "summary": "GET request with response headers only",
+        "description": "This GET request returns custom response headers",
+        "responses": {
+          "200": {
+            "description": "Successful response with custom headers",
+            "headers": {
+              "X-Powered-By": {
+                "description": "Shows which technology powered the request",
+                "schema": {
+                  "type": "string",
+                  "example": "OpenAPI"
+                }
+              },
+              "X-Rate-Limit": {
+                "description": "Indicates the number of requests allowed in a certain time period",
+                "schema": {
+                  "type": "integer",
+                  "example": 100
+                }
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "status": {
+                      "type": "string",
+                      "example": "success"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "securitySchemes": {
+      "BearerAuth": {
+        "type": "http",
+        "scheme": "bearer"
+      }
+    }
+  },
+  "security": [
+    {
+      "BearerAuth": []
+    }
+  ]
+}

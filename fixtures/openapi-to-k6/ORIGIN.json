@@ -1,0 +1,18 @@
+{
+  "repo": "grafana/openapi-to-k6",
+  "commit": "d2105fd0d3ffec8a0c5b9aa30bab1088eee56615",
+  "commitDate": "2026-09-17T11:14:41+01:00",
+  "note": "Each entry is a path in this folder mapped to its source path in this same repo's examples/ directory, as of the commit above. Files were renamed from schema.json to <original-folder-name>.json.",
+  "files": {
+    "basic_schema.json": "examples/basic_schema/schema.json",
+    "form_data_schema.json": "examples/form_data_schema/schema.json",
+    "form_url_encoded_data_schema.json": "examples/form_url_encoded_data_schema/schema.json",
+    "form_url_encoded_data_with_query_params_schema.json": "examples/form_url_encoded_data_with_query_params_schema/schema.json",
+    "get_request_with_path_parameters_schema.json": "examples/get_request_with_path_parameters_schema/schema.json",
+    "headers_schema.json": "examples/headers_schema/schema.json",
+    "no_title_schema.json": "examples/no_title_schema/schema.json",
+    "post_request_with_query_params.json": "examples/post_request_with_query_params/schema.json",
+    "query_params_schema.json": "examples/query_params_schema/schema.json",
+    "simple_post_request_schema.json": "examples/simple_post_request_schema/schema.json"
+  }
+}

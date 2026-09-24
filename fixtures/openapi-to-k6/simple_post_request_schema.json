@@ -1,0 +1,137 @@
+{
+  "openapi": "3.0.3",
+  "info": {
+    "title": "Example API",
+    "description": "API with all formats of data in the POST request body",
+    "version": "1.0.0"
+  },
+  "paths": {
+    "/example": {
+      "post": {
+        "summary": "Create example data",
+        "description": "This endpoint demonstrates the use of various data formats in the input body",
+        "operationId": "createExampleData",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "name": {
+                    "type": "string",
+                    "description": "A string parameter",
+                    "example": "John Doe"
+                  },
+                  "age": {
+                    "type": "integer",
+                    "format": "int32",
+                    "description": "An integer parameter",
+                    "example": 25
+                  },
+                  "isActive": {
+                    "type": "boolean",
+                    "description": "A boolean parameter",
+                    "example": true
+                  },
+                  "tags": {
+                    "type": "array",
+                    "items": {
+                      "type": "string"
+                    },
+                    "description": "An array of strings",
+                    "example": ["tag1", "tag2"]
+                  },
+                  "date": {
+                    "type": "string",
+                    "format": "date",
+                    "description": "A date parameter in YYYY-MM-DD format",
+                    "example": "2024-01-01"
+                  },
+                  "meta": {
+                    "type": "object",
+                    "properties": {
+                      "createdBy": {
+                        "type": "string",
+                        "description": "A string parameter for the creator's name",
+                        "example": "John Doe"
+                      },
+                      "updatedBy": {
+                        "type": "string",
+                        "description": "A string parameter for the updater's name",
+                        "example": "Jane Doe"
+                      }
+                    },
+                    "description": "An object parameter containing metadata"
+                  }
+                },
+                "required": [
+                  "name",
+                  "age",
+                  "isActive"
+                ]
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Successfully created data",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "id": {
+                      "type": "string",
+                      "description": "The unique ID of the created resource",
+                      "example": "12345"
+                    },
+                    "name": {
+                      "type": "string",
+                      "example": "John Doe"
+                    },
+                    "age": {
+                      "type": "integer",
+                      "format": "int32",
+                      "example": 25
+                    },
+                    "isActive": {
+                      "type": "boolean",
+                      "example": true
+                    },
+                    "tags": {
+                      "type": "array",
+                      "items": {
+                        "type": "string",
+                        "example": ["tag1", "tag2"]
+                      }
+                    },
+                    "date": {
+                      "type": "string",
+                      "format": "date",
+                      "example": "2024-01-01"
+                    },
+                    "meta": {
+                      "type": "object",
+                      "properties": {
+                        "createdBy": {
+                          "type": "string",
+                          "example": "John Doe"
+                        },
+                        "updatedBy": {
+                          "type": "string",
+                          "example": "Jane Doe"
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}
