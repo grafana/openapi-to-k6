@@ -35,6 +35,7 @@ async function generateSDK({
   openApiPath,
   outputDir,
   shouldGenerateSampleK6Script,
+  shouldGeneratePreparedRequests,
   analyticsData,
   mode,
   tags,
@@ -57,6 +58,7 @@ async function generateSDK({
     openApiPath,
     outputDir,
     shouldGenerateSampleK6Script,
+    shouldGeneratePreparedRequests,
     analyticsData,
     mode,
     tags,
@@ -86,6 +88,10 @@ program
   )
   .option('-v, --verbose', 'enable verbose mode to show debug logs')
   .option('--include-sample-script', 'generate a sample k6 script')
+  .option(
+    '--include-prepared-requests',
+    'generate helpers for preparing and batching requests'
+  )
   .option('--disable-analytics', 'disable anonymous usage data collection')
   .action(
     async (
@@ -97,6 +103,7 @@ program
         onlyTags?: (string | RegExp)[]
         disableAnalytics?: boolean
         includeSampleScript?: boolean
+        includePreparedRequests?: boolean
       }
     ) => {
       let analyticsData: AnalyticsData | undefined
@@ -127,6 +134,7 @@ program
           openApiPath,
           outputDir,
           shouldGenerateSampleK6Script: !!options.includeSampleScript,
+          shouldGeneratePreparedRequests: !!options.includePreparedRequests,
           analyticsData,
           mode: options.mode,
           tags: options.onlyTags,
