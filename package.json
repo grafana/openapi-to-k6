@@ -1,7 +1,7 @@
 {
   "name": "@grafana/openapi-to-k6",
   "version": "0.4.1",
-  "packageManager": "npm@11.15.0",
+  "packageManager": "npm@11.20.0",
   "description": "A CLI tool to generate helper modules for K6 from OpenAPI schema",
   "type": "module",
   "main": "dist/cli.js",
@@ -39,27 +39,27 @@
   },
   "devDependencies": {
     "@types/uuid": "10.0.0",
-    "@typescript-eslint/eslint-plugin": "8.53.0",
-    "@vitest/coverage-v8": "4.1.10",
+    "@typescript-eslint/eslint-plugin": "8.70.1",
+    "@vitest/coverage-v8": "4.1.11",
     "eslint": "8.57.1",
     "eslint-config-prettier": "10.1.8",
-    "eslint-import-resolver-typescript": "4.4.4",
+    "eslint-import-resolver-typescript": "4.4.5",
     "eslint-plugin-import": "2.32.0",
-    "eslint-plugin-prettier": "5.5.5",
-    "eslint-plugin-unused-imports": "4.3.0",
+    "eslint-plugin-prettier": "5.5.6",
+    "eslint-plugin-unused-imports": "4.4.1",
     "husky": "9.1.7",
-    "lint-staged": "17.0.5",
-    "prettier": "3.8.0",
+    "lint-staged": "17.5.1",
+    "prettier": "3.9.9",
     "typescript": "5.9.3",
-    "vite": "8.2.0",
-    "vite-tsconfig-paths": "6.0.4",
-    "vitest": "4.1.10"
+    "vite": "8.3.0",
+    "vite-tsconfig-paths": "6.1.1",
+    "vitest": "4.1.11"
   },
   "overrides": {
     "@asyncapi/specs": "6.11.1",
     "ajv@6": "6.14.0",
     "ajv@8": "8.20.0",
-    "brace-expansion": "5.0.9",
+    "brace-expansion": "5.0.12",
     "cross-spawn@7": "7.0.6",
     "diff": "9.0.0",
     "fast-uri@3": "3.1.5",
@@ -76,9 +76,9 @@
     "minimatch@9": "9.0.9",
     "picomatch@2": "2.3.2",
     "picomatch@4": "4.0.5",
-    "postcss": "8.5.25",
+    "postcss": "8.5.28",
     "validator": "13.15.35",
-    "vite": "8.2.0"
+    "vite": "8.3.0"
   },
   "lint-staged": {
     "*.{js,jsx,ts,tsx}": [
