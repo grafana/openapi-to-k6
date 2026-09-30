@@ -3,23 +3,21 @@ import {
   camel,
   ClientExtraFilesBuilder,
   ClientFileBuilder,
-  ContextSpecs,
+  ContextSpec,
   GeneratorVerbOptions,
   GetterPropType,
   kebab,
   NormalizedOutputOptions,
+  OpenApiOperationObject as OperationObject,
+  OpenApiParameterObject as ParameterObject,
+  OpenApiReferenceObject as ReferenceObject,
+  OpenApiRequestBodyObject as RequestBodyObject,
+  OpenApiSchemaObject as SchemaObject,
   pascal,
   resolveRef,
   toObjectString,
 } from '@orval/core'
 import Handlebars from 'handlebars'
-import {
-  OperationObject,
-  ParameterObject,
-  ReferenceObject,
-  RequestBodyObject,
-  SchemaObject,
-} from 'openapi3-ts/oas30'
 import path from 'path'
 import {
   DEFAULT_SCHEMA_TITLE,
@@ -32,7 +30,7 @@ import { generateTitle } from './k6Client.js'
 
 function getExampleValueForSchema(
   schema: SchemaObject | ReferenceObject,
-  context: ContextSpecs
+  context: ContextSpec
 ) {
   // Handle $ref
   if ('$ref' in schema) {
@@ -40,6 +38,10 @@ function getExampleValueForSchema(
     return getExampleValueForSchema(resolvedSchema as SchemaObject, context)
   }
 
+  // Orval upgrades specs to OpenAPI 3.1, which moves `example` into `examples`
+  if (Array.isArray(schema.examples) && schema.examples.length > 0) {
+    return `'${schema.examples[0]}'`
+  }
   if ('example' in schema) {
     return `'${schema.example}'`
   }
@@ -85,7 +87,7 @@ function getExampleValueForSchema(
 function getExampleValues(
   requiredProps: GeneratorVerbOptions['props'],
   originalOperation: OperationObject,
-  context: ContextSpecs
+  context: ContextSpec
 ): string {
   let exampleValues = ''
   for (const prop of requiredProps) {
@@ -220,10 +222,9 @@ function getClientObjectName(identifier: string) {
 export const k6ScriptBuilder: ClientExtraFilesBuilder = async (
   verbOptions: Record<string, GeneratorVerbOptions>,
   output: NormalizedOutputOptions,
-  context: ContextSpecs
+  context: ContextSpec
 ): Promise<ClientFileBuilder[]> => {
-  const schemaTitle =
-    context.specs[context.specKey]?.info.title || DEFAULT_SCHEMA_TITLE
+  const schemaTitle = context.spec.info?.title || DEFAULT_SCHEMA_TITLE
   const {
     path: pathOfGeneratedClient,
     filename,

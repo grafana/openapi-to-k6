@@ -15,6 +15,8 @@ export interface AnalyticsData {
     delete: number
     patch: number
     head: number
+    options: number
+    query: number
   }
   isSampleK6ScriptGenerated: boolean
   openApiSpecVersion: string

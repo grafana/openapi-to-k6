@@ -37,6 +37,8 @@ export function generateDefaultAnalyticsData(
       patch: 0,
       delete: 0,
       head: 0,
+      options: 0,
+      query: 0,
     },
     isSampleK6ScriptGenerated,
     openApiSpecVersion: '',
