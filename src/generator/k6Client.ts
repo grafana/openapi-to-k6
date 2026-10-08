@@ -4,7 +4,6 @@ import {
   ClientGeneratorsBuilder,
   ClientHeaderBuilder,
   ClientTitleBuilder,
-  ContextSpecs,
   generateFormDataAndUrlEncodedFunction,
   generateVerbImports,
   GeneratorOptions,
@@ -20,19 +19,6 @@ import {
 import { DEFAULT_SCHEMA_TITLE } from '../constants.js'
 import { AnalyticsData } from '../type.js'
 import { k6ScriptBuilder } from './k6ScriptBuilder.js'
-/**
- * In case the supplied schema does not have a title set, it will set the default title to ensure
- * proper client generation
- *
- * @param context - The context object containing the schema details
- */
-function _setDefaultSchemaTitle(context: ContextSpecs) {
-  const schemaDetails = context.specs[context.specKey]
-  if (schemaDetails && !schemaDetails.info.title) {
-    schemaDetails.info.title = DEFAULT_SCHEMA_TITLE
-  }
-}
-
 function _generateResponseTypeDefinition(response: GetterResponse): string {
   let responseDataType = ''
 
@@ -304,20 +290,12 @@ function getK6Client(analyticsData?: AnalyticsData) {
     verbOptions: GeneratorVerbOptions,
     options: GeneratorOptions
   ) {
-    _setDefaultSchemaTitle(options.context)
-
     const imports = generateVerbImports(verbOptions)
     const implementation = generateK6Implementation(
       verbOptions,
       options,
       analyticsData
     )
-    const specData = Object.values(options.context.specs)
-    if (specData[0]) {
-      if (analyticsData) {
-        analyticsData.openApiSpecVersion = specData[0].openapi
-      }
-    }
 
     return { implementation, imports }
   }
