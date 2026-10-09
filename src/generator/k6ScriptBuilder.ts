@@ -32,10 +32,18 @@ function getExampleValueForSchema(
   schema: SchemaObject | ReferenceObject,
   context: ContextSpec
 ) {
+  // OpenAPI 3.1 allows boolean schemas, which carry no example information
+  if (typeof schema === 'boolean') {
+    return undefined
+  }
+
   // Handle $ref
   if ('$ref' in schema) {
-    const { schema: resolvedSchema } = resolveRef(schema, context)
-    return getExampleValueForSchema(resolvedSchema as SchemaObject, context)
+    const { schema: resolvedSchema } = resolveRef<SchemaObject>(
+      schema as ReferenceObject,
+      context
+    )
+    return getExampleValueForSchema(resolvedSchema, context)
   }
 
   // Orval upgrades specs to OpenAPI 3.1, which moves `example` into `examples`
@@ -152,14 +160,15 @@ function getExampleValues(
 
         for (const parameter of originalOperation.parameters || []) {
           if ('name' in parameter) {
-            paramSchema = parameter.schema as SchemaObject
+            paramSchema = 'schema' in parameter ? parameter.schema : undefined
             break
           } else if ('$ref' in parameter) {
             const { schema: resolvedSchema } = resolveRef<ParameterObject>(
               parameter,
               context
             )
-            paramSchema = resolvedSchema.schema
+            paramSchema =
+              'schema' in resolvedSchema ? resolvedSchema.schema : undefined
             break
           }
         }
