@@ -1,0 +1,58 @@
+{
+  "openapi": "3.0.3",
+  "info": {
+    "title": "Simple API",
+    "version": "1.0.0",
+    "description": "An API with a single GET request that takes a path parameter"
+  },
+  "paths": {
+    "/items/{id}": {
+      "get": {
+        "summary": "Get an item by its ID",
+        "description": "Returns a single item based on the provided ID",
+        "operationId": "getItemById",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "description": "ID of the item to retrieve",
+            "schema": {
+              "type": "string",
+              "example": "12345"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "id": {
+                      "type": "string"
+                    },
+                    "name": {
+                      "type": "string"
+                    },
+                    "description": {
+                      "type": "string"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Item not found"
+          }
+        }
+      }
+    }
+  },
+  "components": {},
+  "security": [],
+  "tags": []
+}
