@@ -55,31 +55,6 @@
     "vite-tsconfig-paths": "6.1.1",
     "vitest": "4.1.11"
   },
-  "overrides": {
-    "@asyncapi/specs": "6.11.1",
-    "ajv@6": "6.14.0",
-    "ajv@8": "8.20.0",
-    "brace-expansion": "5.0.12",
-    "cross-spawn@7": "7.0.6",
-    "diff": "9.0.0",
-    "fast-uri@3": "3.1.5",
-    "flatted": "3.4.4",
-    "form-data@4": "4.0.6",
-    "js-yaml@4": "4.3.0",
-    "jsonpath-plus": "10.4.0",
-    "linkify-it@5": "5.0.2",
-    "lodash": "4.18.1",
-    "markdown-it@14": "14.1.1",
-    "minimatch@3": "3.1.5",
-    "minimatch@5": "5.1.9",
-    "minimatch@6": "6.2.3",
-    "minimatch@9": "9.0.9",
-    "picomatch@2": "2.3.2",
-    "picomatch@4": "4.0.5",
-    "postcss": "8.5.29",
-    "validator": "13.15.35",
-    "vite": "8.3.3"
-  },
   "lint-staged": {
     "*.{js,jsx,ts,tsx}": [
       "eslint --fix",
