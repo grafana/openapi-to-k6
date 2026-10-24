@@ -4,8 +4,6 @@
  * Form URL Encoded API with Query Parameters
  * Service version: 1.0.0
  */
-import { URL, URLSearchParams } from 'https://jslib.k6.io/url/1.0.0/index.js'
-
 import http from 'k6/http'
 import type { Params, Response } from 'k6/http'
 
@@ -18,6 +16,45 @@ import type {
 /**
  * This is the base client to use for interacting with the API.
  */
+
+function __k6EncodeFormComponent(value: unknown): string {
+  const input = String(value)
+  let normalized = ''
+
+  for (let index = 0; index < input.length; index++) {
+    const code = input.charCodeAt(index)
+    if (code >= 0xd800 && code <= 0xdbff) {
+      const next = input.charCodeAt(index + 1)
+      if (next >= 0xdc00 && next <= 0xdfff) {
+        normalized += input.slice(index, index + 2)
+        index++
+      } else {
+        normalized += String.fromCharCode(0xfffd)
+      }
+    } else if (code >= 0xdc00 && code <= 0xdfff) {
+      normalized += String.fromCharCode(0xfffd)
+    } else {
+      normalized += input.charAt(index)
+    }
+  }
+
+  return encodeURIComponent(normalized)
+    .replace(
+      /[!'()~]/g,
+      (character) => '%' + character.charCodeAt(0).toString(16).toUpperCase()
+    )
+    .replace(/%20/g, '+')
+}
+
+function __k6SerializeQueryParams(params: object): string {
+  return Object.entries(params)
+    .map(
+      ([key, value]) =>
+        __k6EncodeFormComponent(key) + '=' + __k6EncodeFormComponent(value)
+    )
+    .join('&')
+}
+
 export class FormURLEncodedAPIWithQueryParametersClient {
   private cleanBaseUrl: string
   private commonRequestParameters: Params
@@ -44,11 +81,10 @@ export class FormURLEncodedAPIWithQueryParametersClient {
     data: PostSubmitForm200
     operationId: string
   } {
-    const k6url = new URL(
+    const k6url =
       this.cleanBaseUrl +
-        `/submit-form` +
-        `?${new URLSearchParams(params).toString()}`
-    )
+      encodeURI(`/submit-form`) +
+      `?${__k6SerializeQueryParams(params)}`
     const mergedRequestParameters = this._mergeRequestParameters(
       requestParameters || {},
       this.commonRequestParameters
