@@ -6,8 +6,6 @@
  */
 import { FormData } from 'https://jslib.k6.io/formdata/0.0.2/index.js'
 
-import { URL } from 'https://jslib.k6.io/url/1.0.0/index.js'
-
 import http from 'k6/http'
 import type { Params, Response } from 'k6/http'
 
@@ -16,6 +14,7 @@ import type { PostUpload200, PostUploadBody } from './formDataAPI.schemas'
 /**
  * This is the base client to use for interacting with the API.
  */
+
 export class FormDataAPIClient {
   private cleanBaseUrl: string
   private commonRequestParameters: Params
@@ -48,7 +47,7 @@ export class FormDataAPIClient {
     }
     formData.append(`userId`, postUploadBody.userId)
 
-    const k6url = new URL(this.cleanBaseUrl + `/upload`)
+    const k6url = this.cleanBaseUrl + encodeURI(`/upload`)
     const mergedRequestParameters = this._mergeRequestParameters(
       requestParameters || {},
       this.commonRequestParameters
