@@ -309,9 +309,14 @@ describe('generator', () => {
       })
 
       client.getItemById('a b/é')
+      const unusualPathValue = `${String.fromCharCode(0xd83d, 0xde00)} ${String.fromCharCode(0xd800)} ${String.fromCharCode(0xdc00)}`
+      client.getItemById(unusualPathValue)
 
       expect(requestedUrls).toEqual([
         new URL('https://api.example.test/v1/items/a b/é').toString(),
+        new URL(
+          `https://api.example.test/v1/items/${unusualPathValue}`
+        ).toString(),
       ])
     } finally {
       await rmdir(schemaDirectory, { recursive: true })

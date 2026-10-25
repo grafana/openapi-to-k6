@@ -203,7 +203,10 @@ const generateK6Implementation = (
     isFormUrlEncoded: false,
   })
 
-  let url = `this.cleanBaseUrl + encodeURI(\`${route}\`)`
+  const encodedRoute = route.includes('${')
+    ? `encodeURI(\`${route}\`.replace(/([\\uD800-\\uDBFF][\\uDC00-\\uDFFF])|[\\uD800-\\uDFFF]/g, (surrogate) => surrogate.length === 2 ? surrogate : '\\uFFFD'))`
+    : `encodeURI(\`${route}\`)`
+  let url = `this.cleanBaseUrl + ${encodedRoute}`
 
   if (queryParams) {
     url += '+`?${__k6SerializeQueryParams(params)}`'

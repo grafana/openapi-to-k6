@@ -39,7 +39,14 @@ export class DefaultClient {
     data: GetItemById200
     operationId: string
   } {
-    const k6url = this.cleanBaseUrl + encodeURI(`/items/${id}`)
+    const k6url =
+      this.cleanBaseUrl +
+      encodeURI(
+        `/items/${id}`.replace(
+          /([\uD800-\uDBFF][\uDC00-\uDFFF])|[\uD800-\uDFFF]/g,
+          (surrogate) => (surrogate.length === 2 ? surrogate : '\uFFFD')
+        )
+      )
     const mergedRequestParameters = this._mergeRequestParameters(
       requestParameters || {},
       this.commonRequestParameters
