@@ -5,8 +5,6 @@
  * An API demonstrating the use of headers in different ways
  * Service version: 1.0.0
  */
-import { URL } from 'https://jslib.k6.io/url/1.0.0/index.js'
-
 import http from 'k6/http'
 import type { Params, Response } from 'k6/http'
 
@@ -21,6 +19,7 @@ import type {
 /**
  * This is the base client to use for interacting with the API.
  */
+
 export class DefaultClient {
   private cleanBaseUrl: string
   private commonRequestParameters: Params
@@ -46,7 +45,7 @@ export class DefaultClient {
     data: GetExampleGet200
     operationId: string
   } {
-    const k6url = new URL(this.cleanBaseUrl + `/example-get`)
+    const k6url = this.cleanBaseUrl + encodeURI(`/example-get`)
     const mergedRequestParameters = this._mergeRequestParameters(
       requestParameters || {},
       this.commonRequestParameters
@@ -90,7 +89,7 @@ export class DefaultClient {
     data: void
     operationId: string
   } {
-    const k6url = new URL(this.cleanBaseUrl + `/example-post`)
+    const k6url = this.cleanBaseUrl + encodeURI(`/example-post`)
     const mergedRequestParameters = this._mergeRequestParameters(
       requestParameters || {},
       this.commonRequestParameters
@@ -136,7 +135,7 @@ export class DefaultClient {
     data: GetExampleResponseHeaders200
     operationId: string
   } {
-    const k6url = new URL(this.cleanBaseUrl + `/example-response-headers`)
+    const k6url = this.cleanBaseUrl + encodeURI(`/example-response-headers`)
     const mergedRequestParameters = this._mergeRequestParameters(
       requestParameters || {},
       this.commonRequestParameters
