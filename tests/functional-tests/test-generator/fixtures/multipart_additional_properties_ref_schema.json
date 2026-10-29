@@ -1,0 +1,51 @@
+{
+  "openapi_schema": {
+    "openapi": "3.0.0",
+    "info": {
+      "title": "Multipart Reference API",
+      "version": "1.0.0"
+    },
+    "paths": {
+      "/upload": {
+        "post": {
+          "operationId": "uploadFiles",
+          "requestBody": {
+            "$ref": "#/components/requestBodies/Upload"
+          },
+          "responses": {
+            "204": {
+              "description": "Upload complete"
+            }
+          }
+        }
+      }
+    },
+    "components": {
+      "requestBodies": {
+        "Upload": {
+          "required": true,
+          "content": {
+            "multipart/form-data": {
+              "schema": {
+                "$ref": "#/components/schemas/UploadPayload"
+              }
+            }
+          }
+        }
+      },
+      "schemas": {
+        "UploadPayload": {
+          "type": "object",
+          "additionalProperties": true
+        }
+      }
+    }
+  },
+  "expected_sdk": {
+    "fileName": "multipartReferenceAPI.ts",
+    "expectedSubstrings": [
+      "export interface UploadPayload",
+      "Object.entries(uploadBody ?? {}).forEach(([key, value]) => { if (value !== undefined && value !== null) { formData.append(key, value as any); } });"
+    ]
+  }
+}

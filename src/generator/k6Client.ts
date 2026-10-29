@@ -4,6 +4,7 @@ import {
   ClientGeneratorsBuilder,
   ClientHeaderBuilder,
   ClientTitleBuilder,
+  ContextSpec,
   generateFormDataAndUrlEncodedFunction,
   generateVerbImports,
   GeneratorOptions,
@@ -11,7 +12,11 @@ import {
   GeneratorVerbOptions,
   GetterBody,
   GetterResponse,
+  OpenApiReferenceObject,
+  OpenApiRequestBodyObject,
+  OpenApiSchemaObject,
   pascal,
+  resolveRef,
   sanitize,
   toObjectString,
   jsStringEscape,
@@ -39,6 +44,48 @@ function _generateResponseTypeDefinition(response: GetterResponse): string {
 }
 
 const INTERNAL_URL_TOKEN = 'k6url'
+
+function generateAdditionalFormDataEntries(
+  body: GetterBody,
+  context: ContextSpec
+): string {
+  if (!body.formData) return ''
+
+  const requestBody =
+    'content' in body.originalSchema
+      ? body.originalSchema
+      : resolveRef<OpenApiRequestBodyObject>(body.originalSchema, context)
+          .schema
+  const multipartSchema = requestBody.content['multipart/form-data']?.schema
+  const schema =
+    multipartSchema &&
+    typeof multipartSchema === 'object' &&
+    '$ref' in multipartSchema
+      ? resolveRef<OpenApiSchemaObject>(
+          multipartSchema as OpenApiReferenceObject,
+          context
+        ).schema
+      : multipartSchema
+  if (
+    !schema ||
+    typeof schema !== 'object' ||
+    schema.type !== 'object' ||
+    !schema.additionalProperties
+  ) {
+    return ''
+  }
+
+  const declaredProperties = Object.keys(schema.properties ?? {})
+  const skipDeclaredProperties = declaredProperties.length
+    ? `if (${JSON.stringify(declaredProperties)}.includes(key)) return;\n`
+    : ''
+
+  return `Object.entries(${body.implementation} ?? {}).forEach(([key, value]) => {
+  ${skipDeclaredProperties}  if (value !== undefined && value !== null) {
+    formData.append(key, value as any);
+  }
+});`
+}
 
 function _getRequestParametersMergerFunctionImplementation() {
   return `/**
@@ -194,7 +241,7 @@ const getK6Dependencies: ClientDependenciesBuilder = () => [
 
 const generateK6Implementation = (
   verbOptions: GeneratorVerbOptions,
-  { route }: GeneratorOptions,
+  { route, context }: GeneratorOptions,
   analyticsData?: AnalyticsData
 ) => {
   const {
@@ -212,13 +259,18 @@ const generateK6Implementation = (
     analyticsData.generatedRequestsCount[verb] += 1
   }
 
-  const bodyForm = generateFormDataAndUrlEncodedFunction({
-    formData,
-    formUrlEncoded,
-    body,
-    isFormData: true,
-    isFormUrlEncoded: false,
-  })
+  const bodyForm = [
+    generateFormDataAndUrlEncodedFunction({
+      formData,
+      formUrlEncoded,
+      body,
+      isFormData: true,
+      isFormUrlEncoded: false,
+    }),
+    generateAdditionalFormDataEntries(body, context),
+  ]
+    .filter(Boolean)
+    .join('\n')
 
   let url = `this.cleanBaseUrl + \`${route}\``
 
