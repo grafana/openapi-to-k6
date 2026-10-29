@@ -4,6 +4,7 @@ import {
   ClientGeneratorsBuilder,
   ClientHeaderBuilder,
   ClientTitleBuilder,
+  ContextSpec,
   generateFormDataAndUrlEncodedFunction,
   generateVerbImports,
   GeneratorOptions,
@@ -11,7 +12,11 @@ import {
   GeneratorVerbOptions,
   GetterBody,
   GetterResponse,
+  OpenApiReferenceObject,
+  OpenApiRequestBodyObject,
+  OpenApiSchemaObject,
   pascal,
+  resolveRef,
   sanitize,
   toObjectString,
   jsStringEscape,
@@ -39,6 +44,71 @@ function _generateResponseTypeDefinition(response: GetterResponse): string {
 }
 
 const INTERNAL_URL_TOKEN = 'k6url'
+
+function generateAdditionalFormDataEntries(
+  body: GetterBody,
+  context: ContextSpec
+): string {
+  if (!body.formData) return ''
+
+  const requestBody =
+    'content' in body.originalSchema
+      ? body.originalSchema
+      : resolveRef<OpenApiRequestBodyObject>(body.originalSchema, context)
+          .schema
+  const multipartSchema = requestBody.content['multipart/form-data']?.schema
+  const schema =
+    multipartSchema &&
+    typeof multipartSchema === 'object' &&
+    '$ref' in multipartSchema
+      ? resolveRef<OpenApiSchemaObject>(
+          multipartSchema as OpenApiReferenceObject,
+          context
+        ).schema
+      : multipartSchema
+  if (
+    !schema ||
+    typeof schema !== 'object' ||
+    schema.type !== 'object' ||
+    !schema.additionalProperties
+  ) {
+    return ''
+  }
+
+  const declaredProperties = Object.keys(schema.properties ?? {})
+  const skipDeclaredProperties = declaredProperties.length
+    ? `if (${JSON.stringify(declaredProperties)}.includes(key)) return;\n`
+    : ''
+
+  return `Object.entries(${body.implementation} ?? {}).forEach(([key, value]) => {
+  ${skipDeclaredProperties}  if (value !== undefined && value !== null) {
+    const formDataValue =
+      typeof value === 'string'
+        ? value
+        : value instanceof ArrayBuffer || value instanceof Uint8Array
+          ? { data: value }
+          : typeof value === 'object' &&
+              value !== null &&
+              'data' in value &&
+              Object.keys(value).every((key) =>
+                ['data', 'filename', 'content_type'].includes(key)
+              ) &&
+              (!('filename' in value) ||
+                value.filename === undefined ||
+                typeof value.filename === 'string') &&
+              (!('content_type' in value) ||
+                value.content_type === undefined ||
+                typeof value.content_type === 'string') &&
+              (typeof value.data === 'string' ||
+                value.data instanceof ArrayBuffer ||
+                value.data instanceof Uint8Array ||
+                Array.isArray(value.data))
+            ? value
+            : JSON.stringify(value);
+    formData.append(key, formDataValue as any);
+  }
+});`
+}
 
 function _getRequestParametersMergerFunctionImplementation() {
   return `/**
@@ -194,7 +264,7 @@ const getK6Dependencies: ClientDependenciesBuilder = () => [
 
 const generateK6Implementation = (
   verbOptions: GeneratorVerbOptions,
-  { route }: GeneratorOptions,
+  { route, context }: GeneratorOptions,
   analyticsData?: AnalyticsData
 ) => {
   const {
@@ -212,13 +282,18 @@ const generateK6Implementation = (
     analyticsData.generatedRequestsCount[verb] += 1
   }
 
-  const bodyForm = generateFormDataAndUrlEncodedFunction({
-    formData,
-    formUrlEncoded,
-    body,
-    isFormData: true,
-    isFormUrlEncoded: false,
-  })
+  const bodyForm = [
+    generateFormDataAndUrlEncodedFunction({
+      formData,
+      formUrlEncoded,
+      body,
+      isFormData: true,
+      isFormUrlEncoded: false,
+    }),
+    generateAdditionalFormDataEntries(body, context),
+  ]
+    .filter(Boolean)
+    .join('\n')
 
   let url = `this.cleanBaseUrl + \`${route}\``
 
