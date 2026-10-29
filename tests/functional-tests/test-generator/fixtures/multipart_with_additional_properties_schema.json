@@ -1,0 +1,44 @@
+{
+  "openapi_schema": {
+    "openapi": "3.0.0",
+    "info": {
+      "title": "Multipart Extensions API",
+      "version": "1.0.0"
+    },
+    "paths": {
+      "/upload": {
+        "post": {
+          "operationId": "uploadFiles",
+          "requestBody": {
+            "required": true,
+            "content": {
+              "multipart/form-data": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "description": {
+                      "type": "string"
+                    }
+                  },
+                  "additionalProperties": true
+                }
+              }
+            }
+          },
+          "responses": {
+            "204": {
+              "description": "Upload complete"
+            }
+          }
+        }
+      }
+    }
+  },
+  "expected_sdk": {
+    "fileName": "multipartExtensionsAPI.ts",
+    "expectedSubstrings": [
+      "formData.append(`description`, uploadFilesBody.description);",
+      "Object.entries(uploadFilesBody ?? {}).forEach(([key, value]) => { if ([\"description\"].includes(key)) return; if (value !== undefined && value !== null) { formData.append(key, value as any); } });"
+    ]
+  }
+}
