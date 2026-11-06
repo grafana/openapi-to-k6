@@ -18,7 +18,7 @@ import type {
  * This is the base client to use for interacting with the API.
  */
 
-function __k6EncodeFormComponent(value: unknown): string {
+function __k6NormalizeString(value: unknown): string {
   const input = String(value)
   let normalized = ''
 
@@ -39,7 +39,11 @@ function __k6EncodeFormComponent(value: unknown): string {
     }
   }
 
-  return encodeURIComponent(normalized)
+  return normalized
+}
+
+function __k6EncodeFormComponent(value: unknown): string {
+  return encodeURIComponent(__k6NormalizeString(value))
     .replace(
       /[!'()~]/g,
       (character) => '%' + character.charCodeAt(0).toString(16).toUpperCase()
@@ -47,7 +51,7 @@ function __k6EncodeFormComponent(value: unknown): string {
     .replace(/%20/g, '+')
 }
 
-function __k6SerializeQueryParams(params: object): string {
+function __k6SerializeQueryParams(params: object = {}): string {
   return Object.entries(params)
     .map(
       ([key, value]) =>

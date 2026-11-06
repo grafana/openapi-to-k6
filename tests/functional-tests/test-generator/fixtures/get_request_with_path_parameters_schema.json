@@ -61,7 +61,7 @@
     "expectedSubstrings": [
       "getItemById( id: string, requestParameters?: Params, ): ",
       "const k6url = this.cleanBaseUrl + encodeURI(",
-      "surrogate.length === 2 ? surrogate"
+      "__k6NormalizeString(`/items/${id}`)"
     ]
   }
 }

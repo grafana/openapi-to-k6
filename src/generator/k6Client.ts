@@ -203,9 +203,13 @@ const generateK6Implementation = (
     isFormUrlEncoded: false,
   })
 
-  const encodedRoute = route.includes('${')
-    ? `encodeURI(\`${route}\`.replace(/([\\uD800-\\uDBFF][\\uDC00-\\uDFFF])|[\\uD800-\\uDFFF]/g, (surrogate) => surrogate.length === 2 ? surrogate : '\\uFFFD'))`
+  let encodedRoute = route.includes('${')
+    ? `encodeURI(__k6NormalizeString(\`${route}\`))`
     : `encodeURI(\`${route}\`)`
+  // Keep valid escapes in literal paths and path values encoded exactly once.
+  if (route.includes('%') || route.includes('${')) {
+    encodedRoute += `.replace(/%25([0-9A-Fa-f]{2})/g, '%$1')`
+  }
   let url = `this.cleanBaseUrl + ${encodedRoute}`
 
   if (queryParams) {
@@ -240,8 +244,8 @@ export const generateTitle: ClientTitleBuilder = (title) => {
   return `${pascal(sanTitle)}Client`
 }
 
-const getQueryParameterSerializerImplementation = () => `
-  function __k6EncodeFormComponent(value: unknown): string {
+const getStringNormalizerImplementation = () => `
+  function __k6NormalizeString(value: unknown): string {
     const input = String(value)
     let normalized = ''
 
@@ -262,12 +266,18 @@ const getQueryParameterSerializerImplementation = () => `
       }
     }
 
-    return encodeURIComponent(normalized)
+    return normalized
+  }
+`
+
+const getQueryParameterSerializerImplementation = () => `
+  function __k6EncodeFormComponent(value: unknown): string {
+    return encodeURIComponent(__k6NormalizeString(value))
       .replace(/[!'()~]/g, (character) => '%' + character.charCodeAt(0).toString(16).toUpperCase())
       .replace(/%20/g, '+')
   }
 
-  function __k6SerializeQueryParams(params: object): string {
+  function __k6SerializeQueryParams(params: object = {}): string {
     return Object.entries(params)
       .map(([key, value]) => __k6EncodeFormComponent(key) + '=' + __k6EncodeFormComponent(value))
       .join('&')
@@ -284,10 +294,17 @@ const generateK6Header: ClientHeaderBuilder = ({
     ? getQueryParameterSerializerImplementation()
     : ''
 
+  const stringNormalizer =
+    queryParameterSerializer ||
+    clientImplementation.includes('__k6NormalizeString')
+      ? getStringNormalizerImplementation()
+      : ''
+
   return `
   /**
    * This is the base client to use for interacting with the API.
    */
+  ${stringNormalizer}
   ${queryParameterSerializer}
 
   export class ${title} {
