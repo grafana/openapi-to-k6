@@ -1,19 +1,24 @@
 /* eslint-disable import/no-unresolved */
 import { check } from 'k6'
+import { Counter } from 'k6/metrics'
 import { ItemsFormClient } from './items-form.ts'
 import { ItemsHeaderClient } from './items-header.ts'
 import { ItemsClient } from './items.ts'
 
 /* eslint-enable import/no-unresolved */
 
+const completedIterations = new Counter('completed_iterations')
 const baseUrl = 'http://localhost:3000'
 const itemsClient = new ItemsClient({ baseUrl })
 const itemFormClient = new ItemsFormClient({ baseUrl })
 const itemsHeaderClient = new ItemsHeaderClient({ baseUrl })
 
 export const options = {
+  vus: 1,
+  iterations: 1,
   thresholds: {
-    // the rate of successful checks should be higher than 90%
+    completed_iterations: ['count==1'],
+    // All assertions must pass and the complete iteration must finish.
     checks: ['rate>=1'],
   },
 }
@@ -32,6 +37,7 @@ function checkResponseStatus(response, expectedStatus) {
 }
 
 export default function () {
+  completedIterations.add(0)
   // Items client calls start
   const getResponseData = itemsClient.getItemsId('1')
   checkResponseStatus(getResponseData.response, 200)
@@ -57,16 +63,18 @@ export default function () {
   const headResponseData = itemsClient.headItemsId('1')
   checkResponseStatus(headResponseData.response, 200)
 
-  const postFormUrlEncodedResponseDataFromItem =
-    itemsClient.postItemsFormUrlEncoded({
-      name: 'string',
-    })
-  checkResponseStatus(postFormUrlEncodedResponseDataFromItem.response, 201)
-  // Should add x-www-form-urlencoded content type header in request
-  check(postFormUrlEncodedResponseDataFromItem.response, {
-    'has x-www-form-urlencoded content type header': (r) =>
-      r.request.headers['Content-Type'][0] ===
-      'application/x-www-form-urlencoded',
+  // Orval routes multi-tag operations to their first (primary) tag.
+  check(itemFormClient, {
+    'primary tag owns form URL encoded operation': (client) =>
+      typeof client.postItemsFormUrlEncoded === 'function',
+    'primary tag owns multipart operation': (client) =>
+      typeof client.postItemsFormData === 'function',
+  })
+  check(itemsClient, {
+    'secondary tag omits form URL encoded operation': (client) =>
+      !('postItemsFormUrlEncoded' in client),
+    'secondary tag omits multipart operation': (client) =>
+      !('postItemsFormData' in client),
   })
   // Items client calls end
 
@@ -82,6 +90,8 @@ export default function () {
     'has x-www-form-urlencoded content type header': (r) =>
       r.request.headers['Content-Type'][0] ===
       'application/x-www-form-urlencoded',
+    'form URL encoded request carries the body': (r) =>
+      r.request.body === 'name=string',
   })
 
   const postFormDataResponseData = itemFormClient.postItemsFormData({
@@ -94,6 +104,9 @@ export default function () {
       r.request.headers['Content-Type'][0].includes(
         'multipart/form-data; boundary=---'
       ),
+    'multipart request carries the body': (r) =>
+      r.request.body.includes('name="name"') &&
+      r.request.body.includes('\r\n\r\nstring\r\n'),
   })
   // Items form client call end
 
@@ -103,4 +116,5 @@ export default function () {
   })
   checkResponseStatus(getItemsHeaderResponseData.response, 200)
   // Default client call end
+  completedIterations.add(1)
 }

@@ -1,14 +1,19 @@
 /* eslint-disable import/no-unresolved */
 import { check } from 'k6'
+import { Counter } from 'k6/metrics'
 import { ComprehensiveAPIClient } from './sdk.ts'
 /* eslint-enable import/no-unresolved */
 
+const completedIterations = new Counter('completed_iterations')
 const baseUrl = 'http://localhost:3000'
 const client = new ComprehensiveAPIClient({ baseUrl })
 
 export const options = {
+  vus: 1,
+  iterations: 1,
   thresholds: {
-    // the rate of successful checks should be higher than 90%
+    completed_iterations: ['count==1'],
+    // All assertions must pass and the complete iteration must finish.
     checks: ['rate>=1'],
   },
 }
@@ -27,6 +32,7 @@ function checkResponseStatus(response, expectedStatus) {
 }
 
 export default function () {
+  completedIterations.add(0)
   const getResponseData = client.getItemsId('1')
   checkResponseStatus(getResponseData.response, 200)
 
@@ -79,4 +85,5 @@ export default function () {
     id: 'test',
   })
   checkResponseStatus(getItemsHeaderResponseData.response, 200)
+  completedIterations.add(1)
 }

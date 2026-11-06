@@ -1,6 +1,7 @@
 import fs from 'fs'
 import os from 'os'
 import path from 'path'
+import { runInNewContext } from 'vm'
 import {
   afterAll,
   afterEach,
@@ -12,6 +13,7 @@ import {
 } from 'vitest'
 import { Mode } from '../../../src/constants'
 import generator from '../../../src/generator'
+import * as ts from 'typescript'
 
 import {
   loadFixture,
@@ -35,6 +37,33 @@ const commonMatchesForAllSDK = [
 ]
 
 const commonSubstringsForK6SampleScript = [`const baseUrl = "<BASE_URL>";`]
+
+function loadGeneratedClient(
+  source: string,
+  request: (...args: unknown[]) => unknown
+) {
+  const compiled = ts.transpileModule(source, {
+    compilerOptions: {
+      esModuleInterop: true,
+      module: ts.ModuleKind.CommonJS,
+      target: ts.ScriptTarget.ES2020,
+    },
+  })
+  const generatedModule = { exports: {} as Record<string, unknown> }
+
+  runInNewContext(compiled.outputText, {
+    exports: generatedModule.exports,
+    module: generatedModule,
+    require: (name: string) => {
+      if (name === 'k6/http') {
+        return { request }
+      }
+      throw new Error(`Unexpected generated-client import: ${name}`)
+    },
+  })
+
+  return generatedModule.exports
+}
 
 describe('generator', () => {
   let tempDir: string, schemaDirectory: string
@@ -159,4 +188,215 @@ describe('generator', () => {
       })
     })
   }
+
+  it('does not import the URL polyfill into generated clients', async () => {
+    const fixture = loadFixture(
+      path.join(__dirname, 'fixtures', 'query_params_schema.json')
+    )
+    fixture['openapi_schema'].paths['/example'].get.parameters[0].required =
+      false
+    const schemaDirectory = await mkdtemp(
+      path.join(tempDir, 'url-polyfill-regression-')
+    )
+    const openApiPath = path.join(schemaDirectory, 'openapi-schema.json')
+    const outputDir = path.join(schemaDirectory, 'generated')
+
+    try {
+      await writeFile(openApiPath, JSON.stringify(fixture['openapi_schema']))
+      await generator({
+        openApiPath,
+        outputDir,
+        mode: Mode.SINGLE,
+      })
+
+      const generatedFile = fs.readdirSync(outputDir)[0]
+      expect(generatedFile).toBeDefined()
+      const generatedContent = await readFile(
+        path.join(outputDir, generatedFile!),
+        'utf-8'
+      )
+
+      expect(generatedContent).not.toContain(
+        'https://jslib.k6.io/url/1.0.0/index.js'
+      )
+
+      const requestedUrls: string[] = []
+      const generatedModule = loadGeneratedClient(
+        generatedContent,
+        (...args) => {
+          if (typeof args[1] !== 'string') {
+            throw new Error('The generated request URL must be a string')
+          }
+          requestedUrls.push(args[1])
+          return { json: () => ({}), body: '' }
+        }
+      )
+      const ExampleAPIClient =
+        generatedModule.ExampleAPIClient as new (options: {
+          baseUrl: string
+        }) => {
+          getExampleData: (params?: Record<string, unknown>) => unknown
+        }
+      const client = new ExampleAPIClient({
+        baseUrl: 'https://api.example.test/v1/',
+      })
+      const params = {
+        name: "a b!~*'() café 😀",
+        age: 42,
+        isActive: false,
+        tags: ['one two', 'x&y'],
+        date: '\ud800',
+      }
+
+      client.getExampleData(params)
+      client.getExampleData()
+
+      const search = new URLSearchParams(
+        params as unknown as Record<string, string>
+      ).toString()
+      expect(requestedUrls).toEqual([
+        `https://api.example.test/v1/example?${search}`,
+        `https://api.example.test/v1/example?`,
+      ])
+    } finally {
+      await rmdir(schemaDirectory, { recursive: true })
+    }
+  })
+
+  it('encodes path values in generated URLs without the URL polyfill', async () => {
+    const fixture = loadFixture(
+      path.join(
+        __dirname,
+        'fixtures',
+        'get_request_with_path_parameters_schema.json'
+      )
+    )
+    const schemaDirectory = await mkdtemp(
+      path.join(tempDir, 'path-url-encoding-')
+    )
+    const openApiPath = path.join(schemaDirectory, 'openapi-schema.json')
+    const outputDir = path.join(schemaDirectory, 'generated')
+
+    try {
+      await writeFile(openApiPath, JSON.stringify(fixture['openapi_schema']))
+      await generator({
+        openApiPath,
+        outputDir,
+        mode: Mode.SINGLE,
+      })
+
+      const generatedFile = fs.readdirSync(outputDir)[0]
+      expect(generatedFile).toBeDefined()
+      const generatedContent = await readFile(
+        path.join(outputDir, generatedFile!),
+        'utf-8'
+      )
+      expect(generatedContent).not.toContain('__k6SerializeQueryParams')
+      const requestedUrls: string[] = []
+      const generatedModule = loadGeneratedClient(
+        generatedContent,
+        (...args) => {
+          if (typeof args[1] !== 'string') {
+            throw new Error('The generated request URL must be a string')
+          }
+          requestedUrls.push(args[1])
+          return { json: () => ({}), body: '' }
+        }
+      )
+      const SimpleAPIClient = generatedModule.SimpleAPIClient as new (options: {
+        baseUrl: string
+      }) => {
+        getItemById: (id: string) => unknown
+      }
+      const client = new SimpleAPIClient({
+        baseUrl: 'https://api.example.test/v1/',
+      })
+
+      client.getItemById('a b/é')
+      const unusualPathValue = `${String.fromCharCode(0xd83d, 0xde00)} ${String.fromCharCode(0xd800)} ${String.fromCharCode(0xdc00)}`
+      client.getItemById(unusualPathValue)
+
+      expect(requestedUrls).toEqual([
+        new URL('https://api.example.test/v1/items/a b/é').toString(),
+        new URL(
+          `https://api.example.test/v1/items/${unusualPathValue}`
+        ).toString(),
+      ])
+    } finally {
+      await rmdir(schemaDirectory, { recursive: true })
+    }
+  })
+
+  it('preserves valid percent escapes without decoding path delimiters', async () => {
+    const fixture = loadFixture(
+      path.join(
+        __dirname,
+        'fixtures',
+        'get_request_with_path_parameters_schema.json'
+      )
+    )
+    const schema = fixture['openapi_schema']
+    schema.paths['/escaped%20path/%2F'] = {
+      get: {
+        operationId: 'getEscapedPath',
+        responses: { '200': { description: 'OK' } },
+      },
+    }
+    const schemaDirectory = await mkdtemp(path.join(tempDir, 'escaped-path-'))
+    const openApiPath = path.join(schemaDirectory, 'schema.json')
+    const outputDir = path.join(schemaDirectory, 'generated')
+    try {
+      await writeFile(openApiPath, JSON.stringify(schema))
+      await generator({ openApiPath, outputDir, mode: Mode.SINGLE })
+      const [generatedFile] = fs.readdirSync(outputDir)
+      const source = await readFile(
+        path.join(outputDir, generatedFile!),
+        'utf-8'
+      )
+      const requestedUrls: string[] = []
+      const generatedModule = loadGeneratedClient(source, (...args) => {
+        requestedUrls.push(String(args[1]))
+        return { json: () => ({}), body: '' }
+      })
+      const SimpleAPIClient = generatedModule.SimpleAPIClient as new (options: {
+        baseUrl: string
+      }) => {
+        getItemById: (id: string) => unknown
+        getEscapedPath: () => unknown
+      }
+      const client = new SimpleAPIClient({
+        baseUrl: 'https://api.example.test/v1/',
+      })
+      const cases: [string, string][] = [
+        ['a%20b', 'a%20b'],
+        ['a%2Fb', 'a%2Fb'],
+        ['%C3%A9', '%C3%A9'],
+        ['%c3%a9', '%c3%a9'],
+        ['%3Fadmin%3Dtrue', '%3Fadmin%3Dtrue'],
+        ['%23fragment', '%23fragment'],
+        ['%252F', '%252F'],
+        ['%25', '%25'],
+        ['%00%0d%0a', '%00%0d%0a'],
+        ['a b/é', 'a%20b/%C3%A9'],
+        ['100%', '100%25'],
+        ['%2', '%252'],
+        ['%GG', '%25GG'],
+        ['%%20', '%25%20'],
+        ['😀', '%F0%9F%98%80'],
+        ['\ud800', '%EF%BF%BD'],
+      ]
+      for (const [input, expected] of cases) {
+        client.getItemById(input)
+        expect(requestedUrls.at(-1)).toBe(
+          `https://api.example.test/v1/items/${expected}`
+        )
+      }
+      client.getEscapedPath()
+      expect(requestedUrls.at(-1)).toBe(
+        'https://api.example.test/v1/escaped%20path/%2F'
+      )
+    } finally {
+      await rmdir(schemaDirectory, { recursive: true })
+    }
+  })
 })

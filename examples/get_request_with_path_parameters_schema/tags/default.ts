@@ -5,8 +5,6 @@
  * An API with a single GET request that takes a path parameter
  * Service version: 1.0.0
  */
-import { URL } from 'https://jslib.k6.io/url/1.0.0/index.js'
-
 import http from 'k6/http'
 import type { Params, Response } from 'k6/http'
 
@@ -15,6 +13,31 @@ import type { GetItemById200 } from './simpleAPI.schemas'
 /**
  * This is the base client to use for interacting with the API.
  */
+
+function __k6NormalizeString(value: unknown): string {
+  const input = String(value)
+  let normalized = ''
+
+  for (let index = 0; index < input.length; index++) {
+    const code = input.charCodeAt(index)
+    if (code >= 0xd800 && code <= 0xdbff) {
+      const next = input.charCodeAt(index + 1)
+      if (next >= 0xdc00 && next <= 0xdfff) {
+        normalized += input.slice(index, index + 2)
+        index++
+      } else {
+        normalized += String.fromCharCode(0xfffd)
+      }
+    } else if (code >= 0xdc00 && code <= 0xdfff) {
+      normalized += String.fromCharCode(0xfffd)
+    } else {
+      normalized += input.charAt(index)
+    }
+  }
+
+  return normalized
+}
+
 export class DefaultClient {
   private cleanBaseUrl: string
   private commonRequestParameters: Params
@@ -40,7 +63,12 @@ export class DefaultClient {
     data: GetItemById200
     operationId: string
   } {
-    const k6url = new URL(this.cleanBaseUrl + `/items/${id}`)
+    const k6url =
+      this.cleanBaseUrl +
+      encodeURI(__k6NormalizeString(`/items/${id}`)).replace(
+        /%25([0-9A-Fa-f]{2})/g,
+        '%$1'
+      )
     const mergedRequestParameters = this._mergeRequestParameters(
       requestParameters || {},
       this.commonRequestParameters

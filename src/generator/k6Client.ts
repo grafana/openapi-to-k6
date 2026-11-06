@@ -165,23 +165,6 @@ const getK6Dependencies: ClientDependenciesBuilder = () => [
   {
     exports: [
       {
-        name: 'URLSearchParams',
-        default: false,
-        values: true,
-        // syntheticDefaultImport: true,
-      },
-      {
-        name: 'URL',
-        default: false,
-        values: true,
-        // syntheticDefaultImport: true,
-      },
-    ],
-    dependency: 'https://jslib.k6.io/url/1.0.0/index.js',
-  },
-  {
-    exports: [
-      {
         name: 'FormData',
         default: false,
         values: true,
@@ -220,12 +203,19 @@ const generateK6Implementation = (
     isFormUrlEncoded: false,
   })
 
-  let url = `this.cleanBaseUrl + \`${route}\``
+  let encodedRoute = route.includes('${')
+    ? `encodeURI(__k6NormalizeString(\`${route}\`))`
+    : `encodeURI(\`${route}\`)`
+  // Keep valid escapes in literal paths and path values encoded exactly once.
+  if (route.includes('%') || route.includes('${')) {
+    encodedRoute += `.replace(/%25([0-9A-Fa-f]{2})/g, '%$1')`
+  }
+  let url = `this.cleanBaseUrl + ${encodedRoute}`
 
   if (queryParams) {
-    url += '+`?${new URLSearchParams(params).toString()}`'
+    url += '+`?${__k6SerializeQueryParams(params)}`'
   }
-  const urlGeneration = `const ${INTERNAL_URL_TOKEN} = new URL(${url});`
+  const urlGeneration = `const ${INTERNAL_URL_TOKEN} = ${url};`
 
   const options = _getK6RequestOptions(verbOptions)
 
@@ -254,11 +244,69 @@ export const generateTitle: ClientTitleBuilder = (title) => {
   return `${pascal(sanTitle)}Client`
 }
 
-const generateK6Header: ClientHeaderBuilder = ({ title }) => {
+const getStringNormalizerImplementation = () => `
+  function __k6NormalizeString(value: unknown): string {
+    const input = String(value)
+    let normalized = ''
+
+    for (let index = 0; index < input.length; index++) {
+      const code = input.charCodeAt(index)
+      if (code >= 0xd800 && code <= 0xdbff) {
+        const next = input.charCodeAt(index + 1)
+        if (next >= 0xdc00 && next <= 0xdfff) {
+          normalized += input.slice(index, index + 2)
+          index++
+        } else {
+          normalized += String.fromCharCode(0xfffd)
+        }
+      } else if (code >= 0xdc00 && code <= 0xdfff) {
+        normalized += String.fromCharCode(0xfffd)
+      } else {
+        normalized += input.charAt(index)
+      }
+    }
+
+    return normalized
+  }
+`
+
+const getQueryParameterSerializerImplementation = () => `
+  function __k6EncodeFormComponent(value: unknown): string {
+    return encodeURIComponent(__k6NormalizeString(value))
+      .replace(/[!'()~]/g, (character) => '%' + character.charCodeAt(0).toString(16).toUpperCase())
+      .replace(/%20/g, '+')
+  }
+
+  function __k6SerializeQueryParams(params: object = {}): string {
+    return Object.entries(params)
+      .map(([key, value]) => __k6EncodeFormComponent(key) + '=' + __k6EncodeFormComponent(value))
+      .join('&')
+  }
+`
+
+const generateK6Header: ClientHeaderBuilder = ({
+  title,
+  clientImplementation,
+}) => {
+  const queryParameterSerializer = clientImplementation.includes(
+    '__k6SerializeQueryParams'
+  )
+    ? getQueryParameterSerializerImplementation()
+    : ''
+
+  const stringNormalizer =
+    queryParameterSerializer ||
+    clientImplementation.includes('__k6NormalizeString')
+      ? getStringNormalizerImplementation()
+      : ''
+
   return `
   /**
    * This is the base client to use for interacting with the API.
    */
+  ${stringNormalizer}
+  ${queryParameterSerializer}
+
   export class ${title} {
       private cleanBaseUrl: string;
       private commonRequestParameters: Params;

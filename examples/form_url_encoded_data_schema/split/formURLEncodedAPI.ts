@@ -4,8 +4,6 @@
  * Form URL Encoded API
  * Service version: 1.0.0
  */
-import { URL } from 'https://jslib.k6.io/url/1.0.0/index.js'
-
 import http from 'k6/http'
 import type { Params, Response } from 'k6/http'
 
@@ -17,6 +15,7 @@ import type {
 /**
  * This is the base client to use for interacting with the API.
  */
+
 export class FormURLEncodedAPIClient {
   private cleanBaseUrl: string
   private commonRequestParameters: Params
@@ -42,7 +41,7 @@ export class FormURLEncodedAPIClient {
     data: PostSubmitForm200
     operationId: string
   } {
-    const k6url = new URL(this.cleanBaseUrl + `/submit-form`)
+    const k6url = this.cleanBaseUrl + encodeURI(`/submit-form`)
     const mergedRequestParameters = this._mergeRequestParameters(
       requestParameters || {},
       this.commonRequestParameters

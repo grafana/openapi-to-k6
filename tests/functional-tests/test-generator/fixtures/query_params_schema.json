@@ -108,7 +108,7 @@
     "fileName": "exampleAPI.ts",
     "expectedSubstrings": [
       "export class ExampleAPIClient {",
-      "this.cleanBaseUrl + `/example` + `?${new URLSearchParams(params).toString()}`",
+      "this.cleanBaseUrl + encodeURI(`/example`) + `?${__k6SerializeQueryParams(params)}`",
       "getExampleData("
     ]
   }
