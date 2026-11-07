@@ -7,6 +7,11 @@
   <br />
 </div>
 
+## _Note: This repository has been archived and is no longer maintained_
+_As of autumn of 2026, this tool and repo is no longer maintained._
+
+_For a supported tool, switch to using the xk6 subcommand: [xk6-subcommand-openapi](https://github.com/grafana/xk6-subcommand-openapi)._ 
+
 ## Overview
 
 The _openapi-to-k6_ repository is a tool designed to simplify the process of writing k6 scripts.
